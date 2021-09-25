@@ -1,7 +1,7 @@
 import React from 'react';
 
-function Layout() {
+const Layout: React.FC = function () {
   return <div></div>;
-}
+};
 
 export default Layout;
