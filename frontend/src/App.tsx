@@ -2,13 +2,18 @@ import './App.less';
 
 import { Button } from 'antd';
 import React from 'react';
+import styled from 'styled-components';
 
-function App() {
+const Wrapper = styled.div`
+  padding: 20px;
+`;
+
+const App: React.FC = function () {
   return (
-    <div>
+    <Wrapper>
       <Button type="primary">Primary Button</Button>
-    </div>
+    </Wrapper>
   );
-}
+};
 
 export default App;

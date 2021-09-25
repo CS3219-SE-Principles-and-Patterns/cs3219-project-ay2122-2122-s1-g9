@@ -1,18 +1,21 @@
-import CracoLessPlugin from 'craco-less';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const CracoLessPlugin = require('craco-less');
 
-export const plugins = [
-  {
-    plugin: CracoLessPlugin,
-    options: {
-      lessLoaderOptions: {
-        lessOptions: {
-          modifyVars: {
-            '@primary-color': '#1890FF',
-            '@font-family': 'Rubik, sans-serif',
+module.exports = {
+  plugins: [
+    {
+      plugin: CracoLessPlugin,
+      options: {
+        lessLoaderOptions: {
+          lessOptions: {
+            modifyVars: {
+              '@primary-color': '#1890FF',
+              '@font-family': 'Rubik, sans-serif',
+            },
+            javascriptEnabled: true,
           },
-          javascriptEnabled: true,
         },
       },
     },
-  },
-];
+  ],
+};
