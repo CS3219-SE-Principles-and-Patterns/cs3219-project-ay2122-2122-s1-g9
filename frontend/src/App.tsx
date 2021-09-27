@@ -1,18 +1,23 @@
 import './App.less';
 
-import { Button } from 'antd';
 import React from 'react';
-import styled from 'styled-components';
-
-const Wrapper = styled.div`
-  padding: 20px;
-`;
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 const App: React.FC = function () {
   return (
-    <Wrapper>
-      <Button type="primary">Primary Button</Button>
-    </Wrapper>
+    <Router>
+      <Switch>
+        <Route exact path="/">
+          <div>Home</div>
+        </Route>
+        <Route path="/login">
+          <div>Login</div>
+        </Route>
+        <Route path="/signup">
+          <div>Signup</div>
+        </Route>
+      </Switch>
+    </Router>
   );
 };
 
