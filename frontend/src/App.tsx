@@ -3,6 +3,9 @@ import './App.less';
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
+import Signin from './pages/Signin';
+import Signup from './pages/Signup';
+
 const App: React.FC = function () {
   return (
     <Router>
@@ -10,11 +13,11 @@ const App: React.FC = function () {
         <Route exact path="/">
           <div>Home</div>
         </Route>
-        <Route path="/login">
-          <div>Login</div>
+        <Route path="/signin">
+          <Signin />
         </Route>
         <Route path="/signup">
-          <div>Signup</div>
+          <Signup />
         </Route>
       </Switch>
     </Router>
