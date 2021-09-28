@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import Sidebar from '../components/Sidebar';
-import { PageLayout } from '../components/Styled';
+import { PageLayout } from '../components/Styles';
 
 const { Title, Text } = Typography;
 

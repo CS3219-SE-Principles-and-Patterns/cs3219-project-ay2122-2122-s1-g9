@@ -3,24 +3,28 @@ import './App.less';
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
+import PrivateRoute from './components/PrivateRoute';
+import { AuthProvider } from './hooks/auth';
 import Signin from './pages/Signin';
 import Signup from './pages/Signup';
 
 const App: React.FC = function () {
   return (
-    <Router>
-      <Switch>
-        <Route exact path="/">
-          <div>Home</div>
-        </Route>
-        <Route path="/signin">
-          <Signin />
-        </Route>
-        <Route path="/signup">
-          <Signup />
-        </Route>
-      </Switch>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Switch>
+          <PrivateRoute exact path="/">
+            <div>Home</div>
+          </PrivateRoute>
+          <Route path="/signin">
+            <Signin />
+          </Route>
+          <Route path="/signup">
+            <Signup />
+          </Route>
+        </Switch>
+      </Router>
+    </AuthProvider>
   );
 };
 
