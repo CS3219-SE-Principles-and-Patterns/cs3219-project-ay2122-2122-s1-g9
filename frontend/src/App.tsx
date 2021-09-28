@@ -1,18 +1,30 @@
 import './App.less';
 
-import { Button } from 'antd';
 import React from 'react';
-import styled from 'styled-components';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
-const Wrapper = styled.div`
-  padding: 20px;
-`;
+import PrivateRoute from './components/PrivateRoute';
+import { AuthProvider } from './hooks/auth';
+import Signin from './pages/Signin';
+import Signup from './pages/Signup';
 
 const App: React.FC = function () {
   return (
-    <Wrapper>
-      <Button type="primary">Primary Button</Button>
-    </Wrapper>
+    <AuthProvider>
+      <Router>
+        <Switch>
+          <PrivateRoute exact path="/">
+            <div>Home</div>
+          </PrivateRoute>
+          <Route path="/signin">
+            <Signin />
+          </Route>
+          <Route path="/signup">
+            <Signup />
+          </Route>
+        </Switch>
+      </Router>
+    </AuthProvider>
   );
 };
 
