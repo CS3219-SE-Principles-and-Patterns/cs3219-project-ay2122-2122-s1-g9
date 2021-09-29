@@ -1,8 +1,12 @@
+import { User } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
+import { googleLogin } from '../helpers/auth';
+
 interface AuthContext {
-  user: Types.User | null;
-  setUser: React.Dispatch<React.SetStateAction<Types.User | null>>;
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  signInWithGoogle: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContext | undefined>(undefined);
@@ -10,7 +14,12 @@ const AuthContext = createContext<AuthContext | undefined>(undefined);
 export const AuthProvider: React.FC = function (props) {
   const { children } = props;
 
-  const [user, setUser] = useState<Types.User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+
+  const signInWithGoogle = async () => {
+    const userFromGoogle = await googleLogin();
+    setUser(userFromGoogle);
+  };
 
   // Subscribe to user on mount
   // Because this sets state in the callback it will cause any ...
@@ -33,7 +42,7 @@ export const AuthProvider: React.FC = function (props) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, signInWithGoogle }}>
       {children}
     </AuthContext.Provider>
   );

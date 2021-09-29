@@ -1,10 +1,16 @@
 // Add calls to firebase service here
-import { createUserWithEmailAndPassword, getAuth } from '@firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from '@firebase/auth';
 import { FirebaseError } from '@firebase/util';
 
 import firebaseApp from './firebaseApp';
 
 const auth = getAuth(firebaseApp);
+const googleProvider = new GoogleAuthProvider();
 
 const createUser = async (email: string, password: string) => {
   try {
@@ -27,4 +33,26 @@ const createUser = async (email: string, password: string) => {
   }
 };
 
-export { createUser };
+const googleLogin = async () => {
+  try {
+    const userCredential = await signInWithPopup(auth, googleProvider);
+    // The signed-in user info.
+    const user = userCredential.user;
+    console.log(user);
+    return user;
+  } catch (error) {
+    if (error instanceof FirebaseError) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      const credential = GoogleAuthProvider.credentialFromError(error);
+      console.log(
+        `ErrorCode: ${errorCode} ErrorMessage: ${errorMessage} Credential: ${credential}`
+      );
+    } else {
+      console.log(`Unknown error: ${error}`);
+    }
+    return null;
+  }
+};
+
+export { createUser, googleLogin };
