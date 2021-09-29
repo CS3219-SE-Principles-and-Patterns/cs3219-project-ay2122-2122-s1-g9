@@ -46,20 +46,6 @@ const googleLogin = async (
     const userCredential = await signInWithPopup(auth, googleProvider);
     const user = userCredential.user;
     setUser(user);
-    // console.log(user);
-    // return user;
-    // let user = null;
-    // setPersistence(auth, browserSessionPersistence).then(async () => {
-    //   const googleProvider = new GoogleAuthProvider();
-    //   const userCredential = await signInWithPopup(auth, googleProvider); // is this why?
-    //   const user = userCredential.user;
-    //   console.log(user);
-    //   setUser(user);
-    //   // return user;
-    // });
-
-    // The signed-in user info.
-    // return user;
   } catch (error) {
     if (error instanceof FirebaseError) {
       const errorCode = error.code;
@@ -104,16 +90,16 @@ const facebookLogin = async () => {
 };
 
 const observeAuthState = (
-  setUser: React.Dispatch<React.SetStateAction<User | null>>
+  setUser: React.Dispatch<React.SetStateAction<User | null>>,
+  setPending: React.Dispatch<React.SetStateAction<boolean>>
 ) =>
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      console.log('if block hit');
       setUser(user);
     } else {
-      console.log('else block hit');
       setUser(null);
     }
+    setPending(false);
   });
 
 export { createUser, facebookLogin, googleLogin, observeAuthState };

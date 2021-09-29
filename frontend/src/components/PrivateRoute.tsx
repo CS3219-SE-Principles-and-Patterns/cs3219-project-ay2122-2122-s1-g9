@@ -11,6 +11,7 @@ const PrivateRoute: React.FC<RouteProps> = function (props) {
 
   return (
     <Route {...rest}>
+      {/* {children} */}
       {auth?.user ? (
         children
       ) : (

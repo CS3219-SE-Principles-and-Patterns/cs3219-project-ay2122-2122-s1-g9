@@ -1,6 +1,6 @@
 import { Button, Layout, Typography } from 'antd';
 import React from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, Redirect, useHistory, useLocation } from 'react-router-dom';
 
 import Sidebar from '../components/Sidebar';
 import { PageLayout } from '../components/Styles';
@@ -16,6 +16,10 @@ const Signin: React.FC = function () {
   const history = useHistory();
   const location = useLocation<LocationState>();
   const auth = useAuth();
+
+  if (auth?.user) {
+    return <Redirect to={{ pathname: '/', state: { from: location } }} />;
+  }
 
   const { from } = location.state || { from: { pathName: '/signIn' } };
   const googleLogin = () => {

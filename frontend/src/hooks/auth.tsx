@@ -1,5 +1,7 @@
 import 'firebase/auth';
 
+import { LoadingOutlined } from '@ant-design/icons';
+import { Spin } from 'antd';
 import { User } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
@@ -18,11 +20,12 @@ export const AuthProvider: React.FC = function (props) {
   const { children } = props;
 
   const [user, setUser] = useState<User | null>(null);
+  const [pending, setPending] = useState<boolean>(true);
+  const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
   // try to get it to work by moving it here instead
   const signInWithGoogle = async () => {
     await googleLogin(setUser);
-    // setUser(userFromGoogle);
   };
 
   const signInWithFacebook = async () => {
@@ -35,22 +38,14 @@ export const AuthProvider: React.FC = function (props) {
   // ... component that utilizes this hook to re-render with the ...
   // ... latest auth object.
   useEffect(() => {
-    const unsubscribe = observeAuthState(setUser);
-    // unsubscribe(setUser);
-    // TODO: replace the unsubscribe this function once firebase is ready
-    // const unsubscribe = () => {
-    //   console.log('unsub');
-    // };
-    // const unsubscribe = firebase.auth.onAuthStateChanged((user) => {
-    //   if (user) {
-    //     setUser(user);
-    //   } else {
-    //     setUser(null);
-    //   }
-    // });
+    const unsubscribe = observeAuthState(setUser, setPending);
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
+
+  if (pending) {
+    return <Spin indicator={antIcon} />;
+  }
 
   return (
     <AuthContext.Provider
