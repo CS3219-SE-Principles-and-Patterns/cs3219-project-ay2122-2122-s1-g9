@@ -20,6 +20,7 @@ const Signin: React.FC = function () {
   const { from } = location.state || { from: { pathName: '/signIn' } };
   const googleLogin = () => {
     auth?.signInWithGoogle().then(() => {
+      console.log('redirecting....');
       history.replace('/', from);
     });
   };

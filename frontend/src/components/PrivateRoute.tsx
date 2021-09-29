@@ -7,6 +7,7 @@ import useAuth from '../hooks/auth';
 const PrivateRoute: React.FC<RouteProps> = function (props) {
   const { children, location, ...rest } = props;
   const auth = useAuth();
+  console.log(auth?.user);
 
   return (
     <Route {...rest}>
