@@ -1,4 +1,4 @@
-import { Button, Layout, Typography } from 'antd';
+import { Alert, Button, Layout, Typography } from 'antd';
 import React from 'react';
 import { Link, Redirect, useHistory, useLocation } from 'react-router-dom';
 
@@ -24,7 +24,6 @@ const Signin: React.FC = function () {
   const { from } = location.state || { from: { pathName: '/signIn' } };
   const googleLogin = () => {
     auth?.signInWithGoogle().then(() => {
-      console.log('redirecting....');
       history.replace('/', from);
     });
   };
@@ -36,24 +35,31 @@ const Signin: React.FC = function () {
   };
 
   return (
-    <PageLayout>
-      <Sidebar>
-        <Title level={3}>Sign in</Title>
-        <Text>
-          Get started by signing in to <Text strong>Peerprep</Text> with your
-          Google or Facebook account.
-        </Text>
-        <Button type="primary" onClick={facebookLogin}>
-          Sign In with Facebook
-        </Button>
-        <Button type="primary" onClick={googleLogin}>
-          Sign In with Google
-        </Button>
-        <Text>Already have an account?</Text>
-        <Link to="/signup">Sign up</Link>
-      </Sidebar>
-      <Layout>Large content area</Layout>
-    </PageLayout>
+    <>
+      {auth?.authError ? (
+        <Alert type="error" message={auth?.authError} banner closable />
+      ) : (
+        <></>
+      )}
+      <PageLayout>
+        <Sidebar>
+          <Title level={3}>Sign in</Title>
+          <Text>
+            Get started by signing in to <Text strong>Peerprep</Text> with your
+            Google or Facebook account.
+          </Text>
+          <Button type="primary" onClick={facebookLogin}>
+            Continue with Facebook
+          </Button>
+          <Button type="primary" onClick={googleLogin}>
+            Continue with Google
+          </Button>
+          <Text>Already have an account?</Text>
+          <Link to="/signup">Sign up</Link>
+        </Sidebar>
+        <Layout>Large content area</Layout>
+      </PageLayout>
+    </>
   );
 };
 

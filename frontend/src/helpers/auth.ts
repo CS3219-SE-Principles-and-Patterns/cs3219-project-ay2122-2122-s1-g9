@@ -63,27 +63,37 @@ const googleLogin = async (
   }
 };
 
-const facebookLogin = async () => {
+const facebookLogin = async (
+  setUser: React.Dispatch<React.SetStateAction<User | null>>,
+  setAuthError: React.Dispatch<React.SetStateAction<string | null>>
+) => {
   try {
     await setPersistence(auth, browserSessionPersistence);
     const facebookProvider = new FacebookAuthProvider();
     const userCredential = await signInWithPopup(auth, facebookProvider);
     // The signed-in user info.
     const user = userCredential.user;
+    setUser(user);
     console.log(user);
     return user;
   } catch (error) {
-    if (error instanceof FirebaseError) {
+    if (
+      error instanceof FirebaseError &&
+      error.code != 'auth/account-exists-with-different-credential'
+    ) {
       const errorCode = error.code;
       const errorMessage = error.message;
       const credential = FacebookAuthProvider.credentialFromError(error);
+
       console.log(
         `ErrorCode: ${errorCode} ErrorMessage: ${errorMessage} Credential: ${JSON.stringify(
           credential
         )}`
       );
     } else {
-      console.log(`Unknown error: ${error}`);
+      setAuthError(
+        'Your Facebook account uses the same email as your Google one. Please login with Google instead.'
+      );
     }
     return null;
   }

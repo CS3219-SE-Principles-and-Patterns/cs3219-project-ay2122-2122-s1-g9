@@ -12,6 +12,7 @@ interface AuthContext {
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
   signInWithGoogle: () => Promise<void>;
   signInWithFacebook: () => Promise<void>;
+  authError: string | null;
 }
 
 const AuthContext = createContext<AuthContext | undefined>(undefined);
@@ -21,16 +22,15 @@ export const AuthProvider: React.FC = function (props) {
 
   const [user, setUser] = useState<User | null>(null);
   const [pending, setPending] = useState<boolean>(true);
+  const [authError, setAuthError] = useState<string | null>(null);
   const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
-  // try to get it to work by moving it here instead
   const signInWithGoogle = async () => {
     await googleLogin(setUser);
   };
 
   const signInWithFacebook = async () => {
-    const userFromFacebook = await facebookLogin();
-    setUser(userFromFacebook);
+    await facebookLogin(setUser, setAuthError);
   };
 
   // Subscribe to user on mount
@@ -49,7 +49,7 @@ export const AuthProvider: React.FC = function (props) {
 
   return (
     <AuthContext.Provider
-      value={{ user, setUser, signInWithGoogle, signInWithFacebook }}
+      value={{ user, setUser, signInWithGoogle, signInWithFacebook, authError }}
     >
       {children}
     </AuthContext.Provider>
