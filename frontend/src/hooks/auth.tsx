@@ -1,12 +1,13 @@
 import { User } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { googleLogin } from '../helpers/auth';
+import { facebookLogin, googleLogin } from '../helpers/auth';
 
 interface AuthContext {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
   signInWithGoogle: () => Promise<void>;
+  signInWithFacebook: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContext | undefined>(undefined);
@@ -19,6 +20,11 @@ export const AuthProvider: React.FC = function (props) {
   const signInWithGoogle = async () => {
     const userFromGoogle = await googleLogin();
     setUser(userFromGoogle);
+  };
+
+  const signInWithFacebook = async () => {
+    const userFromFacebook = await facebookLogin();
+    setUser(userFromFacebook);
   };
 
   // Subscribe to user on mount
@@ -42,7 +48,9 @@ export const AuthProvider: React.FC = function (props) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, signInWithGoogle }}>
+    <AuthContext.Provider
+      value={{ user, setUser, signInWithGoogle, signInWithFacebook }}
+    >
       {children}
     </AuthContext.Provider>
   );
