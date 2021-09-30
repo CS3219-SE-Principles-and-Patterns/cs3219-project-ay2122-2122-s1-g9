@@ -6,11 +6,11 @@ export const PageLayout = styled(Layout)`
 `;
 
 interface SpacerProps {
-  height?: string;
-  width?: string;
+  $height?: string;
+  $width?: string;
 }
 
 export const Spacer = styled.div<SpacerProps>`
-  width: ${(props) => (props.width ? props.width : 0)};
-  height: ${(props) => (props.height ? props.height : 0)};
+  width: ${(props) => props.$width ?? 0};
+  height: ${(props) => props.$height ?? 0};
 `;

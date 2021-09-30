@@ -1,5 +1,3 @@
-import 'firebase/auth';
-
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import { User } from 'firebase/auth';

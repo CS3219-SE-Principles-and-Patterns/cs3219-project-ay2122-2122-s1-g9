@@ -58,16 +58,14 @@ const Signin: React.FC = function () {
 
   return (
     <>
-      {auth?.authError ? (
+      {auth?.authError && (
         <Alert type="error" message={auth?.authError} banner closable />
-      ) : (
-        <></>
       )}
       <PageLayout>
         <Sidebar>
-          <Spacer height="34px" />
+          <Spacer $height="34px" />
           <Logo>
-            <Spacer width="32px" />
+            <Spacer $width="32px" />
             <Image
               width={147}
               src={logo}
@@ -75,15 +73,15 @@ const Signin: React.FC = function () {
               preview={false}
             />
           </Logo>
-          <Spacer height="75px" />
+          <Spacer $height="75px" />
           <Container>
             <Title level={1}>Get started</Title>
-            <Spacer height="16px" />
+            <Spacer $height="16px" />
             <Text>
               Get started by continuing to <Text strong>Peerprep</Text> with
               your Google or Facebook account.
             </Text>
-            <Spacer height="68px" />
+            <Spacer $height="68px" />
             <FacebookLoginButton
               onClick={facebookLogin}
               style={{
@@ -94,7 +92,7 @@ const Signin: React.FC = function () {
             >
               Continue with Facebook
             </FacebookLoginButton>
-            <Spacer height="20px" />
+            <Spacer $height="20px" />
             <GoogleLoginButton
               onClick={googleLogin}
               style={{
