@@ -5,7 +5,7 @@ import { Spin } from 'antd';
 import { User } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { facebookLogin, googleLogin, observeAuthState } from '../helpers/auth';
+import { observeAuthState, socialLogin } from '../firebase/auth';
 
 interface AuthContext {
   user: User | null;
@@ -26,11 +26,11 @@ export const AuthProvider: React.FC = function (props) {
   const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
   const signInWithGoogle = async () => {
-    await googleLogin(setUser);
+    await socialLogin({ setUser, social: 'google' });
   };
 
   const signInWithFacebook = async () => {
-    await facebookLogin(setUser, setAuthError);
+    await socialLogin({ setUser, social: 'facebook', setAuthError });
   };
 
   // Subscribe to user on mount

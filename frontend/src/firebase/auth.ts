@@ -1,5 +1,6 @@
 // Add calls to firebase service here
 import {
+  AuthProvider,
   browserSessionPersistence,
   createUserWithEmailAndPassword,
   FacebookAuthProvider,
@@ -37,62 +38,59 @@ const createUser = async (email: string, password: string) => {
   }
 };
 
-const googleLogin = async (
-  setUser: React.Dispatch<React.SetStateAction<User | null>>
-) => {
-  try {
-    await setPersistence(auth, browserSessionPersistence);
-    const googleProvider = new GoogleAuthProvider();
-    const userCredential = await signInWithPopup(auth, googleProvider);
-    const user = userCredential.user;
-    setUser(user);
-  } catch (error) {
-    if (error instanceof FirebaseError) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      const credential = GoogleAuthProvider.credentialFromError(error);
-      console.log(
-        `ErrorCode: ${errorCode} ErrorMessage: ${errorMessage} Credential: ${JSON.stringify(
-          credential
-        )}`
-      );
-    } else {
-      console.log(`Unknown error: ${error}`);
-    }
-    return null;
-  }
-};
+interface SocialLoginParams {
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  social: 'google' | 'facebook';
+  setAuthError?: React.Dispatch<React.SetStateAction<string | null>>;
+}
 
-const facebookLogin = async (
-  setUser: React.Dispatch<React.SetStateAction<User | null>>,
-  setAuthError: React.Dispatch<React.SetStateAction<string | null>>
-) => {
+const socialLogin = async ({
+  setUser,
+  social,
+  setAuthError,
+}: SocialLoginParams) => {
   try {
     await setPersistence(auth, browserSessionPersistence);
-    const facebookProvider = new FacebookAuthProvider();
-    const userCredential = await signInWithPopup(auth, facebookProvider);
+    let provider: AuthProvider;
+    switch (social) {
+      case 'facebook':
+        provider = new FacebookAuthProvider();
+        console.log(provider, 'fbprovider');
+        break;
+
+      case 'google':
+        provider = new GoogleAuthProvider();
+        console.log(provider, 'gprovider');
+        break;
+
+      default:
+        throw new Error('Unsupported SNS' + social);
+    }
+
+    const userCredential = await signInWithPopup(auth, provider);
     // The signed-in user info.
     const user = userCredential.user;
     setUser(user);
-    console.log(user);
     return user;
   } catch (error) {
-    if (
-      error instanceof FirebaseError &&
-      error.code != 'auth/account-exists-with-different-credential'
-    ) {
+    if (error instanceof FirebaseError) {
       const errorCode = error.code;
+      if (errorCode === 'auth/account-exists-with-different-credential') {
+        setAuthError?.(
+          'Your Facebook account uses the same email as your Google one. Please login with Google instead.'
+        );
+      }
+
       const errorMessage = error.message;
-      const credential = FacebookAuthProvider.credentialFromError(error);
+      const credential =
+        social == 'facebook'
+          ? FacebookAuthProvider.credentialFromError(error)
+          : GoogleAuthProvider.credentialFromError(error);
 
       console.log(
         `ErrorCode: ${errorCode} ErrorMessage: ${errorMessage} Credential: ${JSON.stringify(
           credential
         )}`
-      );
-    } else {
-      setAuthError(
-        'Your Facebook account uses the same email as your Google one. Please login with Google instead.'
       );
     }
     return null;
@@ -112,4 +110,4 @@ const observeAuthState = (
     setPending(false);
   });
 
-export { createUser, facebookLogin, googleLogin, observeAuthState };
+export { createUser, observeAuthState, socialLogin };

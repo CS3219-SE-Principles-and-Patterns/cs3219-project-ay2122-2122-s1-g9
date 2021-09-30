@@ -1,6 +1,6 @@
 import { initializeApp } from '@firebase/app';
 
-import firebaseOptions from '../consts/firebaseOptions';
+import firebaseOptions from './firebaseOptions';
 
 const app = initializeApp(firebaseOptions);
 
