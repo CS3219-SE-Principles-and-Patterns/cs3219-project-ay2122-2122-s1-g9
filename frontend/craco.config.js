@@ -11,6 +11,7 @@ module.exports = {
             modifyVars: {
               '@primary-color': '#1890FF',
               '@font-family': 'Rubik, sans-serif',
+              '@typography-title-font-weight': 500,
             },
             javascriptEnabled: true,
           },
