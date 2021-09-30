@@ -6,7 +6,6 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './hooks/auth';
 import Signin from './pages/Signin';
-import Signup from './pages/Signup';
 
 const App: React.FC = function () {
   return (
@@ -18,9 +17,6 @@ const App: React.FC = function () {
           </PrivateRoute>
           <Route path="/signin">
             <Signin />
-          </Route>
-          <Route path="/signup">
-            <Signup />
           </Route>
         </Switch>
       </Router>
