@@ -13,9 +13,11 @@ import storage from 'redux-persist/lib/storage';
 import thunk from 'redux-thunk';
 
 import chatSlice from './chatSlice';
+import editorSlice from './editorSlice';
 
 const reducers = combineReducers({
   chat: chatSlice,
+  editor: editorSlice,
 });
 
 const persistConfig = {

@@ -12,6 +12,8 @@ const FIREBASE_APP_ID = process.env.REACT_APP_FIREBASE_APP_ID || '';
 const options: FirebaseOptions = {
   apiKey: FIREBASE_API_KEY,
   authDomain: FIREBASE_AUTH_DOMAIN,
+  databaseURL:
+    'https://cs3219-project-dev-default-rtdb.asia-southeast1.firebasedatabase.app',
   projectId: FIREBASE_PROJECT_ID,
   storageBucket: FIREBASE_STORAGE_BUCKET,
   messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
