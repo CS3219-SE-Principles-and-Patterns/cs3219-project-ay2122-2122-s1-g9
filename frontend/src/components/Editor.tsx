@@ -1,6 +1,6 @@
 import { fromMonaco } from '@hackerrank/firepad';
 import MonacoEditor, { EditorProps } from '@monaco-editor/react';
-import { get, getDatabase, ref } from 'firebase/database';
+// import { get, getDatabase, ref } from 'firebase/database';
 import { editor } from 'monaco-editor';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -29,7 +29,7 @@ const Editor: React.FC = function () {
       return;
     }
 
-    const dbRef = ref(getDatabase(app), '/editor');
+    // const dbRef = ref(getDatabase(app), '/editor');
 
     // get(ref(dbRef, '/editor')).then((snapshot) => {
     //   if (snapshot.exists()) {

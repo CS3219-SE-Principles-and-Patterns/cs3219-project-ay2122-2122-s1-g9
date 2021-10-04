@@ -1,27 +1,21 @@
 // Add calls to firebase service here
-import {
-  AuthProvider,
-  browserSessionPersistence,
-  createUserWithEmailAndPassword,
-  FacebookAuthProvider,
-  getAuth,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  setPersistence,
-  signInWithPopup,
-  User,
-} from '@firebase/auth';
 import { FirebaseError } from '@firebase/util';
+import firebase from 'firebase';
 
 import firebaseApp from './firebaseApp';
 
-const auth = getAuth(firebaseApp);
+const {
+  FacebookAuthProvider,
+  GoogleAuthProvider,
+  Auth: { Persistence },
+} = firebase.auth;
+
+const auth = firebaseApp.auth();
 
 const createUser = async (email: string, password: string) => {
   try {
     // Signed in
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
+    const userCredential = await auth.createUserWithEmailAndPassword(
       email,
       password
     );
@@ -39,7 +33,7 @@ const createUser = async (email: string, password: string) => {
 };
 
 interface SocialLoginParams {
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  setUser: React.Dispatch<React.SetStateAction<firebase.User | null>>;
   social: 'google' | 'facebook';
   setAuthError?: React.Dispatch<React.SetStateAction<string | null>>;
 }
@@ -50,8 +44,8 @@ const socialLogin = async ({
   setAuthError,
 }: SocialLoginParams) => {
   try {
-    await setPersistence(auth, browserSessionPersistence);
-    let provider: AuthProvider;
+    await auth.setPersistence(Persistence.SESSION);
+    let provider: firebase.auth.AuthProvider;
     switch (social) {
       case 'facebook':
         provider = new FacebookAuthProvider();
@@ -67,41 +61,36 @@ const socialLogin = async ({
         throw new Error('Unsupported SNS' + social);
     }
 
-    const userCredential = await signInWithPopup(auth, provider);
+    const userCredential = await auth.signInWithPopup(provider);
     // The signed-in user info.
     const user = userCredential.user;
     setUser(user);
     return user;
-  } catch (error) {
-    if (error instanceof FirebaseError) {
-      const errorCode = error.code;
-      if (errorCode === 'auth/account-exists-with-different-credential') {
-        setAuthError?.(
-          'Your Facebook account uses the same email as your Google one. Please login with Google instead.'
-        );
-      }
-
-      const errorMessage = error.message;
-      const credential =
-        social == 'facebook'
-          ? FacebookAuthProvider.credentialFromError(error)
-          : GoogleAuthProvider.credentialFromError(error);
-
-      console.log(
-        `ErrorCode: ${errorCode} ErrorMessage: ${errorMessage} Credential: ${JSON.stringify(
-          credential
-        )}`
+  } catch (error: any) {
+    const errorCode = error?.code;
+    if (errorCode === 'auth/account-exists-with-different-credential') {
+      setAuthError?.(
+        'Your Facebook account uses the same email as your Google one. Please login with Google instead.'
       );
     }
+
+    const errorMessage = error?.message;
+    const credential = error?.credential;
+
+    console.log(
+      `ErrorCode: ${errorCode} ErrorMessage: ${errorMessage} Credential: ${JSON.stringify(
+        credential
+      )}`
+    );
     return null;
   }
 };
 
 const observeAuthState = (
-  setUser: React.Dispatch<React.SetStateAction<User | null>>,
+  setUser: React.Dispatch<React.SetStateAction<firebase.User | null>>,
   setPending: React.Dispatch<React.SetStateAction<boolean>>
 ) =>
-  onAuthStateChanged(auth, (user) => {
+  auth.onAuthStateChanged((user) => {
     if (user) {
       setUser(user);
     } else {
