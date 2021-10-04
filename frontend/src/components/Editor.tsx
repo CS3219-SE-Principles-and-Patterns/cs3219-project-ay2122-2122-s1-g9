@@ -4,7 +4,7 @@ import MonacoEditor, { EditorProps } from '@monaco-editor/react';
 import { editor } from 'monaco-editor';
 import React, { useEffect, useRef, useState } from 'react';
 
-import app from '../firebase/firebaseApp';
+import firebaseApp from '../firebase/firebaseApp';
 import { setPosition, setValue } from '../redux/editorSlice';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 
@@ -29,29 +29,21 @@ const Editor: React.FC = function () {
       return;
     }
 
-    // const dbRef = ref(getDatabase(app), '/editor');
-
-    // get(ref(dbRef, '/editor')).then((snapshot) => {
-    //   if (snapshot.exists()) {
-    //     console.log(snapshot.val());
-    //   } else {
-    //     console.log('no data');
-    //   }
-    // });
-    // .ref().child(`pair001`);
-
-    // const firepad = fromMonaco(dbRef, editorRef.current);
-    // const name = 'me';
-    // firepad.setUserName(name);
+    const dbRef = firebaseApp.database().ref().child('/testEditor');
+    const firepad = fromMonaco(dbRef, editorRef.current);
+    const name = prompt('enter your name:');
+    if (name) {
+      firepad.setUserName(name);
+    }
   }, [editorLoaded]);
 
-  const handleEditorChange: EditorProps['onChange'] = (value, event) => {
-    if (value == null) {
-      return;
-    }
-    dispatch(setValue(value));
-    dispatch(setPosition(editorRef.current?.getPosition()));
-  };
+  // const handleEditorChange: EditorProps['onChange'] = (value, event) => {
+  //   if (value == null) {
+  //     return;
+  //   }
+  //   dispatch(setValue(value));
+  //   dispatch(setPosition(editorRef.current?.getPosition()));
+  // };
 
   return (
     <div>
@@ -59,9 +51,9 @@ const Editor: React.FC = function () {
         height="90vh"
         options={options}
         defaultLanguage="javascript"
-        defaultValue={editorValue}
+        // defaultValue={editorValue}
         onMount={handleEditorMount}
-        onChange={handleEditorChange}
+        // onChange={handleEditorChange}
       />
     </div>
   );
