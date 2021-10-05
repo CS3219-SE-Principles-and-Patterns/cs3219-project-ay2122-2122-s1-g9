@@ -1,13 +1,13 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
-import { User } from 'firebase/auth';
+import firebase from 'firebase';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 import { observeAuthState, socialLogin } from '../firebase/auth';
 
 interface AuthContext {
-  user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  user: firebase.User | null;
+  setUser: React.Dispatch<React.SetStateAction<firebase.User | null>>;
   signInWithGoogle: () => Promise<void>;
   signInWithFacebook: () => Promise<void>;
   authError: string | null;
@@ -18,7 +18,7 @@ const AuthContext = createContext<AuthContext | undefined>(undefined);
 export const AuthProvider: React.FC = function (props) {
   const { children } = props;
 
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<firebase.User | null>(null);
   const [pending, setPending] = useState<boolean>(true);
   const [authError, setAuthError] = useState<string | null>(null);
   const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;

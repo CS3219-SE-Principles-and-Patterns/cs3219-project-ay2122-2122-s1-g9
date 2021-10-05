@@ -1,7 +1,7 @@
-import { initializeApp } from '@firebase/app';
+import firebase from 'firebase';
 
 import firebaseOptions from './firebaseOptions';
 
-const app = initializeApp(firebaseOptions);
+const app = firebase.initializeApp(firebaseOptions);
 
 export default app;
