@@ -1,18 +1,18 @@
 import {
-  Firestore,
-  setDoc,
+  addDoc,
   collection,
   doc,
-  addDoc,
+  Firestore,
+  setDoc,
 } from '@firebase/firestore';
 
-import { QuestionDict, QnsDictForRandom } from './questionTypes';
+import { QnsDictForRandom, QuestionDict } from './questionTypes';
 
 async function writeQnsDict(
   db: Firestore,
   qnsDict: QuestionDict
 ): Promise<void> {
-  for (const [key, qns] of Object.entries(qnsDict)) {
+  for (const qns of Object.values(qnsDict)) {
     const docRef = doc(db, 'questions', qns.slug);
     await setDoc(docRef, qns);
     console.log(
@@ -26,7 +26,6 @@ async function writeDictForRandom(
   dictForRandom: QnsDictForRandom
 ): Promise<void> {
   // randomQuestions(C) -> algorithms(D) -> easy(C) -> auto_id containing qns (D)
-
   const rootCollectionRef = collection(db, 'randomQuestions');
 
   for (const [cate, levelDict] of Object.entries(dictForRandom)) {
@@ -45,4 +44,4 @@ async function writeDictForRandom(
   }
 }
 
-export { writeQnsDict, writeDictForRandom };
+export { writeDictForRandom, writeQnsDict };

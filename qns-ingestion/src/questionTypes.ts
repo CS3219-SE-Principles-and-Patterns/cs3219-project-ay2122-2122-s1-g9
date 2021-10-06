@@ -22,7 +22,7 @@ export interface TemplateMeta {
 }
 
 export interface Question {
-	id: number;
+  id: number;
   fid: number;
   name: string;
   slug: string;

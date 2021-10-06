@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-import { Question, QuestionDict, QuestionIdentifier } from './questionTypes';
+import { QnsDictForRandom, Question, QuestionDict } from './questionTypes';
 
 function readQuestions(qnsDir: string): QuestionDict {
   const exclusions = ['.DS_STORE', 'problems.json', 'translationConfig.json'];
@@ -8,9 +8,6 @@ function readQuestions(qnsDir: string): QuestionDict {
   let arr = fs.readdirSync(qnsDir);
   arr = arr.filter((filename) => !exclusions.includes(filename));
   arr = arr.map((filename) => qnsDir + '/' + filename);
-
-  const questions = [];
-  arr = arr.slice(0, 2); // TODO: Remove this line once completed
 
   const qnsDict: { [id: string]: Question } = {};
   for (const filename of arr) {
@@ -22,13 +19,11 @@ function readQuestions(qnsDir: string): QuestionDict {
   return qnsDict;
 }
 
-function createDictForRandom(qnsDict: QuestionDict) {
+function createDictForRandom(qnsDict: QuestionDict): QnsDictForRandom {
   // https://stackoverflow.com/questions/46798981/firestore-how-to-get-random-documents-in-a-collection
-  const results: {
-    [category: string]: { [level: string]: QuestionIdentifier[] };
-  } = {};
+  const results: QnsDictForRandom = {};
 
-  for (const [key, qns] of Object.entries(qnsDict)) {
+  for (const qns of Object.values(qnsDict)) {
     if (!results.hasOwnProperty(qns.category)) {
       results[qns.category] = { easy: [], medium: [], hard: [] };
     }
@@ -42,4 +37,4 @@ function createDictForRandom(qnsDict: QuestionDict) {
   return results;
 }
 
-export { readQuestions, createDictForRandom };
+export { createDictForRandom, readQuestions };
