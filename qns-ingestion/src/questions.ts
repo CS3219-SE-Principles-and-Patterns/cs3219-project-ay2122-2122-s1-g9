@@ -1,52 +1,8 @@
 import fs from 'fs';
 
-interface QuestionTemplate {
-	value: string,
-	text: string,
-	defaultCode: string,
-}
+import { Question, QuestionDict, QuestionIdentifier  } from './questionTypes';
 
-interface Param {
-	name: string;
-	type: string;
-}
-
-interface Return {
-	type: string;
-	size: string;	
-}
-
-interface TemplateMeta {
-	name: string;
-	params: Param[];
-	return: Return;
-	manual: boolean;
-}
-
-interface Question {
-  id: number;
-  fid: number;
-	name: string;
-	slug: string;
-	link: string;
-	percent: number;
-	level: string;
-	category: string;
-	totalAC: string;
-	totalSubmit: string;
-	likes: string;
-	dislikes: string;
-	desc: string;
-	templates: QuestionTemplate[];
-	testcase: string;
-	testable: string;
-	templateMeta: TemplateMeta;
-	isPaidOnly: false,
-	hints: string[];	
-}
-
-function readQuestions(qnsDir: string): { [id: string]: Question } {
-  // Produce a list of questions [{id: ..., desc: ...}, {id: ..., desc: ...}]
+function readQuestions(qnsDir: string): QuestionDict {
 	const exclusions = [".DS_STORE", "problems.json", "translationConfig.json"];
 
   let arr = fs.readdirSync(qnsDir);
@@ -65,5 +21,31 @@ function readQuestions(qnsDir: string): { [id: string]: Question } {
 	return qnsDict;
 }
 
+function createDictForRandom(qnsDict: QuestionDict) {
+	// https://stackoverflow.com/questions/46798981/firestore-how-to-get-random-documents-in-a-collection
+	const results: { [category: string]: { [difficulty: string]: QuestionIdentifier[] }}= {};
 
-export { readQuestions };
+	for (const [key, qns] of Object.entries(qnsDict)) {
+		if (!results.hasOwnProperty(qns.category)) {
+			results[qns.category] = {"Easy": [], "Medium": [], "Hard": []};
+		}
+
+		console.log(qns.category);
+		console.log(qns.level);
+
+		results[qns.category][qns.level].push({
+			id: qns.id,
+			slug: qns.slug,
+		});	
+	}
+
+	return results;
+}
+
+
+function createCategoryDict() {
+
+}
+
+
+export { readQuestions, createDictForRandom };
