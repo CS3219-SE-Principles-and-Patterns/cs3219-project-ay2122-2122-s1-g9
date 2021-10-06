@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-import { Question, QuestionDict, QuestionIdentifier  } from './questionTypes';
+import { Question, QuestionDict, QuestionIdentifier } from './questionTypes';
 
 function readQuestions(qnsDir: string): QuestionDict {
 	const exclusions = [".DS_STORE", "problems.json", "translationConfig.json"];

@@ -10,7 +10,7 @@ import { getFirestore, connectFirestoreEmulator, } from "@firebase/firestore";
 import firebaseOptions from './firebaseOptions';
 import { createDictForRandom, readQuestions } from './questions';
 import { Question } from './questionTypes';
-import { writeQnsDictToFirebase } from './firestore';
+import { writeDictForRandom, writeQnsDict } from './firestore';
 
 const QNS_DIR = "./questions";
 
@@ -33,12 +33,15 @@ async function main() {
   // console.log("hello")
 
   const qnsDict = readQuestions(QNS_DIR);
-  // const dictForRandom = createDictForRandom(qnsDict);
-  await writeQnsDictToFirebase(db, qnsDict);
+  const dictForRandom = createDictForRandom(qnsDict);
+  await writeQnsDict(db, qnsDict);
+  await writeDictForRandom(db, dictForRandom);
 }
 
 (async () => {
   await main();
+  process.exit();
 })().catch(err => {
     console.error(err);
+    process.exit(1);
 });
