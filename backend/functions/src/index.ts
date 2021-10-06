@@ -1,5 +1,6 @@
-import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
+import * as functions from 'firebase-functions';
+import * as admin from 'firebase-admin';
+import { CallableContext } from 'firebase-functions/v1/https';
 
 admin.initializeApp();
 
@@ -8,29 +9,32 @@ admin.initializeApp();
 //
 
 export const helloWorld = functions.https.onRequest((request, response) => {
-  functions.logger.info("Hello logs!", { structuredData: true });
-  response.send("Hello from Firebase!");
+  functions.logger.info('Hello logs!', { structuredData: true });
+  response.send('Hello from Firebase!');
 });
 
-export const getQuestion = functions.https.onCall(async (request, context) => {
+export const getQuestion = functions.https.onCall(async (data, context: CallableContext) => {
   // request
   // { "slug": two-sums }
 
-  if (!request || !request.slug || request.slug.length === 0) {
-    throw new functions.https.HttpsError("invalid-argument", "The function must be called with " +
-      "one arguments \"slug\", the title of the question.");
+  if (!data || !data.slug || data.slug.length === 0) {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      'The function must be called with ' +
+        'one arguments "slug", the title of the question.'
+    );
   }
 
   const db = admin.firestore();
-
-  const slug = request.slug;
-  const docRef = db.doc(`questions/${slug}`);
+  const docRef = db.doc(`questions/${request.slug}`);
   const snap = await docRef.get();
 
   if (!snap.exists) {
     // throw error
-    throw new functions.https.HttpsError("invalid-argument",
-        "Question with slug cannot be found");
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      'Question with slug cannot be found'
+    );
   }
 
   return snap.data();
