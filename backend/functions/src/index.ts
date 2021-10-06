@@ -13,9 +13,8 @@ export const helloWorld = functions.https.onRequest((request, response) => {
   response.send('Hello from Firebase!');
 });
 
-export const getQuestion = functions.https.onCall(async (data, context: CallableContext) => {
-  // request
-  // { "slug": two-sums }
+export const getQuestion = functions.https.onCall(async (data: App.getQuestionData, context: CallableContext) => {
+  // data: { "slug": "two-sum" }
 
   if (!data || !data.slug || data.slug.length === 0) {
     throw new functions.https.HttpsError(
@@ -26,7 +25,7 @@ export const getQuestion = functions.https.onCall(async (data, context: Callable
   }
 
   const db = admin.firestore();
-  const docRef = db.doc(`questions/${request.slug}`);
+  const docRef = db.doc(`questions/${data.slug}`);
   const snap = await docRef.get();
 
   if (!snap.exists) {
