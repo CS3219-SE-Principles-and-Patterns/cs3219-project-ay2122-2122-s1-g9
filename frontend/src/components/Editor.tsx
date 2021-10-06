@@ -172,6 +172,7 @@ const Editor: React.FC = function () {
         ))}
       </select>
       <MonacoEditor
+        width="90vh"
         height="90vh"
         options={options}
         path={editorLanguage}

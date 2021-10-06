@@ -66,6 +66,7 @@ const socialLogin = async ({
     const user = userCredential.user;
     setUser(user);
     return user;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     const errorCode = error?.code;
     if (errorCode === 'auth/account-exists-with-different-credential') {
