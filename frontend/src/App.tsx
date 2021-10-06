@@ -19,9 +19,9 @@ const App: React.FC = function () {
           <Route path="/signin">
             <Signin />
           </Route>
-          <Route path="/collaborate">
+          <PrivateRoute exact path="/collaborate">
             <Collaborate />
-          </Route>
+          </PrivateRoute>
         </Switch>
       </Router>
     </AuthProvider>

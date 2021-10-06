@@ -5,6 +5,7 @@ import firebaseApp from '../firebase/firebaseApp';
 interface ChatMessage {
   content: string;
   timeStamp: string;
+  uid: string | null;
 }
 
 interface ChatErrors {
@@ -20,6 +21,7 @@ const Chat: React.FC = function () {
     writeError: null,
   });
   const dbRef = firebaseApp.database().ref('testChat/messages');
+  const uid = firebaseApp.auth().currentUser?.uid ?? null;
 
   useEffect(() => {
     dbRef.on('value', (snapshot) => {
@@ -34,9 +36,14 @@ const Chat: React.FC = function () {
   const handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault();
     try {
+      if (!uid) {
+        throw new Error('User not logged in');
+      }
+      console.log(uid);
       await dbRef.push({
         content,
         timeStamp: Date.now().toString(),
+        uid,
       } as ChatMessage);
       setContent('');
     } catch (error: unknown) {
@@ -55,6 +62,10 @@ const Chat: React.FC = function () {
   return (
     <div>
       {messages.map((chat) => {
+        if (chat.uid != uid) {
+          console.log('uid no match');
+          return <p key={chat.timeStamp}>{'other ' + chat.content}</p>;
+        }
         return <p key={chat.timeStamp}>{chat.content}</p>;
       })}
       <form onSubmit={handleSubmit}>
