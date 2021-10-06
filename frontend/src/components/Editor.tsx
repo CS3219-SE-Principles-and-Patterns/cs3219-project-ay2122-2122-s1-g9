@@ -136,10 +136,11 @@ const Editor: React.FC = function () {
 
     const dbRef = firebaseApp.database().ref('testEditor/content');
     const firepad = fromMonaco(dbRef, editorRef.current);
-    const name = prompt('enter your name:');
-    if (name) {
-      firepad.setUserName(name);
-    }
+    // const name = prompt('enter your name:');
+    // if (name) {
+    //   firepad.setUserName(name);
+    // }
+    firepad.setUserName('arthur');
   }, [editorLoaded]);
 
   // Listen for when the language changes
