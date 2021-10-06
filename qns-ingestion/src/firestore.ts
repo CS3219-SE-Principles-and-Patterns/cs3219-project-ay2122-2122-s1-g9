@@ -15,15 +15,15 @@ async function writeDictForRandom(db: Firestore, dictForRandom: QnsDictForRandom
 
 	const rootCollectionRef = collection(db, "randomQuestions");
 
-	for (const [cate, difficultyDict] of Object.entries(dictForRandom)) {
+	for (const [cate, levelDict] of Object.entries(dictForRandom)) {
 		const cateDocRef = doc(rootCollectionRef, cate);
 
-		for (const [difficulty, questions] of Object.entries(difficultyDict)) {
-			const difficultyCollectionRef = collection(cateDocRef, difficulty);
+		for (const [level, questions] of Object.entries(levelDict)) {
+			const levelCollectionRef = collection(cateDocRef, level);
 
 			for (const qns of questions) {
-				const docRef = await addDoc(difficultyCollectionRef, qns);
-				console.log(`Document written to Collection ${difficultyCollectionRef.id} with ID ${docRef.id}`);
+				const docRef = await addDoc(levelCollectionRef, qns);
+				console.log(`Document written to Collection ${levelCollectionRef.id} with ID ${docRef.id}`);
 			}
 		}
 	}

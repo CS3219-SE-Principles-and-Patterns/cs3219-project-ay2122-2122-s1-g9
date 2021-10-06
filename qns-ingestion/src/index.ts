@@ -19,19 +19,6 @@ async function main() {
   const db = getFirestore(app);
   connectFirestoreEmulator(db, "localhost", 8080);
 
-  // try {
-  //   const docRef = await addDoc(collection(db, "users"), {
-  //     first: "Ada",
-  //     last: "Lovelace",
-  //     born: 1815,
-  //   });
-  //   console.log("Document written with ID: ", docRef.id);
-  // } catch (e) {
-  //   console.error("Error adding document: ", e);
-  // }
-
-  // console.log("hello")
-
   const qnsDict = readQuestions(QNS_DIR);
   const dictForRandom = createDictForRandom(qnsDict);
   await writeQnsDict(db, qnsDict);

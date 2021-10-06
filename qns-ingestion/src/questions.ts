@@ -10,11 +10,12 @@ function readQuestions(qnsDir: string): QuestionDict {
   arr = arr.map((filename) => qnsDir + "/" + filename);
 
 	const questions = [];
-	arr = arr.slice(0, 2);
+	arr = arr.slice(0, 2); // TODO: Remove this line once completed
 
 	const qnsDict: { [id: string]: Question } = {}
 	for (const filename of arr) {
 		const qns: Question = JSON.parse(fs.readFileSync(filename).toString());
+		qns.level = qns.level.toLowerCase();
 		qnsDict[qns.slug] = qns;
 	}
 
@@ -23,15 +24,12 @@ function readQuestions(qnsDir: string): QuestionDict {
 
 function createDictForRandom(qnsDict: QuestionDict) {
 	// https://stackoverflow.com/questions/46798981/firestore-how-to-get-random-documents-in-a-collection
-	const results: { [category: string]: { [difficulty: string]: QuestionIdentifier[] }}= {};
+	const results: { [category: string]: { [level: string]: QuestionIdentifier[] }}= {};
 
 	for (const [key, qns] of Object.entries(qnsDict)) {
 		if (!results.hasOwnProperty(qns.category)) {
-			results[qns.category] = {"Easy": [], "Medium": [], "Hard": []};
+			results[qns.category] = {"easy": [], "medium": [], "hard": []};
 		}
-
-		console.log(qns.category);
-		console.log(qns.level);
 
 		results[qns.category][qns.level].push({
 			id: qns.id,

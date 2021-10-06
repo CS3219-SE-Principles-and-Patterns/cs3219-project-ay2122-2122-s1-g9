@@ -54,6 +54,6 @@ export interface QuestionDict {
 
 export interface QnsDictForRandom {
   [category: string]: {
-    [difficulty: string]: QuestionIdentifier[];
+    [level: string]: QuestionIdentifier[];
   };
 }
