@@ -27,6 +27,7 @@ const ChatContainer = styled.div`
   padding: 16px;
   overflow-y: auto;
   max-width: 20vw;
+  min-width: 283px;
 `;
 
 const OverallContainer = styled.div`

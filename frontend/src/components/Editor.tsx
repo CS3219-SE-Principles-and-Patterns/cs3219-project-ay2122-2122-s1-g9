@@ -2,6 +2,7 @@ import { fromMonaco } from '@hackerrank/firepad';
 import MonacoEditor, { EditorProps, Monaco } from '@monaco-editor/react';
 import { editor } from 'monaco-editor';
 import React, { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
 
 import firebaseApp from '../firebase/firebaseApp';
 
@@ -116,6 +117,10 @@ const testLanguages = [
   },
 ];
 
+const StyledContainer = styled.div`
+  border: 1px solid #91d5ff;
+`;
+
 const Editor: React.FC = function () {
   const monacoRef = useRef<Monaco | null>(null);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
@@ -136,11 +141,10 @@ const Editor: React.FC = function () {
 
     const dbRef = firebaseApp.database().ref('testEditor/content');
     const firepad = fromMonaco(dbRef, editorRef.current);
-    // const name = prompt('enter your name:');
-    // if (name) {
-    //   firepad.setUserName(name);
-    // }
-    firepad.setUserName('arthur');
+    const name = prompt('enter your name:');
+    if (name) {
+      firepad.setUserName(name);
+    }
   }, [editorLoaded]);
 
   // Listen for when the language changes
@@ -164,7 +168,7 @@ const Editor: React.FC = function () {
   };
 
   return (
-    <div>
+    <StyledContainer>
       <select value={editorLanguage} onChange={handleLanguageChange}>
         {testLanguages.map((language) => (
           <option key={language.value} value={language.value}>
@@ -173,7 +177,7 @@ const Editor: React.FC = function () {
         ))}
       </select>
       <MonacoEditor
-        width="60vw"
+        width="50vw"
         height="100vh"
         options={options}
         path={editorLanguage}
@@ -184,7 +188,7 @@ const Editor: React.FC = function () {
         }
         onMount={handleEditorMount}
       />
-    </div>
+    </StyledContainer>
   );
 };
 
