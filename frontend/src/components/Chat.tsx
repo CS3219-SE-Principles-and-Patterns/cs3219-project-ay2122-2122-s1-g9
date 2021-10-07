@@ -1,4 +1,5 @@
-import { Typography } from 'antd';
+import { SendOutlined } from '@ant-design/icons';
+import { Button, Input, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -23,19 +24,23 @@ const { Text } = Typography;
 const ChatContainer = styled.div`
   display: flex;
   flex-direction: column;
-  background: #ffffff;
   padding: 16px;
+  overflow-y: auto;
+  max-width: 20vw;
 `;
 
 const OverallContainer = styled.div`
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  background: #ffffff;
 `;
 
 const StyledHeader = styled(Text)`
   font-weight: 500;
   color: #1890ff;
   align-self: center;
+  padding: 16px 0;
 `;
 
 const StyledForm = styled.form`
@@ -45,6 +50,19 @@ const StyledForm = styled.form`
   align-items: flex-start;
   padding: 16px;
   background: #f5f5f5;
+  lign-items: center;
+  gap: 16px;
+`;
+
+const StyledInput = styled(Input)`
+  background: none;
+  flex-grow: 1;
+  border: none;
+`;
+
+const SendButton = styled(Button)`
+  border: none;
+  background: none;
 `;
 
 const Chat: React.FC = function () {
@@ -99,9 +117,9 @@ const Chat: React.FC = function () {
 
   return (
     <OverallContainer>
+      <StyledHeader>Chat</StyledHeader>
       <ChatContainer>
-        <StyledHeader>Chat</StyledHeader>
-        <Spacer $height="32px" />
+        <Spacer $height="16px" />
         {messages.map((chat) => {
           if (chat.uid != uid) {
             return (
@@ -115,12 +133,14 @@ const Chat: React.FC = function () {
         })}
       </ChatContainer>
       <StyledForm onSubmit={handleSubmit}>
-        <input
+        <StyledInput
           placeholder="Write a response..."
           onChange={handleChange}
           value={content}
         />
-        <button type="submit">Send</button>
+        <SendButton htmlType="submit" disabled={content.length === 0}>
+          <SendOutlined />
+        </SendButton>
       </StyledForm>
     </OverallContainer>
   );

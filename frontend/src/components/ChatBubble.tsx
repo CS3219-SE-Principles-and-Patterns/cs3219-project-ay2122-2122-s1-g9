@@ -31,6 +31,7 @@ const ContentContainer = styled.div<BubbleProps>`
   border-radius: ${(props) =>
     props.$displayName ? '0px 8px 8px 8px' : '8px 0px 8px 8px'};
   padding: 8px 16px;
+  overflow-wrap: anywhere;
 `;
 
 const ChatBubble = ({ displayName, content }: ChatBubbleProps) => {
