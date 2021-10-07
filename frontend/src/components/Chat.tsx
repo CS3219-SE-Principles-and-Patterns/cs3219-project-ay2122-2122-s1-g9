@@ -14,11 +14,6 @@ interface ChatMessage {
   displayName: string | undefined;
 }
 
-interface ChatErrors {
-  readError: string | null;
-  writeError: string | null;
-}
-
 const { Text } = Typography;
 
 const ChatContainer = styled.div`
@@ -69,10 +64,6 @@ const SendButton = styled(Button)`
 const Chat: React.FC = function () {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [content, setContent] = useState<string>('');
-  const [chatError, setChatError] = useState<ChatErrors>({
-    readError: null,
-    writeError: null,
-  });
   const dbRef = firebaseApp.database().ref('testChat/messages');
   const currentUser = firebaseApp.auth().currentUser;
   const uid = currentUser?.uid;
@@ -104,10 +95,7 @@ const Chat: React.FC = function () {
       } as ChatMessage);
     } catch (error: unknown) {
       const result = (error as Error).message;
-      setChatError({
-        ...chatError,
-        writeError: result,
-      });
+      console.log(result);
       setContent(tempContent);
     }
   };
