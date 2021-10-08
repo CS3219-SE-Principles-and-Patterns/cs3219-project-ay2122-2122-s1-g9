@@ -16,20 +16,19 @@ interface ChatMessage {
 
 const { Text } = Typography;
 
+const OverallContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 283px;
+  background: #ffffff;
+`;
+
 const ChatContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 16px;
   overflow-y: auto;
-  max-width: 20vw;
-  min-width: 283px;
-`;
-
-const OverallContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: #ffffff;
 `;
 
 const StyledHeader = styled(Text)`

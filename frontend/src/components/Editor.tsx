@@ -118,7 +118,10 @@ const testLanguages = [
 ];
 
 const StyledContainer = styled.div`
+  flex-grow: 1;
+  max-height: 100vh;
   border: 1px solid #91d5ff;
+  overflow-y: hidden;
 `;
 
 const Editor: React.FC = function () {
@@ -177,8 +180,6 @@ const Editor: React.FC = function () {
         ))}
       </select>
       <MonacoEditor
-        width="50vw"
-        height="100vh"
         options={options}
         path={editorLanguage}
         defaultLanguage={editorLanguage}

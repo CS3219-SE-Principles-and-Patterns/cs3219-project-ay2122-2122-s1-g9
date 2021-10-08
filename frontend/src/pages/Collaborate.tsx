@@ -32,33 +32,31 @@ const EditorContent = styled(Content)`
 
 const Collaborate: React.FC = function () {
   return (
-    <>
-      <PageLayout>
-        <Sidebar>
-          <Spacer $height="34px" />
-          <Logo>
-            <Spacer $width="32px" />
-            <Image
-              width={147}
-              src={logo}
-              fallback={fallbackImage}
-              preview={false}
-            />
-          </Logo>
-          <Spacer $height="75px" />
-          <Container>
-            <Title level={1}>Question title goes here</Title>
-            <Spacer $height="16px" />
-            <Text>question description goes here</Text>
-            <Spacer $height="68px" />
-          </Container>
-        </Sidebar>
-        <EditorContent>
-          <Editor />
-          <Chat />
-        </EditorContent>
-      </PageLayout>
-    </>
+    <PageLayout>
+      <Sidebar>
+        <Spacer $height="34px" />
+        <Logo>
+          <Spacer $width="32px" />
+          <Image
+            width={147}
+            src={logo}
+            fallback={fallbackImage}
+            preview={false}
+          />
+        </Logo>
+        <Spacer $height="75px" />
+        <Container>
+          <Title level={1}>Question title goes here</Title>
+          <Spacer $height="16px" />
+          <Text>question description goes here</Text>
+          <Spacer $height="68px" />
+        </Container>
+      </Sidebar>
+      <EditorContent>
+        <Editor />
+        <Chat />
+      </EditorContent>
+    </PageLayout>
   );
 };
 
