@@ -1,10 +1,4 @@
-import {
-  addDoc,
-  collection,
-  doc,
-  Firestore,
-  setDoc,
-} from '@firebase/firestore';
+import { addDoc, collection, doc, Firestore, setDoc } from 'firebase/firestore';
 
 import { QnsDictForRandom, QuestionDict } from './questionTypes';
 

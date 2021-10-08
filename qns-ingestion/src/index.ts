@@ -2,8 +2,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-import { initializeApp } from '@firebase/app';
-import { connectFirestoreEmulator, getFirestore } from '@firebase/firestore';
+import { initializeApp } from 'firebase/app';
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 
 import firebaseOptions from './firebaseOptions';
 import { writeDictForRandom, writeQnsDict } from './firestore';

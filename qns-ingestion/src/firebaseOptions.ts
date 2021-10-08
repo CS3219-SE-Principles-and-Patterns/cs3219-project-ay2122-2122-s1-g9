@@ -1,4 +1,4 @@
-import { FirebaseOptions } from '@firebase/app-types';
+import { FirebaseOptions } from 'firebase/app';
 
 const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || '';
 const FIREBASE_AUTH_DOMAIN = process.env.FIREBASE_AUTH_DOMAIN || '';
