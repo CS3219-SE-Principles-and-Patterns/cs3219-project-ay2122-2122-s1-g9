@@ -34,7 +34,10 @@ const ContentContainer = styled.div<BubbleProps>`
   overflow-wrap: anywhere;
 `;
 
-const ChatBubble = ({ displayName, content }: ChatBubbleProps) => {
+const ChatBubble: React.FC<ChatBubbleProps> = function ({
+  displayName,
+  content,
+}) {
   return (
     <Container>
       {displayName && (

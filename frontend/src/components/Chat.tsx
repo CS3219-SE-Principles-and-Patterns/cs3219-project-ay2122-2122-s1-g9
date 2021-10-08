@@ -7,13 +7,6 @@ import firebaseApp from '../firebase/firebaseApp';
 import ChatBubble from './ChatBubble';
 import { Spacer } from './Styles';
 
-interface ChatMessage {
-  content: string;
-  timeStamp: string;
-  uid: string | undefined;
-  displayName: string | undefined;
-}
-
 const { Text } = Typography;
 
 const OverallContainer = styled.div`
@@ -42,10 +35,9 @@ const StyledForm = styled.form`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   padding: 16px;
   background: #f5f5f5;
-  lign-items: center;
   gap: 16px;
 `;
 
@@ -61,7 +53,7 @@ const SendButton = styled(Button)`
 `;
 
 const Chat: React.FC = function () {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<Types.ChatMessage[]>([]);
   const [content, setContent] = useState<string>('');
   const dbRef = firebaseApp.database().ref('testChat/messages');
   const currentUser = firebaseApp.auth().currentUser;
@@ -70,7 +62,7 @@ const Chat: React.FC = function () {
 
   useEffect(() => {
     dbRef.on('value', (snapshot) => {
-      const chatMessages = [] as ChatMessage[];
+      const chatMessages = [] as Types.ChatMessage[];
       snapshot.forEach((snap) => {
         chatMessages.push(snap.val());
       });
@@ -91,7 +83,7 @@ const Chat: React.FC = function () {
         timeStamp: Date.now().toString(),
         uid,
         displayName,
-      } as ChatMessage);
+      } as Types.ChatMessage);
     } catch (error: unknown) {
       const result = (error as Error).message;
       console.log(result);
@@ -112,6 +104,7 @@ const Chat: React.FC = function () {
           if (chat.uid != uid) {
             return (
               <ChatBubble
+                key={chat.timeStamp}
                 displayName={chat.displayName}
                 content={chat.content}
               />
