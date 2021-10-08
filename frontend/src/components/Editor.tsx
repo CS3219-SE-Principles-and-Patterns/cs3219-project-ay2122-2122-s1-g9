@@ -2,6 +2,7 @@ import { fromMonaco } from '@hackerrank/firepad';
 import MonacoEditor, { EditorProps, Monaco } from '@monaco-editor/react';
 import { editor } from 'monaco-editor';
 import React, { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
 
 import firebaseApp from '../firebase/firebaseApp';
 
@@ -116,6 +117,13 @@ const testLanguages = [
   },
 ];
 
+const StyledContainer = styled.div`
+  flex-grow: 1;
+  max-height: 100vh;
+  border: 1px solid #91d5ff;
+  overflow-y: hidden;
+`;
+
 const Editor: React.FC = function () {
   const monacoRef = useRef<Monaco | null>(null);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
@@ -163,7 +171,7 @@ const Editor: React.FC = function () {
   };
 
   return (
-    <div>
+    <StyledContainer>
       <select value={editorLanguage} onChange={handleLanguageChange}>
         {testLanguages.map((language) => (
           <option key={language.value} value={language.value}>
@@ -172,7 +180,6 @@ const Editor: React.FC = function () {
         ))}
       </select>
       <MonacoEditor
-        height="90vh"
         options={options}
         path={editorLanguage}
         defaultLanguage={editorLanguage}
@@ -182,7 +189,7 @@ const Editor: React.FC = function () {
         }
         onMount={handleEditorMount}
       />
-    </div>
+    </StyledContainer>
   );
 };
 
