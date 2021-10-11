@@ -3,6 +3,7 @@ import * as admin from 'firebase-admin';
 import { CallableContext } from 'firebase-functions/v1/https';
 
 import { detectMatchCreateSession } from './match';
+import { addUserToQueue } from './queue';
 
 admin.initializeApp();
 
@@ -44,3 +45,4 @@ export const getQuestion = functions.https.onCall(
 );
 
 export const matchAndCreateSession = detectMatchCreateSession;
+export const addUserToQuestionQueue = addUserToQueue;
