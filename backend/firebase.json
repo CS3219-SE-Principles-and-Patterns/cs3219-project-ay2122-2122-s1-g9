@@ -17,10 +17,10 @@
       "port": 9099
     },
     "firestore": {
-      "port": 9090
+      "port": 8080
     },
     "database": {
-      "port": 9091
+      "port": 9000
     }
   },
   "firestore": {
