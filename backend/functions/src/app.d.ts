@@ -1,6 +1,6 @@
 declare namespace App {
   interface getQuestionData {
-    slug: string;
+    id: string;
   }
   interface addUserToQueueVm {
     queueName: string;

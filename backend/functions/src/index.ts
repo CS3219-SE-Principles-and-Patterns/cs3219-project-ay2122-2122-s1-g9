@@ -16,6 +16,7 @@ export const helloWorld = functions.https.onRequest((request, response) => {
   response.send('Hello from Firebase!');
 });
 
+<<<<<<< HEAD
 export const getQuestion = functions.https.onCall(
   async (data: App.getQuestionData, context: CallableContext) => {
     // data: { "slug": "two-sum" }
@@ -41,6 +42,29 @@ export const getQuestion = functions.https.onCall(
     }
 
     return snap.data();
+=======
+export const getQuestion = functions.https.onCall(async (data: App.getQuestionData, context: CallableContext) => {
+  // data: { "id": "two-sum" }
+
+  if (!data || !data.id || data.id.length === 0) {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      'The function must be called with ' +
+        'one argument "id", the title slug of the question.'
+    );
+  }
+
+  const db = admin.firestore();
+  const docRef = db.doc(`questions/${data.id}`);
+  const snap = await docRef.get();
+
+  if (!snap.exists) {
+    // throw error
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      'Question with id cannot be found'
+    );
+>>>>>>> f9d11a3 (chore: rename slug to id for questions)
   }
 );
 
