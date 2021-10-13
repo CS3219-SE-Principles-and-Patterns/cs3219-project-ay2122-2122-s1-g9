@@ -3,7 +3,6 @@ namespace App {
     slug: string;
   }
   interface addUserToQueueVm {
-    userId: number;
     queueName: string;
   }
 }

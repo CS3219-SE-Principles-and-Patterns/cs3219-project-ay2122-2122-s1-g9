@@ -1,18 +1,20 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import { CallableContext } from 'firebase-functions/v1/https';
 
 export const addUserToQueue = functions.https.onCall(
-  async (data: App.addUserToQueueVm) => {
-    if (
-      !data ||
-      !data.userId ||
-      !data.queueName ||
-      data.queueName.length === 0
-    ) {
+  async (data: App.addUserToQueueVm, context: CallableContext) => {
+    if (!context.auth || !context.auth.uid) {
+      throw new functions.https.HttpsError(
+        'unauthenticated',
+        'The function can only be called by a logged in user.'
+      );
+    }
+
+    if (!data || !data.queueName || data.queueName.length === 0) {
       throw new functions.https.HttpsError(
         'invalid-argument',
-        'The function must be called with ' +
-          'two arguments "userId" and "queueName"'
+        'The function must be called with a single argument "queueName"'
       );
     }
 
