@@ -1,4 +1,5 @@
-import { Collapse, Layout, Typography } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+import { Collapse, Layout, Spin, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -50,19 +51,25 @@ const Collaborate: React.FC = function () {
   const [question, setQuestion] = useState<Types.Question>(
     {} as Types.Question
   );
+  const [pageLoaded, setPageLoaded] = useState<boolean>(false);
   const getQuestion = firebaseApp.functions().httpsCallable('getQuestion');
   const { Panel } = Collapse;
-
   useEffect(() => {
     getQuestion({ slug: 'two-sum' })
       .then((result) => {
         console.log(result);
         setQuestion(result.data);
+        setPageLoaded(true);
       })
       .catch((error) => {
         console.log(error);
       });
   }, []);
+
+  if (!pageLoaded) {
+    const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+    return <Spin indicator={antIcon} />;
+  }
 
   return (
     <PageLayout>
@@ -91,6 +98,7 @@ const Collaborate: React.FC = function () {
       </Sidebar>
       <EditorContent>
         <Editor
+          questionTemplates={question.templates}
           questionLink={question.link}
           isChatVisible={isChatVisible}
           setChatVisible={setChatVisible}

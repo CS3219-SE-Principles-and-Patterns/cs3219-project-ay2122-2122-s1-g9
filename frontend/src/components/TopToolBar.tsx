@@ -10,7 +10,7 @@ import styled from 'styled-components';
 interface TopToolBarProps {
   editorLanguage: string;
   handleLanguageChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  testLanguages: {
+  questionTemplates: {
     value: string;
     text: string;
     defaultCode: string;
@@ -49,7 +49,7 @@ const LeetCodeButton = styled(Button)`
 const TopToolBar: React.FC<TopToolBarProps> = function ({
   editorLanguage,
   handleLanguageChange,
-  testLanguages,
+  questionTemplates,
   handleCopy,
   isChatVisible,
   toggleChat,
@@ -61,7 +61,7 @@ const TopToolBar: React.FC<TopToolBarProps> = function ({
         <CopyOutlined />
       </CopyButton>
       <select value={editorLanguage} onChange={handleLanguageChange}>
-        {testLanguages.map((language) => (
+        {questionTemplates.map((language) => (
           <option key={language.value} value={language.value}>
             {language.text}
           </option>
