@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import firebaseApp from '../firebase/firebaseApp';
+import TopToolBar from './TopToolBar';
 
 const testLanguages = [
   {
@@ -126,14 +127,6 @@ const StyledContainer = styled.div`
   flex-direction: column;
 `;
 
-const TopToolBar = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  background: #e9f7fe;
-  height: 40px;
-`;
-
 const BottomToolBar = styled.div`
   display: flex;
   flex-direction: row;
@@ -165,11 +158,15 @@ const Editor: React.FC = function () {
     }
 
     const dbRef = firebaseApp.database().ref('testEditor/content');
-    const currentUser = firebaseApp.auth().currentUser;
+    // const currentUser = firebaseApp.auth().currentUser;
     const firepad = fromMonaco(dbRef, editorRef.current);
-    if (currentUser?.displayName) {
-      firepad.setUserName(currentUser.displayName);
+    const name = prompt('enter your name:');
+    if (name) {
+      firepad.setUserName(name);
     }
+    // if (currentUser?.displayName) {
+    //   firepad.setUserName(currentUser.displayName);
+    // }
   }, [editorLoaded]);
 
   // Listen for when the language changes
@@ -192,17 +189,18 @@ const Editor: React.FC = function () {
     editorRef.update({ language: e.target.value });
   };
 
+  const handleCopy = (editorVal: string) => () => {
+    navigator.clipboard.writeText(editorVal);
+  };
+
   return (
     <StyledContainer>
-      <TopToolBar>
-        <select value={editorLanguage} onChange={handleLanguageChange}>
-          {testLanguages.map((language) => (
-            <option key={language.value} value={language.value}>
-              {language.text}
-            </option>
-          ))}
-        </select>
-      </TopToolBar>
+      <TopToolBar
+        editorLanguage={editorLanguage}
+        handleLanguageChange={handleLanguageChange}
+        testLanguages={testLanguages}
+        handleCopy={handleCopy(editorRef.current?.getValue() ?? '')}
+      />
       <StyledMonacoEditor
         options={options}
         path={editorLanguage}
