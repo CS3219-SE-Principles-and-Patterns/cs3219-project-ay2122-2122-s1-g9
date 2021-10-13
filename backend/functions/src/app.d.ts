@@ -1,4 +1,4 @@
-namespace App {
+declare namespace App {
   interface getQuestionData {
     slug: string;
   }

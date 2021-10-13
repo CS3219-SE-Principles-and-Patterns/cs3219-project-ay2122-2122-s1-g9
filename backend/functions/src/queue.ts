@@ -4,7 +4,7 @@ import { CallableContext } from 'firebase-functions/v1/https';
 
 export const addUserToQueue = functions.https.onCall(
   async (data: App.addUserToQueueVm, context: CallableContext) => {
-    if (!context.auth || !context.auth.uid) {
+    if (!context || !context.auth || !context.auth.uid) {
       throw new functions.https.HttpsError(
         'unauthenticated',
         'The function can only be called by a logged in user.'
@@ -30,6 +30,7 @@ export const addUserToQueue = functions.https.onCall(
     const queuePath = admin
       .database()
       .ref(`/queues/${data.queueName.toLowerCase()}`);
+    const uid = context.auth.uid;
 
     queuePath.once('value', (snapshot) => {
       let queue = snapshot.val();
@@ -37,7 +38,7 @@ export const addUserToQueue = functions.https.onCall(
       if (queue == null) {
         queue = [];
       }
-      queue.push(data.userId);
+      queue.push(uid);
       queuePath.set(queue);
     });
   }
