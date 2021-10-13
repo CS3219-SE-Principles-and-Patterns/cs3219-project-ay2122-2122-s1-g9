@@ -7,6 +7,11 @@ import styled from 'styled-components';
 import firebaseApp from '../firebase/firebaseApp';
 import TopToolBar from './TopToolBar';
 
+interface PeerprepEditorProps {
+  isChatVisible: boolean;
+  setChatVisible: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 const testLanguages = [
   {
     value: 'cpp',
@@ -139,7 +144,10 @@ const StyledMonacoEditor = styled(MonacoEditor)`
   flex: 'flex-grow';
 `;
 
-const Editor: React.FC = function () {
+const Editor: React.FC<PeerprepEditorProps> = function ({
+  isChatVisible,
+  setChatVisible,
+}) {
   const monacoRef = useRef<Monaco | null>(null);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
@@ -158,15 +166,15 @@ const Editor: React.FC = function () {
     }
 
     const dbRef = firebaseApp.database().ref('testEditor/content');
-    // const currentUser = firebaseApp.auth().currentUser;
+    const currentUser = firebaseApp.auth().currentUser;
     const firepad = fromMonaco(dbRef, editorRef.current);
-    const name = prompt('enter your name:');
-    if (name) {
-      firepad.setUserName(name);
-    }
-    // if (currentUser?.displayName) {
-    //   firepad.setUserName(currentUser.displayName);
+    // const name = prompt('enter your name:');
+    // if (name) {
+    //   firepad.setUserName(name);
     // }
+    if (currentUser?.displayName) {
+      firepad.setUserName(currentUser.displayName);
+    }
   }, [editorLoaded]);
 
   // Listen for when the language changes
@@ -200,6 +208,8 @@ const Editor: React.FC = function () {
         handleLanguageChange={handleLanguageChange}
         testLanguages={testLanguages}
         handleCopy={handleCopy(editorRef.current?.getValue() ?? '')}
+        isChatVisible={isChatVisible}
+        toggleChat={() => setChatVisible(!isChatVisible)}
       />
       <StyledMonacoEditor
         options={options}

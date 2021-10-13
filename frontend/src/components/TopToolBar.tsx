@@ -1,6 +1,6 @@
 import {
   CopyOutlined,
-  //   MessageFilled,
+  MessageFilled,
   MessageOutlined,
 } from '@ant-design/icons';
 import { Button } from 'antd';
@@ -16,6 +16,8 @@ interface TopToolBarProps {
     defaultCode: string;
   }[];
   handleCopy: () => void;
+  isChatVisible: boolean;
+  toggleChat: () => void;
 }
 
 const StyledTopToolBar = styled.div`
@@ -47,6 +49,8 @@ const TopToolBar: React.FC<TopToolBarProps> = function ({
   handleLanguageChange,
   testLanguages,
   handleCopy,
+  isChatVisible,
+  toggleChat,
 }) {
   return (
     <StyledTopToolBar>
@@ -60,8 +64,8 @@ const TopToolBar: React.FC<TopToolBarProps> = function ({
           </option>
         ))}
       </select>
-      <ChatButton>
-        <MessageOutlined />
+      <ChatButton onClick={toggleChat}>
+        {isChatVisible ? <MessageFilled /> : <MessageOutlined />}
       </ChatButton>
       <LeetCodeButton>Go to Leetcode</LeetCodeButton>
     </StyledTopToolBar>

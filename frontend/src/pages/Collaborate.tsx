@@ -1,5 +1,5 @@
 import { Image, Layout, Typography } from 'antd';
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import Chat from '../components/Chat';
@@ -31,6 +31,7 @@ const EditorContent = styled(Content)`
 `;
 
 const Collaborate: React.FC = function () {
+  const [isChatVisible, setChatVisible] = useState<boolean>(false);
   return (
     <PageLayout>
       <Sidebar>
@@ -53,8 +54,8 @@ const Collaborate: React.FC = function () {
         </Container>
       </Sidebar>
       <EditorContent>
-        <Editor />
-        <Chat />
+        <Editor isChatVisible={isChatVisible} setChatVisible={setChatVisible} />
+        {isChatVisible && <Chat />}
       </EditorContent>
     </PageLayout>
   );
