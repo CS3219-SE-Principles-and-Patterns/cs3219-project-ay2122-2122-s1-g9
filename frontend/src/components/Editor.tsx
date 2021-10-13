@@ -12,6 +12,7 @@ interface PeerprepEditorProps {
   questionLink: string;
   isChatVisible: boolean;
   setChatVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setQuestion: React.Dispatch<React.SetStateAction<Types.Question>>;
 }
 
 const testLanguages = [
@@ -142,6 +143,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
   isChatVisible,
   setChatVisible,
   questionLink,
+  setQuestion,
 }) {
   const monacoRef = useRef<Monaco | null>(null);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
@@ -217,7 +219,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
         }
         onMount={handleEditorMount}
       />
-      <BottomToolBar />
+      <BottomToolBar setQuestion={setQuestion} />
     </StyledContainer>
   );
 };

@@ -4,7 +4,11 @@ import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
-interface BottomToolBarProps {}
+import firebaseApp from '../firebase/firebaseApp';
+
+interface BottomToolBarProps {
+  setQuestion: React.Dispatch<React.SetStateAction<Types.Question>>;
+}
 
 type LocationState = {
   from: Location;
@@ -25,7 +29,7 @@ const StyledBottomToolBar = styled.div`
   border-top: 1px solid #91d5ff;
 `;
 
-const BottomToolBar: React.FC<BottomToolBarProps> = function ({}) {
+const BottomToolBar: React.FC<BottomToolBarProps> = function ({ setQuestion }) {
   const history = useHistory();
   const location = useLocation<LocationState>();
   const { confirm } = Modal;
@@ -48,16 +52,30 @@ const BottomToolBar: React.FC<BottomToolBarProps> = function ({}) {
           .then(() => {
             history.push('/', from);
           })
-          .catch(() => console.log('Oops errors!'));
+          .catch((error) => console.error(error));
       },
     });
+  };
+
+  const changeQuestion = () => {
+    const getQuestion = firebaseApp.functions().httpsCallable('getQuestion');
+    getQuestion({ slug: 'find-minimum-in-rotated-sorted-array' })
+      .then((result) => {
+        console.log(result);
+        setQuestion(result.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const { from } = location.state || { from: { pathName: '/collaborate' } };
 
   return (
     <StyledBottomToolBar>
-      <ChangeQuestionButton>Change the question</ChangeQuestionButton>
+      <ChangeQuestionButton onClick={changeQuestion}>
+        Change the question
+      </ChangeQuestionButton>
       <Button type="primary" onClick={showConfirm}>
         Finish Session
       </Button>
