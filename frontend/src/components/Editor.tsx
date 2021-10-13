@@ -9,6 +9,7 @@ import BottomToolBar from './BottomToolBar';
 import TopToolBar from './TopToolBar';
 
 interface PeerprepEditorProps {
+  questionLink: string;
   isChatVisible: boolean;
   setChatVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -140,6 +141,7 @@ const StyledMonacoEditor = styled(MonacoEditor)`
 const Editor: React.FC<PeerprepEditorProps> = function ({
   isChatVisible,
   setChatVisible,
+  questionLink,
 }) {
   const monacoRef = useRef<Monaco | null>(null);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
@@ -203,6 +205,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
         handleCopy={handleCopy(editorRef.current?.getValue() ?? '')}
         isChatVisible={isChatVisible}
         toggleChat={() => setChatVisible(!isChatVisible)}
+        questionLink={questionLink}
       />
       <StyledMonacoEditor
         options={options}

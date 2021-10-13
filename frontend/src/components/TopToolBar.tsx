@@ -18,6 +18,7 @@ interface TopToolBarProps {
   handleCopy: () => void;
   isChatVisible: boolean;
   toggleChat: () => void;
+  questionLink: string;
 }
 
 const StyledTopToolBar = styled.div`
@@ -52,6 +53,7 @@ const TopToolBar: React.FC<TopToolBarProps> = function ({
   handleCopy,
   isChatVisible,
   toggleChat,
+  questionLink,
 }) {
   return (
     <StyledTopToolBar>
@@ -68,7 +70,9 @@ const TopToolBar: React.FC<TopToolBarProps> = function ({
       <ChatButton onClick={toggleChat}>
         {isChatVisible ? <MessageFilled /> : <MessageOutlined />}
       </ChatButton>
-      <LeetCodeButton>Go to Leetcode</LeetCodeButton>
+      <LeetCodeButton target="_blank" href={questionLink}>
+        Go to Leetcode
+      </LeetCodeButton>
     </StyledTopToolBar>
   );
 };

@@ -6,6 +6,8 @@ const { Sider } = Layout;
 
 const StyledSider = styled(Sider)`
   background: ${(props) => props.theme.colors.white};
+  max-height: 100vh;
+  overflow-y: hidden;
 `;
 
 const Sidebar: React.FC = function (props) {
