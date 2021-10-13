@@ -1,8 +1,14 @@
-import { Button } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { Button, Modal } from 'antd';
 import React from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
 interface BottomToolBarProps {}
+
+type LocationState = {
+  from: Location;
+};
 
 const ChangeQuestionButton = styled(Button)`
   border: 1px solid #1890ff;
@@ -20,10 +26,41 @@ const StyledBottomToolBar = styled.div`
 `;
 
 const BottomToolBar: React.FC<BottomToolBarProps> = function ({}) {
+  const history = useHistory();
+  const location = useLocation<LocationState>();
+  const { confirm } = Modal;
+
+  const showConfirm = () => {
+    confirm({
+      title: 'Not so fast...',
+      icon: <ExclamationCircleOutlined />,
+      content: (
+        <p>
+          Finishing the session will end the session for both you and your peer.
+          <br />
+          <strong>Are you sure you want to do that?</strong>
+        </p>
+      ),
+      onOk() {
+        return new Promise((resolve, reject) => {
+          setTimeout(Math.random() > 0 ? resolve : reject, 1000);
+        })
+          .then(() => {
+            history.push('/', from);
+          })
+          .catch(() => console.log('Oops errors!'));
+      },
+    });
+  };
+
+  const { from } = location.state || { from: { pathName: '/collaborate' } };
+
   return (
     <StyledBottomToolBar>
       <ChangeQuestionButton>Change the question</ChangeQuestionButton>
-      <Button type="primary">Finish Session</Button>
+      <Button type="primary" onClick={showConfirm}>
+        Finish Session
+      </Button>
     </StyledBottomToolBar>
   );
 };
