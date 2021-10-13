@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import firebaseApp from '../firebase/firebaseApp';
+import BottomToolBar from './BottomToolBar';
 import TopToolBar from './TopToolBar';
 
 interface PeerprepEditorProps {
@@ -130,14 +131,6 @@ const StyledContainer = styled.div`
   overflow-y: hidden;
   display: flex;
   flex-direction: column;
-`;
-
-const BottomToolBar = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  background: #e9f7fe;
-  height: 40px;
 `;
 
 const StyledMonacoEditor = styled(MonacoEditor)`

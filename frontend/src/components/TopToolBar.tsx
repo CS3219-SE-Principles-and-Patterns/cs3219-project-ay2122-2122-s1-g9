@@ -27,6 +27,7 @@ const StyledTopToolBar = styled.div`
   justify-content: space-between;
   background: #e9f7fe;
   height: 64px;
+  border-bottom: 1px solid #91d5ff;
 `;
 
 const CopyButton = styled(Button)`
