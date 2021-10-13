@@ -122,6 +122,28 @@ const StyledContainer = styled.div`
   max-height: 100vh;
   border: 1px solid #91d5ff;
   overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+`;
+
+const TopToolBar = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: #e9f7fe;
+  height: 40px;
+`;
+
+const BottomToolBar = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: #e9f7fe;
+  height: 40px;
+`;
+
+const StyledMonacoEditor = styled(MonacoEditor)`
+  flex: 'flex-grow';
 `;
 
 const Editor: React.FC = function () {
@@ -143,10 +165,10 @@ const Editor: React.FC = function () {
     }
 
     const dbRef = firebaseApp.database().ref('testEditor/content');
+    const currentUser = firebaseApp.auth().currentUser;
     const firepad = fromMonaco(dbRef, editorRef.current);
-    const name = prompt('enter your name:');
-    if (name) {
-      firepad.setUserName(name);
+    if (currentUser?.displayName) {
+      firepad.setUserName(currentUser.displayName);
     }
   }, [editorLoaded]);
 
@@ -172,14 +194,16 @@ const Editor: React.FC = function () {
 
   return (
     <StyledContainer>
-      <select value={editorLanguage} onChange={handleLanguageChange}>
-        {testLanguages.map((language) => (
-          <option key={language.value} value={language.value}>
-            {language.text}
-          </option>
-        ))}
-      </select>
-      <MonacoEditor
+      <TopToolBar>
+        <select value={editorLanguage} onChange={handleLanguageChange}>
+          {testLanguages.map((language) => (
+            <option key={language.value} value={language.value}>
+              {language.text}
+            </option>
+          ))}
+        </select>
+      </TopToolBar>
+      <StyledMonacoEditor
         options={options}
         path={editorLanguage}
         defaultLanguage={editorLanguage}
@@ -189,6 +213,7 @@ const Editor: React.FC = function () {
         }
         onMount={handleEditorMount}
       />
+      <BottomToolBar />
     </StyledContainer>
   );
 };
