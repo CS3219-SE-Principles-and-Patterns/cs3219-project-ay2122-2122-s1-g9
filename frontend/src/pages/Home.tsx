@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import GetToWork from '../components/GetToWork';
+import Nav from '../components/Nav';
 import Queue from '../components/Queue';
 import Sidebar from '../components/Sidebar';
 import { PageLayout, Spacer } from '../components/Styles';
@@ -63,41 +64,44 @@ const Home: React.FC = function () {
   }
 
   return (
-    <PageLayout>
-      <Sidebar>
-        <Container>
-          <Title level={1}>Welcome to Peerprep 👋</Title>
-          <Spacer $height="16px" />
-          <Text style={{ color: '#8C8C8C' }}>
-            Get matched with another student and practice for your interview
-            together
-          </Text>
-          <Spacer $height="80px" />
-          <DifficultySelector>
-            <Text>Difficulty level</Text>
-            <Select
-              placeholder="Select difficulty"
-              value={difficulty ?? undefined}
-              onChange={handleSelect}
+    <>
+      <Nav />
+      <PageLayout>
+        <Sidebar>
+          <Container>
+            <Title level={1}>Welcome to Peerprep 👋</Title>
+            <Spacer $height="16px" />
+            <Text style={{ color: '#8C8C8C' }}>
+              Get matched with another student and practice for your interview
+              together
+            </Text>
+            <Spacer $height="80px" />
+            <DifficultySelector>
+              <Text>Difficulty level</Text>
+              <Select
+                placeholder="Select difficulty"
+                value={difficulty ?? undefined}
+                onChange={handleSelect}
+              >
+                <Option value="easy">Easy</Option>
+                <Option value="medium">Medium</Option>
+                <Option value="hard">Hard</Option>
+              </Select>
+            </DifficultySelector>
+            <Spacer $height="50px" />
+            <StyledButton
+              type="primary"
+              size="large"
+              disabled={difficulty == null}
+              onClick={handleClick}
             >
-              <Option value="easy">Easy</Option>
-              <Option value="medium">Medium</Option>
-              <Option value="hard">Hard</Option>
-            </Select>
-          </DifficultySelector>
-          <Spacer $height="50px" />
-          <StyledButton
-            type="primary"
-            size="large"
-            disabled={difficulty == null}
-            onClick={handleClick}
-          >
-            Get matched
-          </StyledButton>
-        </Container>
-      </Sidebar>
-      <GetToWork />
-    </PageLayout>
+              Get matched
+            </StyledButton>
+          </Container>
+        </Sidebar>
+        <GetToWork />
+      </PageLayout>
+    </>
   );
 };
 
