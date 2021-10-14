@@ -74,11 +74,10 @@ const BottomToolBar: React.FC<BottomToolBarProps> = function ({ setQuestion }) {
     const getQuestion = firebaseApp.functions().httpsCallable('getQuestion');
     getQuestion({ slug: 'find-minimum-in-rotated-sorted-array' })
       .then((result) => {
-        console.log(result);
         setQuestion(result.data);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   };
 

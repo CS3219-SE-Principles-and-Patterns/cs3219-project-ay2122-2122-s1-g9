@@ -45,8 +45,6 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
     questionTemplates[0].value
   );
 
-  const [editorVal, setEditorVal] = useState<string>('');
-
   const options: editor.IStandaloneEditorConstructionOptions = {
     cursorStyle: 'line',
   };

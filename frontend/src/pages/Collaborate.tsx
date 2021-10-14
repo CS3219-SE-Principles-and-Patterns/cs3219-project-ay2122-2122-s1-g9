@@ -65,13 +65,13 @@ const Collaborate: React.FC = function () {
   useEffect(() => {
     getQuestion({ slug: 'two-sum' })
       .then((result) => {
-        console.log(result);
         setQuestion(result.data);
         setPageLoaded(true);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!pageLoaded) {
