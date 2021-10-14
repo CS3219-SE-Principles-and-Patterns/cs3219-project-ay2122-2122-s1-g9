@@ -69,4 +69,6 @@ declare namespace Types {
       [level: string]: QuestionIdentifier[];
     };
   }
+
+  type Difficulty = 'easy' | 'medium' | 'hard';
 }
