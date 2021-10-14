@@ -13,9 +13,11 @@ import storage from 'redux-persist/lib/storage';
 import thunk from 'redux-thunk';
 
 import chatSlice from './chatSlice';
+import matchSlice from './matchSlice';
 
 const reducers = combineReducers({
   chat: chatSlice,
+  match: matchSlice,
 });
 
 const persistConfig = {

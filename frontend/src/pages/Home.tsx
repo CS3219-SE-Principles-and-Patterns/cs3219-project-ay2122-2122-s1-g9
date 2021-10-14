@@ -1,13 +1,15 @@
 import { Button, Select, Typography } from 'antd';
 import React, { useState } from 'react';
+import { useHistory } from 'react-router';
 import styled from 'styled-components';
 
 import GetToWork from '../components/GetToWork';
 import Nav from '../components/Nav';
-import Queue from '../components/Queue';
 import Sidebar from '../components/Sidebar';
 import { PageLayout, Spacer } from '../components/Styles';
 import firebaseApp from '../firebase/firebaseApp';
+import { useAppDispatch } from '../redux/hooks';
+import { setIsQueuing } from '../redux/matchSlice';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -33,11 +35,12 @@ const StyledButton = styled(Button)`
 `;
 
 const Home: React.FC = function () {
+  const history = useHistory();
+  const dispatch = useAppDispatch();
+  const [difficulty, setDifficulty] = useState<Types.Difficulty | null>(null);
   const addUserToQuestionQueue = firebaseApp
     .functions()
     .httpsCallable('addUserToQuestionQueue');
-  const [difficulty, setDifficulty] = useState<Types.Difficulty | null>(null);
-  const [isQueuing, setIsQueuing] = useState<boolean>(false);
 
   const handleSelect = (value: Types.Difficulty) => {
     setDifficulty(value);
@@ -46,22 +49,13 @@ const Home: React.FC = function () {
   const handleClick = () => {
     addUserToQuestionQueue({ queueName: difficulty })
       .then(() => {
-        setIsQueuing(true);
+        dispatch(setIsQueuing(true));
+        history.replace('/queue');
       })
       .catch((error) => {
         console.error(error);
       });
   };
-
-  const handleCancelClick = () => {
-    if (isQueuing) {
-      setIsQueuing(false);
-    }
-  };
-
-  if (isQueuing) {
-    return <Queue handleCancelClick={handleCancelClick} />;
-  }
 
   return (
     <>

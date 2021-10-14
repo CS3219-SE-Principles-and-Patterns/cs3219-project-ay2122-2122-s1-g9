@@ -7,6 +7,7 @@ import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './hooks/auth';
 import Collaborate from './pages/Collaborate';
 import Home from './pages/Home';
+import Queue from './pages/Queue';
 import Signin from './pages/Signin';
 
 const App: React.FC = function () {
@@ -16,6 +17,9 @@ const App: React.FC = function () {
         <Switch>
           <PrivateRoute exact path="/">
             <Home />
+          </PrivateRoute>
+          <PrivateRoute exact path="/queue">
+            <Queue />
           </PrivateRoute>
           <Route path="/signin">
             <Signin />

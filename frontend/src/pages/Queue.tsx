@@ -4,9 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 
-import firebaseApp from '../firebase/firebaseApp';
-import useAuth from '../hooks/auth';
-import { Spacer } from './Styles';
+import { Spacer } from '../components/Styles';
+import useMessageQueue from '../hooks/messageQueue';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { getIsQueuing, setIsQueuing } from '../redux/matchSlice';
 
 const { Title, Text } = Typography;
 const antIcon = <LoadingOutlined style={{ fontSize: 80 }} spin />;
@@ -24,16 +25,19 @@ const MediumText = styled(Text)`
   font-weight: 500;
 `;
 
-interface Props {
-  handleCancelClick: () => void;
-}
-
-const Queue: React.FC<Props> = function (props) {
-  const { handleCancelClick } = props;
-
+const Queue: React.FC = function () {
   const history = useHistory();
+  const dispatch = useAppDispatch();
+  const isQueueing = useAppSelector(getIsQueuing);
   const [timeLeft, setTimeLeft] = useState<number>(30);
-  const authContext = useAuth();
+
+  useMessageQueue();
+
+  useEffect(() => {
+    if (!isQueueing) {
+      history.replace('/');
+    }
+  }, [history, isQueueing]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -45,28 +49,10 @@ const Queue: React.FC<Props> = function (props) {
     return () => clearTimeout(timer);
   }, [timeLeft]);
 
-  useEffect(() => {
-    const user = authContext?.user;
-    if (user == null) {
-      return;
-    }
-
-    const uid = user.uid;
-    const userRef = firebaseApp.database().ref(`users/${uid}`);
-    userRef.on('value', (snapshot) => {
-      const notifications: Types.MessageQueueNotif[] = Object.values(
-        snapshot.val()
-      );
-      const latestNotif: Types.MessageQueueNotif =
-        notifications[notifications.length - 1];
-
-      if (latestNotif.type === 'FOUND_SESSION') {
-        history.replace('/collaborate');
-      } else if (latestNotif.type === 'CANNOT_FIND_SESSION') {
-        handleCancelClick();
-      }
-    });
-  }, [authContext?.user, handleCancelClick, history]);
+  const handleCancelClick = () => {
+    dispatch(setIsQueuing(false));
+    // TODO: inform server that user has left queue
+  };
 
   return (
     <StyledLayout>

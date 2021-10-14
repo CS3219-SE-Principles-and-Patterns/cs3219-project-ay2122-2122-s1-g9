@@ -33,7 +33,6 @@ const StyledText = styled(Text)`
 
 const Nav: React.FC = function () {
   const authContext = useAuth();
-  console.log(authContext?.user);
 
   const displayName = authContext?.user?.displayName;
   let initials = '';
