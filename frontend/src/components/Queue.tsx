@@ -1,8 +1,11 @@
 import { LoadingOutlined } from '@ant-design/icons';
-import { Button, Collapse, Layout, Spin, Typography } from 'antd';
+import { Button, Layout, Spin, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
 import styled from 'styled-components';
 
+import firebaseApp from '../firebase/firebaseApp';
+import useAuth from '../hooks/auth';
 import { Spacer } from './Styles';
 
 const { Title, Text } = Typography;
@@ -21,8 +24,16 @@ const MediumText = styled(Text)`
   font-weight: 500;
 `;
 
-const Queue: React.FC = function () {
+interface Props {
+  handleCancelClick: () => void;
+}
+
+const Queue: React.FC<Props> = function (props) {
+  const { handleCancelClick } = props;
+
+  const history = useHistory();
   const [timeLeft, setTimeLeft] = useState<number>(30);
+  const authContext = useAuth();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -34,6 +45,29 @@ const Queue: React.FC = function () {
     return () => clearTimeout(timer);
   }, [timeLeft]);
 
+  useEffect(() => {
+    const user = authContext?.user;
+    if (user == null) {
+      return;
+    }
+
+    const uid = user.uid;
+    const userRef = firebaseApp.database().ref(`users/${uid}`);
+    userRef.on('value', (snapshot) => {
+      const notifications: Types.MessageQueueNotif[] = Object.values(
+        snapshot.val()
+      );
+      const latestNotif: Types.MessageQueueNotif =
+        notifications[notifications.length - 1];
+
+      if (latestNotif.type === 'FOUND_SESSION') {
+        history.replace('/collaborate');
+      } else if (latestNotif.type === 'CANNOT_FIND_SESSION') {
+        handleCancelClick();
+      }
+    });
+  }, [authContext?.user, handleCancelClick, history]);
+
   return (
     <StyledLayout>
       <Spin indicator={antIcon} />
@@ -42,7 +76,7 @@ const Queue: React.FC = function () {
         Matching you with another student
       </Title>
       <Spacer $height="40px" />
-      <Button type="ghost" size="large">
+      <Button type="ghost" size="large" onClick={handleCancelClick}>
         Cancel
       </Button>
       <Spacer $height="16px" />

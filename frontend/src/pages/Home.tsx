@@ -44,7 +44,7 @@ const Home: React.FC = function () {
 
   const handleClick = () => {
     addUserToQuestionQueue({ queueName: difficulty })
-      .then((result) => {
+      .then(() => {
         setIsQueuing(true);
       })
       .catch((error) => {
@@ -52,8 +52,14 @@ const Home: React.FC = function () {
       });
   };
 
+  const handleCancelClick = () => {
+    if (isQueuing) {
+      setIsQueuing(false);
+    }
+  };
+
   if (isQueuing) {
-    return <Queue />;
+    return <Queue handleCancelClick={handleCancelClick} />;
   }
 
   return (
@@ -69,7 +75,11 @@ const Home: React.FC = function () {
           <Spacer $height="80px" />
           <DifficultySelector>
             <Text>Difficulty level</Text>
-            <Select placeholder="Select difficulty" onChange={handleSelect}>
+            <Select
+              placeholder="Select difficulty"
+              value={difficulty ?? undefined}
+              onChange={handleSelect}
+            >
               <Option value="easy">Easy</Option>
               <Option value="medium">Medium</Option>
               <Option value="hard">Hard</Option>

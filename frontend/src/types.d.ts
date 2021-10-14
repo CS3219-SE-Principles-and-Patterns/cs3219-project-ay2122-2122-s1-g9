@@ -71,4 +71,9 @@ declare namespace Types {
   }
 
   type Difficulty = 'easy' | 'medium' | 'hard';
+
+  interface MessageQueueNotif {
+    type: string;
+    session_id: string;
+  }
 }
