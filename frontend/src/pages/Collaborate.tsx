@@ -30,7 +30,7 @@ const StyledText = styled(Text)`
 `;
 
 const DifficultyLevel = styled(Text)<{ $level: string }>`
-  margin-bottom: 0.5em;
+  margin-bottom: 0;
   font-weight: 400;
   font-size: 20px;
   text-transform: capitalize;
@@ -44,6 +44,14 @@ const DifficultyLevel = styled(Text)<{ $level: string }>`
     }
   }};
   font-weight: normal;
+`;
+
+const Seperator = styled.span`
+  width: 240.5px;
+  height: 0px;
+  left: 0px;
+  top: 110px;
+  border: 1px solid #bfbfbf;
 `;
 
 const Collaborate: React.FC = function () {
@@ -80,7 +88,9 @@ const Collaborate: React.FC = function () {
           <DifficultyLevel $level={question.level}>
             {question.level}
           </DifficultyLevel>
-          <Spacer $height="16px" />
+          <Spacer $height="24px" />
+          <Seperator />
+          <Spacer $height="32px" />
           <StyledText>
             <div dangerouslySetInnerHTML={{ __html: question.desc }} />
             <Spacer $height="16px" />

@@ -5,6 +5,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
 import firebaseApp from '../firebase/firebaseApp';
+import { Spacer } from './Styles';
 
 interface BottomToolBarProps {
   setQuestion: React.Dispatch<React.SetStateAction<Types.Question>>;
@@ -27,6 +28,18 @@ const StyledBottomToolBar = styled.div`
   background: #e9f7fe;
   height: 64px;
   border-top: 1px solid #91d5ff;
+`;
+
+const LeftContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
+const RightContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `;
 
 const BottomToolBar: React.FC<BottomToolBarProps> = function ({ setQuestion }) {
@@ -73,12 +86,18 @@ const BottomToolBar: React.FC<BottomToolBarProps> = function ({ setQuestion }) {
 
   return (
     <StyledBottomToolBar>
-      <ChangeQuestionButton onClick={changeQuestion}>
-        Change the question
-      </ChangeQuestionButton>
-      <Button type="primary" onClick={showConfirm}>
-        Finish Session
-      </Button>
+      <LeftContainer>
+        <Spacer $width="16px" />
+        <ChangeQuestionButton onClick={changeQuestion}>
+          Change the question
+        </ChangeQuestionButton>
+      </LeftContainer>
+      <RightContainer>
+        <Button type="primary" onClick={showConfirm}>
+          Finish Session
+        </Button>
+        <Spacer $width="16px" />
+      </RightContainer>
     </StyledBottomToolBar>
   );
 };

@@ -7,6 +7,8 @@ import { Button } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 
+import { Spacer } from './Styles';
+
 interface TopToolBarProps {
   editorLanguage: string;
   handleLanguageChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
@@ -34,16 +36,36 @@ const StyledTopToolBar = styled.div`
 const CopyButton = styled(Button)`
   border: none;
   background: none;
+  color: #40a9ff;
 `;
 
 const ChatButton = styled(Button)`
   border: none;
   background: none;
+  color: #40a9ff;
 `;
 
 const LeetCodeButton = styled(Button)`
   border: 1px solid #1890ff;
   color: #1890ff;
+`;
+
+const StyledSelect = styled.select`
+  padding: 4px;
+  border: 1px solid #1890ff;
+  color: #40a9ff;
+`;
+
+const LeftContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
+const RightContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `;
 
 const TopToolBar: React.FC<TopToolBarProps> = function ({
@@ -57,22 +79,30 @@ const TopToolBar: React.FC<TopToolBarProps> = function ({
 }) {
   return (
     <StyledTopToolBar>
-      <CopyButton onClick={handleCopy}>
-        <CopyOutlined />
-      </CopyButton>
-      <select value={editorLanguage} onChange={handleLanguageChange}>
-        {questionTemplates.map((language) => (
-          <option key={language.value} value={language.value}>
-            {language.text}
-          </option>
-        ))}
-      </select>
-      <ChatButton onClick={toggleChat}>
-        {isChatVisible ? <MessageFilled /> : <MessageOutlined />}
-      </ChatButton>
-      <LeetCodeButton target="_blank" href={questionLink}>
-        Go to Leetcode
-      </LeetCodeButton>
+      <LeftContainer>
+        <Spacer $width="16px" />
+        <CopyButton onClick={handleCopy} icon={<CopyOutlined />} size="large" />
+        <Spacer $width="16px" />
+        <StyledSelect value={editorLanguage} onChange={handleLanguageChange}>
+          {questionTemplates.map((language) => (
+            <option key={language.value} value={language.value}>
+              {language.text}
+            </option>
+          ))}
+        </StyledSelect>
+      </LeftContainer>
+      <RightContainer>
+        <ChatButton
+          onClick={toggleChat}
+          icon={isChatVisible ? <MessageFilled /> : <MessageOutlined />}
+          size="large"
+        />
+        <Spacer $width="16px" />
+        <LeetCodeButton target="_blank" href={questionLink}>
+          Go to Leetcode
+        </LeetCodeButton>
+        <Spacer $width="16px" />
+      </RightContainer>
     </StyledTopToolBar>
   );
 };
