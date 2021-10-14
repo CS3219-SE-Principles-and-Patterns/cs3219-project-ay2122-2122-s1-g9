@@ -1,5 +1,6 @@
 import { fromMonaco } from '@hackerrank/firepad';
 import MonacoEditor, { EditorProps, Monaco } from '@monaco-editor/react';
+import { message } from 'antd';
 import { editor } from 'monaco-editor';
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -44,6 +45,8 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
     questionTemplates[0].value
   );
 
+  const [editorVal, setEditorVal] = useState<string>('');
+
   const options: editor.IStandaloneEditorConstructionOptions = {
     cursorStyle: 'line',
   };
@@ -56,10 +59,6 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
     const dbRef = firebaseApp.database().ref('testEditor/content');
     const currentUser = firebaseApp.auth().currentUser;
     const firepad = fromMonaco(dbRef, editorRef.current);
-    // const name = prompt('enter your name:');
-    // if (name) {
-    //   firepad.setUserName(name);
-    // }
     if (currentUser?.displayName) {
       firepad.setUserName(currentUser.displayName);
     }
@@ -87,6 +86,11 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
 
   const handleCopy = (editorVal: string) => () => {
     navigator.clipboard.writeText(editorVal);
+    message.success(
+      'Editor content starting with: "' +
+        editorVal.substring(0, 32) +
+        '" copied to clipboard 👍'
+    );
   };
 
   return (
