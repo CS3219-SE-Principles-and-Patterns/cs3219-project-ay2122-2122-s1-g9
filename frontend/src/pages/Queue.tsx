@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 
+import Nav from '../components/Nav';
 import { Spacer } from '../components/Styles';
 import useMessageQueue from '../hooks/messageQueue';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
@@ -55,21 +56,24 @@ const Queue: React.FC = function () {
   };
 
   return (
-    <StyledLayout>
-      <Spin indicator={antIcon} />
-      <Spacer $height="24px" />
-      <Title level={3} style={{ fontWeight: 400, margin: 0 }}>
-        Matching you with another student
-      </Title>
-      <Spacer $height="40px" />
-      <Button type="ghost" size="large" onClick={handleCancelClick}>
-        Cancel
-      </Button>
-      <Spacer $height="16px" />
-      <Text>
-        Timeout in: <MediumText>{timeLeft}s</MediumText>
-      </Text>
-    </StyledLayout>
+    <>
+      <Nav />
+      <StyledLayout>
+        <Spin indicator={antIcon} />
+        <Spacer $height="24px" />
+        <Title level={3} style={{ fontWeight: 400, margin: 0 }}>
+          Matching you with another student
+        </Title>
+        <Spacer $height="40px" />
+        <Button type="ghost" size="large" onClick={handleCancelClick}>
+          Cancel
+        </Button>
+        <Spacer $height="16px" />
+        <Text>
+          Timeout in: <MediumText>{timeLeft}s</MediumText>
+        </Text>
+      </StyledLayout>
+    </>
   );
 };
 
