@@ -98,7 +98,11 @@ const TopToolBar: React.FC<TopToolBarProps> = function ({
           size="large"
         />
         <Spacer $width="16px" />
-        <LeetCodeButton target="_blank" href={questionLink}>
+        <LeetCodeButton
+          rel="noopener noreferrer"
+          target="_blank"
+          href={questionLink}
+        >
           Go to Leetcode
         </LeetCodeButton>
         <Spacer $width="16px" />

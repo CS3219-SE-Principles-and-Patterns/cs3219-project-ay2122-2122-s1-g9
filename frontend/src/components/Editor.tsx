@@ -27,7 +27,7 @@ const StyledContainer = styled.div`
 `;
 
 const StyledMonacoEditor = styled(MonacoEditor)`
-  flex: 'flex-grow';
+  flex: flex-grow;
 `;
 
 const Editor: React.FC<PeerprepEditorProps> = function ({
@@ -82,13 +82,18 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
     editorRef.update({ language: e.target.value });
   };
 
-  const handleCopy = (editorVal: string) => () => {
-    navigator.clipboard.writeText(editorVal);
-    message.success(
-      'Editor content starting with: "' +
-        editorVal.substring(0, 32) +
-        '" copied to clipboard 👍'
-    );
+  const handleCopy = () => {
+    if (editorRef.current) {
+      const editorVal = editorRef.current.getValue();
+      navigator.clipboard.writeText(editorVal);
+      message.success(
+        'Editor content starting with: "' +
+          editorVal.substring(0, 32) +
+          '" copied to clipboard 👍'
+      );
+    } else {
+      message.error('Editor content not copied. Try again!');
+    }
   };
 
   return (
@@ -97,7 +102,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
         editorLanguage={editorLanguage}
         handleLanguageChange={handleLanguageChange}
         questionTemplates={questionTemplates}
-        handleCopy={handleCopy(editorRef.current?.getValue() ?? '')}
+        handleCopy={handleCopy}
         isChatVisible={isChatVisible}
         toggleChat={() => setChatVisible(!isChatVisible)}
         questionLink={questionLink}

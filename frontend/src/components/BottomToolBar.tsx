@@ -41,11 +41,11 @@ const RightContainer = styled.div`
   flex-direction: row;
   align-items: center;
 `;
+const { confirm } = Modal;
 
 const BottomToolBar: React.FC<BottomToolBarProps> = function ({ setQuestion }) {
   const history = useHistory();
   const location = useLocation<LocationState>();
-  const { confirm } = Modal;
 
   const showConfirm = () => {
     confirm({
@@ -59,8 +59,8 @@ const BottomToolBar: React.FC<BottomToolBarProps> = function ({ setQuestion }) {
         </p>
       ),
       onOk() {
-        return new Promise((resolve, reject) => {
-          setTimeout(Math.random() > 0 ? resolve : reject, 1000);
+        return new Promise((resolve) => {
+          setTimeout(resolve, 1000);
         })
           .then(() => {
             history.push('/', from);
@@ -71,14 +71,29 @@ const BottomToolBar: React.FC<BottomToolBarProps> = function ({ setQuestion }) {
   };
 
   const changeQuestion = () => {
-    const getQuestion = firebaseApp.functions().httpsCallable('getQuestion');
-    getQuestion({ slug: 'find-minimum-in-rotated-sorted-array' })
-      .then((result) => {
-        setQuestion(result.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    confirm({
+      title: 'Not so fast...',
+      icon: <ExclamationCircleOutlined />,
+      content: (
+        <p>
+          Changing the question will cause your editor data to be lost.
+          <br />
+          <strong>Are you sure you want to do that?</strong>
+        </p>
+      ),
+      onOk() {
+        const getQuestion = firebaseApp
+          .functions()
+          .httpsCallable('getQuestion');
+        getQuestion({ slug: 'find-minimum-in-rotated-sorted-array' })
+          .then((result) => {
+            setQuestion(result.data);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      },
+    });
   };
 
   const { from } = location.state || { from: { pathName: '/collaborate' } };
