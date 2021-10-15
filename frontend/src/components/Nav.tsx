@@ -13,6 +13,7 @@ const StyledNav = styled.div`
   justify-content: space-between;
   padding: 20px;
   border-bottom: 1px solid #d9d9d9;
+  background: ${(props) => props.theme.colors.white};
 `;
 
 const UserIcon = styled.div`
@@ -31,7 +32,12 @@ const StyledText = styled(Text)`
   font-weight: 500;
 `;
 
-const Nav: React.FC = function () {
+interface Props {
+  handleLogoClick?: () => void;
+}
+
+const Nav: React.FC<Props> = function (props) {
+  const { handleLogoClick } = props;
   const authContext = useAuth();
 
   const displayName = authContext?.user?.displayName;
@@ -47,7 +53,7 @@ const Nav: React.FC = function () {
 
   return (
     <StyledNav>
-      <Image width={147} src={logo} preview={false} />
+      <Image width={147} src={logo} preview={false} onClick={handleLogoClick} />
       <UserIcon key="3">
         <StyledText>{initials}</StyledText>
       </UserIcon>

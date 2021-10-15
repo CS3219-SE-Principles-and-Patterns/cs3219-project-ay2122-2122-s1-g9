@@ -9,7 +9,7 @@ import styled from 'styled-components';
 
 import GetToWork from '../components/GetToWork';
 import Sidebar from '../components/Sidebar';
-import { PageLayout, Spacer } from '../components/Styles';
+import { Spacer, TwoColLayout } from '../components/Styles';
 import useAuth from '../hooks/auth';
 import logo from '../resources/logo.svg';
 
@@ -61,7 +61,7 @@ const Signin: React.FC = function () {
       {auth?.authError && (
         <Alert type="error" message={auth?.authError} banner closable />
       )}
-      <PageLayout>
+      <TwoColLayout>
         <Sidebar>
           <Spacer $height="34px" />
           <Logo>
@@ -105,7 +105,7 @@ const Signin: React.FC = function () {
           </Container>
         </Sidebar>
         <GetToWork />
-      </PageLayout>
+      </TwoColLayout>
     </>
   );
 };

@@ -5,19 +5,20 @@ import styled from 'styled-components';
 
 import Chat from '../components/Chat';
 import Editor from '../components/Editor';
+import PageLayout from '../components/PageLayout';
 import Sidebar from '../components/Sidebar';
-import { PageLayout, Spacer } from '../components/Styles';
+import { Spacer, TwoColLayout } from '../components/Styles';
 import firebaseApp from '../firebase/firebaseApp';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
 
 const Container = styled.div`
-  padding: 0 32px 60px 32px;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  max-height: 100vh;
+  padding: 0 32px 60px 32px;
 `;
 
 const EditorContent = styled(Content)`
@@ -81,41 +82,42 @@ const Collaborate: React.FC = function () {
 
   return (
     <PageLayout>
-      <Sidebar>
-        <Spacer $height="64px" />
-        <Container>
-          <Title level={1}>{question.name}</Title>
-          <DifficultyLevel $level={question.level}>
-            {question.level}
-          </DifficultyLevel>
-          <Spacer $height="24px" />
-          <Separator />
-          <Spacer $height="32px" />
-          <StyledText>
-            <div dangerouslySetInnerHTML={{ __html: question.desc }} />
-            <Spacer $height="16px" />
-            <Collapse>
-              {question.hints?.map((hintString: string, index: number) => (
-                <Panel header={'Show Hint ' + (index + 1)} key={index}>
-                  <div dangerouslySetInnerHTML={{ __html: hintString }} />
-                </Panel>
-              ))}
-            </Collapse>
+      <TwoColLayout>
+        <Sidebar>
+          <Spacer $height="64px" />
+          <Container>
+            <Title level={1}>{question.name}</Title>
+            <DifficultyLevel $level={question.level}>
+              {question.level}
+            </DifficultyLevel>
             <Spacer $height="24px" />
-          </StyledText>
-          <Spacer $height="68px" />
-        </Container>
-      </Sidebar>
-      <EditorContent>
-        <Editor
-          questionTemplates={question.templates}
-          questionLink={question.link}
-          isChatVisible={isChatVisible}
-          setChatVisible={setChatVisible}
-          setQuestion={setQuestion}
-        />
-        {isChatVisible && <Chat />}
-      </EditorContent>
+            <Separator />
+            <Spacer $height="32px" />
+            <StyledText>
+              <div dangerouslySetInnerHTML={{ __html: question.desc }} />
+              <Spacer $height="16px" />
+              <Collapse>
+                {question.hints?.map((hintString: string, index: number) => (
+                  <Panel header={'Show Hint ' + (index + 1)} key={index}>
+                    <div dangerouslySetInnerHTML={{ __html: hintString }} />
+                  </Panel>
+                ))}
+              </Collapse>
+              <Spacer $height="24px" />
+            </StyledText>
+          </Container>
+        </Sidebar>
+        <EditorContent>
+          <Editor
+            questionTemplates={question.templates}
+            questionLink={question.link}
+            isChatVisible={isChatVisible}
+            setChatVisible={setChatVisible}
+            setQuestion={setQuestion}
+          />
+          {isChatVisible && <Chat />}
+        </EditorContent>
+      </TwoColLayout>
     </PageLayout>
   );
 };

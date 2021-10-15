@@ -12,7 +12,7 @@ const { Text } = Typography;
 const OverallContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
   width: 283px;
   background: #ffffff;
 `;

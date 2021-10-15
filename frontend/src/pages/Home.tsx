@@ -4,9 +4,9 @@ import { useHistory } from 'react-router';
 import styled from 'styled-components';
 
 import GetToWork from '../components/GetToWork';
-import Nav from '../components/Nav';
+import PageLayout from '../components/PageLayout';
 import Sidebar from '../components/Sidebar';
-import { PageLayout, Spacer } from '../components/Styles';
+import { Spacer, TwoColLayout } from '../components/Styles';
 import firebaseApp from '../firebase/firebaseApp';
 import { useAppDispatch } from '../redux/hooks';
 import { setIsQueuing } from '../redux/matchSlice';
@@ -27,10 +27,15 @@ const DifficultySelector = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  .ant-select-selector {
+    border-radius: 8px !important;
+  }
 `;
 
 const StyledButton = styled(Button)`
   height: 56px;
+  border-radius: 8px;
   font-weight: 500;
 `;
 
@@ -58,9 +63,8 @@ const Home: React.FC = function () {
   };
 
   return (
-    <>
-      <Nav />
-      <PageLayout>
+    <PageLayout>
+      <TwoColLayout>
         <Sidebar>
           <Container>
             <Title level={1}>Welcome to Peerprep 👋</Title>
@@ -94,8 +98,8 @@ const Home: React.FC = function () {
           </Container>
         </Sidebar>
         <GetToWork />
-      </PageLayout>
-    </>
+      </TwoColLayout>
+    </PageLayout>
   );
 };
 

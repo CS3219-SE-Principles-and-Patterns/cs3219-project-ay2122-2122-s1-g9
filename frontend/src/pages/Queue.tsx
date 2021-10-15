@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 
-import Nav from '../components/Nav';
+import PageLayout from '../components/PageLayout';
 import { Spacer } from '../components/Styles';
 import useMessageQueue from '../hooks/messageQueue';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
@@ -14,7 +14,7 @@ const { Title, Text } = Typography;
 const antIcon = <LoadingOutlined style={{ fontSize: 80 }} spin />;
 
 const StyledLayout = styled(Layout)`
-  min-height: 100vh;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -56,8 +56,7 @@ const Queue: React.FC = function () {
   };
 
   return (
-    <>
-      <Nav />
+    <PageLayout>
       <StyledLayout>
         <Spin indicator={antIcon} />
         <Spacer $height="24px" />
@@ -73,7 +72,7 @@ const Queue: React.FC = function () {
           Timeout in: <MediumText>{timeLeft}s</MediumText>
         </Text>
       </StyledLayout>
-    </>
+    </PageLayout>
   );
 };
 
