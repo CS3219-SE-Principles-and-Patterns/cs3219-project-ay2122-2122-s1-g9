@@ -19,7 +19,7 @@ interface PeerprepEditorProps {
 
 const StyledContainer = styled.div`
   flex-grow: 1;
-  max-height: 100vh;
+  max-height: 100%;
   border: 1px solid #91d5ff;
   overflow-y: hidden;
   display: flex;

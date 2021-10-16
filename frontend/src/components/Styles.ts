@@ -1,8 +1,13 @@
 import { Layout } from 'antd';
 import styled from 'styled-components';
 
-export const PageLayout = styled(Layout)`
-  min-height: 100vh;
+export const TwoColLayout = styled(Layout)`
+  flex-grow: 1;
+  width: 100%;
+
+  > :last-child {
+    flex-grow: 1;
+  }
 `;
 
 interface SpacerProps {

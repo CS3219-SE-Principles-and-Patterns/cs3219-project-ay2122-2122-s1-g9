@@ -69,4 +69,11 @@ declare namespace Types {
       [level: string]: QuestionIdentifier[];
     };
   }
+
+  type Difficulty = 'easy' | 'medium' | 'hard';
+
+  interface MessageQueueNotif {
+    type: string;
+    session_id: string;
+  }
 }
