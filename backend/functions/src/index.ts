@@ -58,7 +58,7 @@ export const getRandomQuestion = async function (
 
   const db = admin.firestore();
 
-  const allQuestions: unknown[] = [];
+  const allQuestions: any[] = [];
   const questionRef = db.collection(`randomQuestions/algorithms/${difficulty}`);
   const snapshot = await questionRef.get();
 
