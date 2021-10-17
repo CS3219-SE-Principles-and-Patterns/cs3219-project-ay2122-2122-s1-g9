@@ -44,5 +44,30 @@ export const getQuestion = functions.https.onCall(
   }
 );
 
+export const getRandomQuestion = async function (
+  difficulty: string
+): Promise<string> {
+  const validQueues = new Set(['easy', 'medium', 'hard']);
+
+  if (!validQueues.has(difficulty.toLowerCase())) {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      'The difficultyLevel must be one of {easy, medium, hard}'
+    );
+  }
+
+  const db = admin.firestore();
+
+  const allQuestions: unknown[] = [];
+  const questionRef = db.collection(`randomQuestions/algorithms/${difficulty}`);
+  const snapshot = await questionRef.get();
+
+  snapshot.forEach(function (doc) {
+    console.log(doc.data());
+    allQuestions.push(doc.data());
+  });
+  return allQuestions[Math.floor(Math.random() * allQuestions.length)].slug;
+};
+
 export const matchAndCreateSession = detectMatchCreateSession;
 export const addUserToQuestionQueue = addUserToQueue;

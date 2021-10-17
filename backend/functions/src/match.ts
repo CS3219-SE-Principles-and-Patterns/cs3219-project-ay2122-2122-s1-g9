@@ -1,9 +1,10 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import { getRandomQuestion } from '.';
 
 export const detectMatchCreateSession = functions.database
   .ref('/queues/{difficulty}')
-  .onWrite((change, context) => {
+  .onWrite(async (change, context) => {
     const queueName = context.params.difficulty;
 
     // Exit when the data is deleted.
@@ -42,6 +43,7 @@ export const detectMatchCreateSession = functions.database
       const session = {
         users: [userOne, userTwo],
         createdAt: Date.now(),
+        questionId: await getRandomQuestion(queueName),
       };
       const sessionId = sessionPath.push(session).key;
       // then we add the session to the user's message queue
