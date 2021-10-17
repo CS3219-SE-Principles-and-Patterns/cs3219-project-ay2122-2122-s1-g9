@@ -27,7 +27,6 @@ export const detectMatchesCreateSession = functions.database
     }
 
     const sessionPath = admin.database().ref('/sessions');
-    const userPath = admin.database().ref('/users');
     const queuePath = admin.database().ref('/queues');
 
     // We will make 1 match for every 2 people in the queue

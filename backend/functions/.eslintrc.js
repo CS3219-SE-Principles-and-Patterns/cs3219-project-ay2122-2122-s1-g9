@@ -27,5 +27,6 @@ module.exports = {
     'object-curly-spacing': [2, 'always'],
     'import/no-unresolved': 0,
     'require-jsdoc': 0,
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
   },
 };

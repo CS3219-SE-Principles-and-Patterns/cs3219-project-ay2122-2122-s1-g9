@@ -1,13 +1,12 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { DataSnapshot } from 'firebase-functions/v1/database';
 
 export const initSession = functions.database
   .ref('/sessions/{sessId}')
   .onCreate(
     (
       snapshot: functions.database.DataSnapshot,
-      context: functions.EventContext
+			_context: functions.EventContext
     ) => {
 			const db = admin.database();
 
