@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
-export const detectMatchCreateSession = functions.database
+export const detectMatchesCreateSession = functions.database
   .ref('/queues/{difficulty}')
   .onWrite((change, context) => {
     const queueName = context.params.difficulty;
@@ -43,14 +43,8 @@ export const detectMatchCreateSession = functions.database
         users: [userOne, userTwo],
         createdAt: Date.now(),
       };
-      const sessionId = sessionPath.push(session).key;
-      // then we add the session to the user's message queue
-      const notification = {
-        type: 'FOUND_SESSION',
-        session_id: sessionId,
-      };
-      userPath.child(userOne).push(notification);
-      userPath.child(userTwo).push(notification);
+
+      sessionPath.push(session);
 
       // Pop the first 2 elements from the queue
       queue.shift();

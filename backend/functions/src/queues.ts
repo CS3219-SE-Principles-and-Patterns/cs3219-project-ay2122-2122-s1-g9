@@ -41,5 +41,7 @@ export const addUserToQueue = functions.https.onCall(
       queue.push(uid);
       queuePath.set(queue);
     });
+
+    return { success: true };
   }
 );

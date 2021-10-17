@@ -1,39 +1,46 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { CallableContext } from 'firebase-functions/v1/https';
-import HeadlessAdapter from './HeadlessAdapter';
-import { Firepad, FirebaseAdapter, IFirepadConstructorOptions } from '@hackerrank/firepad';
+import { DataSnapshot } from 'firebase-functions/v1/database';
 
+export const initSession = functions.database
+  .ref('/sessions/{sessId}')
+  .onCreate(
+    (
+      snapshot: functions.database.DataSnapshot,
+      context: functions.EventContext
+    ) => {
+			const db = admin.database();
 
-const initSession = async (sessId: string, qnsId: string) => {
-	// (global as any).self = global;
+			const sessPath = snapshot;
+			const users: string[] = sessPath.child('users').val();
 
-	require('amd-loader');
+			if (users.length != 2) {
+				throw new functions.https.HttpsError(
+          'failed-precondition',
+          `There should only be 2 users in a session. Found ${users.length} at session ${sessPath.key}.`
+        );
+			}
 
+			// Write Default Code
+			const writeDefaultCodeNotif = {
+				type: 'WRITE_DEFAULT_CODE',
+				session_id: sessPath.key,
+				qns_id: 'two-sum', // this could be derived from this function or the matches one
+			};
+		
+			const userToWrite = users[0];
+			db.ref(`/users/${userToWrite}`).push(writeDefaultCodeNotif)
+		
+			// Add User To Session
+      const foundSessNotif = {
+        type: 'FOUND_SESSION',
+        session_id: sessPath.key,
+      };
 
-	const sessRef = admin.database().ref('/sessions').child(sessId);
-	const editorRef = sessRef.child('editor');
+			for (const user of users) {
+				const userPath = db.ref(`/users/${user}`);
+				userPath.push(foundSessNotif);
+			}
+		}
+  );
 
-	const headlessAdapter = new HeadlessAdapter();
-	const firebaseAdapter = new FirebaseAdapter(editorRef, 0, '#000000', 'Admin');
-	const opts = <IFirepadConstructorOptions> {
-		userId: 0,
-		userColor: '#000000',
-		userName: 'Admin'
-	};
-
-	const firepad = new Firepad(firebaseAdapter, headlessAdapter, opts);
-
-	// const fakeData = { 'asdf': 'xxx', 123V: 'asf' };
-	// const newKey = await sessPath.push(fakeData).key;
-	// console.log(newKey);
-
-	// const fakeData2 = { 'asdf2': 'xxx', 1232: 'asf' };
-	// const sessPath2 = sessPath.child('randomId');
-	// const newKey2 = await sessPath2.set(fakeData2);
-	// console.log(newKey2);
-
-	return 'asdfff'
-};
-
-export { initSession };
