@@ -23,7 +23,7 @@ export const initSession = functions.database
 			// Write Default Code
 			const writeDefaultCodeNotif = {
 				type: 'WRITE_DEFAULT_CODE',
-				session_id: sessPath.key,
+				sess_id: sessPath.key,
 				qns_id: 'two-sum', // this could be derived from this function or the matches one
 			};
 		
@@ -33,7 +33,7 @@ export const initSession = functions.database
 			// Add User To Session
       const foundSessNotif = {
         type: 'FOUND_SESSION',
-        session_id: sessPath.key,
+        sess_id: sessPath.key,
       };
 
 			for (const user of users) {

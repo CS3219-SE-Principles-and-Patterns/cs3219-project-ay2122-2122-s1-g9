@@ -74,6 +74,6 @@ declare namespace Types {
 
   interface MessageQueueNotif {
     type: string;
-    session_id: string;
+    sess_id: string;
   }
 }

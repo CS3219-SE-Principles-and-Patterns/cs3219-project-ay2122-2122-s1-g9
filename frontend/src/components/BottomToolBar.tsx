@@ -4,7 +4,7 @@ import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
-import firebaseApp from '../firebase/firebaseApp';
+import { getQuestion } from '../firebase/functions';
 import { Spacer } from './Styles';
 
 interface BottomToolBarProps {
@@ -82,10 +82,7 @@ const BottomToolBar: React.FC<BottomToolBarProps> = function ({ setQuestion }) {
         </p>
       ),
       onOk() {
-        const getQuestion = firebaseApp
-          .functions()
-          .httpsCallable('getQuestion');
-        getQuestion({ slug: 'find-minimum-in-rotated-sorted-array' })
+        getQuestion({ id: 'find-minimum-in-rotated-sorted-array' })
           .then((result) => {
             setQuestion(result.data);
           })

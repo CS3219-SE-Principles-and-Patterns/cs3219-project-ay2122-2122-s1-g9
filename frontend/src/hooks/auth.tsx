@@ -1,6 +1,8 @@
+import 'firebase/auth';
+
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 import { observeAuthState, socialLogin } from '../firebase/auth';
