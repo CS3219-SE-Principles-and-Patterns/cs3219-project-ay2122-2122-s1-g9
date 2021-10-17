@@ -7,6 +7,7 @@ import { addUserToQueue } from './queue';
 import * as questions from './questions';
 import { initSession } from './sessions';
 
+
 admin.initializeApp();
 
 // // Start writing Firebase Functions

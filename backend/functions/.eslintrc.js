@@ -26,5 +26,6 @@ module.exports = {
     quotes: ['error', 'single'],
     'object-curly-spacing': [2, 'always'],
     'import/no-unresolved': 0,
+    'require-jsdoc': 0,
   },
 };
