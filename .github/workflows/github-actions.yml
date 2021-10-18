@@ -1,5 +1,9 @@
 name: deploy-service
-on: [push]
+on:
+    push:
+        branches:
+            - master
+
 jobs:
     deploy-backend:
         runs-on: ubuntu-latest
