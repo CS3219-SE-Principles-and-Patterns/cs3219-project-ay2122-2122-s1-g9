@@ -20,16 +20,6 @@ export const initSession = functions.database
         );
       }
 
-      // Write Default Code
-      const writeDefaultCodeNotif = {
-        type: 'WRITE_DEFAULT_CODE',
-        sess_id: sessPath.key,
-        qns_id: 'two-sum', // this could be derived from this function or the matches one
-      };
-
-      const userToWrite = users[0];
-      db.ref(`/users/${userToWrite}`).push(writeDefaultCodeNotif);
-
       // Add User To Session
       const foundSessNotif = {
         type: 'FOUND_SESSION',
@@ -40,5 +30,15 @@ export const initSession = functions.database
         const userPath = db.ref(`/users/${user}`);
         userPath.push(foundSessNotif);
       }
+
+      // Write Default Code
+      const writeDefaultCodeNotif = {
+        type: 'WRITE_DEFAULT_CODE',
+        sess_id: sessPath.key,
+        qns_id: 'two-sum', // this could be derived from this function or the matches one
+      };
+
+      const userToWrite = users[0];
+      db.ref(`/users/${userToWrite}`).push(writeDefaultCodeNotif);
     }
   );
