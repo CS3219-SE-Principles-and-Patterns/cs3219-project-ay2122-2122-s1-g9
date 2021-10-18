@@ -1,13 +1,21 @@
-name: deploy-backend
+name: deploy-service
 on: [push]
 jobs:
-    check-bats-version:
+    deploy-backend:
         runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./backend
         steps:
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2
+            - name: Checkout repository
+              uses: actions/checkout@v2
+            - name: Install node
+              uses: actions/setup-node@v2
               with:
                   node-version: "14"
-            - uses: borales/actions-yarn@v2.3.0
-              with:
-                  cmd: install
+            - name: Install libraries
+              run: yarn install
+            - name: Install Firebase
+              run: yarn global add firebase-tools
+            - name: Deploy functions
+              run: firebase deploy --token ${{secrets.FIREBASE_CI_TOKEN}}
