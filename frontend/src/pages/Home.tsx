@@ -7,7 +7,7 @@ import GetToWork from '../components/GetToWork';
 import PageLayout from '../components/PageLayout';
 import Sidebar from '../components/Sidebar';
 import { Spacer, TwoColLayout } from '../components/Styles';
-import firebaseApp from '../firebase/firebaseApp';
+import { addUserToQueue } from '../firebase/functions';
 import { useAppDispatch } from '../redux/hooks';
 import { setIsQueuing } from '../redux/matchSlice';
 
@@ -43,16 +43,17 @@ const Home: React.FC = function () {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const [difficulty, setDifficulty] = useState<Types.Difficulty | null>(null);
-  const addUserToQuestionQueue = firebaseApp
-    .functions()
-    .httpsCallable('addUserToQuestionQueue');
 
   const handleSelect = (value: Types.Difficulty) => {
     setDifficulty(value);
   };
 
   const handleClick = () => {
-    addUserToQuestionQueue({ queueName: difficulty })
+    if (!difficulty) {
+      return;
+    }
+
+    addUserToQueue({ queueName: difficulty })
       .then(() => {
         dispatch(setIsQueuing(true));
         history.replace('/queue');

@@ -1,8 +1,9 @@
-declare namespace App {
+declare namespace FunctionTypes {
   interface getQuestionData {
     id: string;
   }
-  interface addUserToQueueVm {
+
+  interface addUserToQueueData {
     queueName: string;
   }
 }
