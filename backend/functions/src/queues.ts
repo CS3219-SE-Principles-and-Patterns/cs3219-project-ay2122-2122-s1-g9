@@ -45,3 +45,8 @@ export const addUserToQueue = functions.https.onCall(
     return { success: true };
   }
 );
+
+export const removeUserFromQueue = functions.https.onCall(
+
+)
+
