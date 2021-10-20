@@ -10,7 +10,6 @@ const initialState: ChatState = {
   isVisible: true,
 };
 
-// Sample slice
 export const chatSlice = createSlice({
   name: 'chat',
   initialState,
