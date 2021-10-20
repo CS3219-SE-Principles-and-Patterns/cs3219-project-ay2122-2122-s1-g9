@@ -1,6 +1,6 @@
 // Add calls to firebase service here
 import { FirebaseError } from '@firebase/util';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 
 import firebaseApp from './firebaseApp';
 

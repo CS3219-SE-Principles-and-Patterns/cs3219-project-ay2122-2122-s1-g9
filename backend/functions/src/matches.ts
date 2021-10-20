@@ -1,8 +1,8 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { getRandomQuestion } from '.';
+import { getRandomQuestion } from './questions';
 
-export const detectMatchCreateSession = functions.database
+export const detectMatchesCreateSession = functions.database
   .ref('/queues/{difficulty}')
   .onWrite(async (change, context) => {
     const queueName = context.params.difficulty;
@@ -28,7 +28,6 @@ export const detectMatchCreateSession = functions.database
     }
 
     const sessionPath = admin.database().ref('/sessions');
-    const userPath = admin.database().ref('/users');
     const queuePath = admin.database().ref('/queues');
 
     // We will make 1 match for every 2 people in the queue
@@ -39,20 +38,24 @@ export const detectMatchCreateSession = functions.database
       const userOne = queue[0];
       const userTwo = queue[1];
 
+      // Try 5 times to get a random question, our random key may not always work
+      let questionId = null;
+      let retries = 5;
+
+      while (
+        retries-- > 0 &&
+        !(questionId = await getRandomQuestion(queueName))
+        // eslint-disable-next-line no-empty
+      ) {}
+
       // First we create a session
       const session = {
         users: [userOne, userTwo],
         createdAt: Date.now(),
-        questionId: await getRandomQuestion(queueName),
+        questionId: questionId,
       };
-      const sessionId = sessionPath.push(session).key;
-      // then we add the session to the user's message queue
-      const notification = {
-        type: 'FOUND_SESSION',
-        session_id: sessionId,
-      };
-      userPath.child(userOne).push(notification);
-      userPath.child(userTwo).push(notification);
+
+      sessionPath.push(session);
 
       // Pop the first 2 elements from the queue
       queue.shift();

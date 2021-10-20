@@ -8,7 +8,7 @@ import Editor from '../components/Editor';
 import PageLayout from '../components/PageLayout';
 import Sidebar from '../components/Sidebar';
 import { Spacer, TwoColLayout } from '../components/Styles';
-import firebaseApp from '../firebase/firebaseApp';
+import { getQuestion } from '../firebase/functions';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -61,10 +61,9 @@ const Collaborate: React.FC = function () {
     {} as Types.Question
   );
   const [pageLoaded, setPageLoaded] = useState<boolean>(false);
-  const getQuestion = firebaseApp.functions().httpsCallable('getQuestion');
   const { Panel } = Collapse;
   useEffect(() => {
-    getQuestion({ slug: 'two-sum' })
+    getQuestion({ id: 'two-sum' })
       .then((result) => {
         setQuestion(result.data);
         setPageLoaded(true);
