@@ -1,11 +1,13 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { getRandomQuestion } from './questions';
+import { sendMessageToUser } from './messages';
 
 export const detectMatchesCreateSession = functions.database
   .ref('/queues/{difficulty}')
   .onWrite(async (change, context) => {
     const queueName = context.params.difficulty;
+    const MAX_NUMBER_OF_TRIES = 5;
 
     // Exit when the data is deleted.
     if (!change.after.exists()) {
@@ -40,13 +42,32 @@ export const detectMatchesCreateSession = functions.database
 
       // Try 5 times to get a random question, our random key may not always work
       let questionId = null;
-      let retries = 5;
+      let retries = 0;
 
-      while (
-        retries-- > 0 &&
-        !(questionId = await getRandomQuestion(queueName))
-        // eslint-disable-next-line no-empty
-      ) {}
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        try {
+          questionId = await getRandomQuestion(queueName);
+          break;
+        } catch (err) {
+          if (retries >= MAX_NUMBER_OF_TRIES) {
+            // Remove both users from queue, ask them to rejoin
+            queue.shift();
+            queue.shift();
+
+            // Send an error to both users' message queues
+            [userOne, userTwo].forEach((user) => {
+              sendMessageToUser(
+                user,
+                'QUESTION_GENERATION_ERROR',
+                'Unable to generate question for session. Please rejoin the queue'
+              );
+            });
+            return { sucess: false };
+          }
+        }
+        retries++;
+      }
 
       // First we create a session
       const session = {
@@ -66,5 +87,5 @@ export const detectMatchesCreateSession = functions.database
     // Update the queue to only contain the unmatched people
     queuePath.child(queueName).set(queue);
 
-    return null;
+    return { sucess: true };
   });
