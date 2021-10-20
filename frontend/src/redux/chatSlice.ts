@@ -3,11 +3,11 @@ import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from './store';
 
 interface ChatState {
-  messages: string[];
+  isVisible: boolean;
 }
 
 const initialState: ChatState = {
-  messages: [],
+  isVisible: true,
 };
 
 // Sample slice
@@ -15,14 +15,14 @@ export const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    addNewMessage: (state, action) => {
-      state.messages.push(action.payload.message);
+    setIsVisible: (state, action) => {
+      state.isVisible = action.payload;
     },
   },
 });
 
-export const { addNewMessage } = chatSlice.actions;
+export const { setIsVisible } = chatSlice.actions;
 
-export const getMessages = (state: RootState): string[] => state.chat.messages;
+export const getIsVisible = (state: RootState) => state.chat.isVisible;
 
 export default chatSlice.reducer;
