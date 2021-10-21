@@ -32,7 +32,7 @@ export const addUserToQueue = functions.https.onCall(
       .ref(`/queues/${data.queueName.toLowerCase()}`);
     const uid = context.auth.uid;
 
-    queuePath.once('value', (snapshot) => {
+    await queuePath.once('value', (snapshot) => {
       let queue = snapshot.val();
       // If the queue does not exist (i.e its currently empty)
       if (queue == null) {
@@ -46,7 +46,7 @@ export const addUserToQueue = functions.https.onCall(
   }
 );
 
-export const removeUserFromQueue = functions.https.onCall(
+// export const removeUserFromQueue = functions.https.onCall(
 
-)
+// )
 
