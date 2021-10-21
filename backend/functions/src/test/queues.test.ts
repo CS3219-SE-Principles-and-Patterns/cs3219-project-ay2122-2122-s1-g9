@@ -32,10 +32,11 @@ describe('removeUserFromQueue', () => {
   it ('should remove user from queue', async () => {
     const func = test.wrap(queues.removeUserFromQueue);
     await admin.database().ref('/queues/easy').set(['fakeuid']); 
-    await func({}, { auth: { uid: 'fakeuid' } });
+    await func({ queueName: 'easy' }, { auth: { uid: 'fakeuid' } });
 
     await admin.database().ref('/queues/easy').once('value', (snapshot) => {
-      expect(snapshot.val()).to.not.contain('fakeuid');
+      // If there is nothing in queue, the val will be null
+      expect(snapshot.val()).to.be.null;
     })
   })
 })
