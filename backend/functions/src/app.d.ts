@@ -2,7 +2,10 @@ declare namespace App {
   interface getQuestionData {
     id: string;
   }
-  interface addUserToQueueVm {
+  interface addUserToQueue {
+    queueName: string;
+  }
+  interface removeUserFromQueue {
     queueName: string;
   }
 }
