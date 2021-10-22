@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import { sendMessageToUser } from './messages';
 
 export const initSession = functions.database
   .ref('/sessions/{sessId}')
@@ -21,14 +22,12 @@ export const initSession = functions.database
       }
 
       // Add User To Session
-      const foundSessNotif = {
-        type: 'FOUND_SESSION',
+      const foundSessNotifData = {
         sess_id: sessPath.key,
       };
 
       for (const user of users) {
-        const userPath = db.ref(`/users/${user}`);
-        userPath.push(foundSessNotif);
+        sendMessageToUser(user, 'FOUND_SESSION', foundSessNotifData);
       }
 
       // Write Default Code
