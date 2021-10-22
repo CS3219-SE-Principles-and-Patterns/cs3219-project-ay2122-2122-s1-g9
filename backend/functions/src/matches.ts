@@ -1,6 +1,5 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { firebaseConfig } from 'firebase-functions';
 
 export const detectMatchesCreateSession = functions.database
   .ref('/queues/{difficulty}')

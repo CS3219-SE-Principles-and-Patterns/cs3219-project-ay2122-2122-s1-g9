@@ -26,15 +26,14 @@ export const initSession = functions.database
       const qnsId = 'two-sum';
 
       // Initialize session in firestore
-      const docRef = fs.collection('sessions').doc(sessId);
-      await docRef.set({
+      await fs.collection('sessions').doc(sessId).set({
         users: users,
         createdAt: sessFromDb['createdAt'],
         qnsId: qnsId,
         status: SESS_STATUS_STARTED,
       });
 
-      // Add User To Session
+      // Initialize session for user
       const foundSessNotif = {
         type: 'FOUND_SESSION',
         sess_id: sessId,
@@ -43,6 +42,10 @@ export const initSession = functions.database
       for (const user of users) {
         const userPath = db.ref(`/users/${user}`);
         await userPath.push(foundSessNotif);
+
+        await fs.collection('currentSessions').doc(user).set({
+          sessId: sessId,
+        })
       }
 
       // Write Default Code
@@ -57,4 +60,8 @@ export const initSession = functions.database
     }
   );
 
-// export const stopSession = functions.https
+// export const stopSession = functions.https.onCall(async (data: any, context: CallableContext) => {
+//   // 1. We search if the person is in a current session
+//   // 2. 
+  
+// })
