@@ -8,7 +8,7 @@ import PageLayout from '../components/PageLayout';
 import { Spacer } from '../components/Styles';
 import useMessageQueue from '../hooks/messageQueue';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { getIsQueuing, setIsQueuing } from '../redux/matchSlice';
+import { getIsQueuing, getSessionId, setIsQueuing } from '../redux/matchSlice';
 
 const { Title, Text } = Typography;
 const antIcon = <LoadingOutlined style={{ fontSize: 80 }} spin />;
@@ -30,15 +30,20 @@ const Queue: React.FC = function () {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const isQueueing = useAppSelector(getIsQueuing);
+  const sessionId = useAppSelector(getSessionId);
   const [timeLeft, setTimeLeft] = useState<number>(30);
 
   useMessageQueue();
 
+  // Should only run on initial page load
   useEffect(() => {
-    if (!isQueueing) {
+    if (sessionId != null) {
+      history.replace('/collaborate');
+    } else if (!isQueueing) {
       history.replace('/');
     }
-  }, [history, isQueueing]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -52,6 +57,7 @@ const Queue: React.FC = function () {
 
   const handleCancelClick = () => {
     dispatch(setIsQueuing(false));
+    history.replace('/');
     // TODO: inform server that user has left queue
   };
 

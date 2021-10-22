@@ -6,14 +6,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import firebaseApp from '../firebase/firebaseApp';
+import { useAppSelector } from '../redux/hooks';
+import { getSessionId } from '../redux/matchSlice';
 import BottomToolBar from './BottomToolBar';
 import TopToolBar from './TopToolBar';
 
 interface PeerprepEditorProps {
   questionTemplates: Types.QuestionTemplate[];
   questionLink: string;
-  isChatVisible: boolean;
-  setChatVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setQuestion: React.Dispatch<React.SetStateAction<Types.Question>>;
 }
 
@@ -21,7 +21,7 @@ const StyledContainer = styled.div`
   flex-grow: 1;
   max-height: 100%;
   border: 1px solid #91d5ff;
-  overflow-y: hidden;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 `;
@@ -31,12 +31,11 @@ const StyledMonacoEditor = styled(MonacoEditor)`
 `;
 
 const Editor: React.FC<PeerprepEditorProps> = function ({
-  isChatVisible,
-  setChatVisible,
   questionLink,
   questionTemplates,
   setQuestion,
 }) {
+  const sessionId = useAppSelector(getSessionId);
   const monacoRef = useRef<Monaco | null>(null);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
@@ -54,17 +53,19 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
       return;
     }
 
-    const dbRef = firebaseApp.database().ref('testEditor/content');
+    const dbRef = firebaseApp.database().ref(`sessions/${sessionId}/content`);
     const currentUser = firebaseApp.auth().currentUser;
     const firepad = fromMonaco(dbRef, editorRef.current);
     if (currentUser?.displayName) {
       firepad.setUserName(currentUser.displayName);
     }
-  }, [editorLoaded]);
+  }, [editorLoaded, sessionId]);
 
   // Listen for when the language changes
   useEffect(() => {
-    const languageRef = firebaseApp.database().ref('testEditor/language');
+    const languageRef = firebaseApp
+      .database()
+      .ref(`sessions/${sessionId}/language`);
     languageRef.on('value', (snapshot) => {
       const data = snapshot.val();
       setEditorLanguage(data);
@@ -78,7 +79,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
   };
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const editorRef = firebaseApp.database().ref('testEditor');
+    const editorRef = firebaseApp.database().ref(`sessions/${sessionId}`);
     editorRef.update({ language: e.target.value });
   };
 
@@ -103,8 +104,6 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
         handleLanguageChange={handleLanguageChange}
         questionTemplates={questionTemplates}
         handleCopy={handleCopy}
-        isChatVisible={isChatVisible}
-        toggleChat={() => setChatVisible(!isChatVisible)}
         questionLink={questionLink}
       />
       <StyledMonacoEditor

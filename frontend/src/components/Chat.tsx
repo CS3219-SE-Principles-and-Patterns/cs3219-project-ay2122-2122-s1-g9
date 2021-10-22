@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import firebaseApp from '../firebase/firebaseApp';
+import { useAppSelector } from '../redux/hooks';
+import { getSessionId } from '../redux/matchSlice';
 import ChatBubble from './ChatBubble';
 import { Spacer } from './Styles';
 
@@ -18,6 +20,7 @@ const OverallContainer = styled.div`
 `;
 
 const ChatContainer = styled.div`
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   padding: 16px;
@@ -53,9 +56,11 @@ const SendButton = styled(Button)`
 `;
 
 const Chat: React.FC = function () {
+  const sessionId = useAppSelector(getSessionId);
   const [messages, setMessages] = useState<Types.ChatMessage[]>([]);
   const [content, setContent] = useState<string>('');
-  const dbRef = firebaseApp.database().ref('testChat/messages');
+
+  const dbRef = firebaseApp.database().ref(`sessions/${sessionId}/messages`);
   const currentUser = firebaseApp.auth().currentUser;
   const uid = currentUser?.uid;
   const displayName = currentUser?.displayName;

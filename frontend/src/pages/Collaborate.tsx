@@ -9,9 +9,12 @@ import PageLayout from '../components/PageLayout';
 import Sidebar from '../components/Sidebar';
 import { Spacer, TwoColLayout } from '../components/Styles';
 import { getQuestion } from '../firebase/functions';
+import { getIsVisible } from '../redux/chatSlice';
+import { useAppSelector } from '../redux/hooks';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
+const { Panel } = Collapse;
 
 const Container = styled.div`
   flex-grow: 1;
@@ -56,12 +59,12 @@ const Separator = styled.span`
 `;
 
 const Collaborate: React.FC = function () {
-  const [isChatVisible, setChatVisible] = useState<boolean>(false);
+  const isChatVisible = useAppSelector(getIsVisible);
   const [question, setQuestion] = useState<Types.Question>(
     {} as Types.Question
   );
   const [pageLoaded, setPageLoaded] = useState<boolean>(false);
-  const { Panel } = Collapse;
+
   useEffect(() => {
     getQuestion({ id: 'two-sum' })
       .then((result) => {
@@ -110,8 +113,6 @@ const Collaborate: React.FC = function () {
           <Editor
             questionTemplates={question.templates}
             questionLink={question.link}
-            isChatVisible={isChatVisible}
-            setChatVisible={setChatVisible}
             setQuestion={setQuestion}
           />
           {isChatVisible && <Chat />}
