@@ -23,20 +23,20 @@ export const initSession = functions.database
         );
       }
 
-      const qnsId = 'two-sum';
+      const qnsId = 'two-sum'; // this could be derived from this function or the matches one
 
       // Initialize session in firestore
       await fs.collection('sessions').doc(sessId).set({
-        users: users,
+        users,
+        qnsId,
         createdAt: sessFromDb['createdAt'],
-        qnsId: qnsId,
         status: SESS_STATUS_STARTED,
       });
 
       // Initialize session for user
       const foundSessNotif = {
+        sessId,
         type: 'FOUND_SESSION',
-        sess_id: sessId,
       };
 
       for (const user of users) {
@@ -50,9 +50,9 @@ export const initSession = functions.database
 
       // Write Default Code
       const writeDefaultCodeNotif = {
+        sessId,
+        qnsId,
         type: 'WRITE_DEFAULT_CODE',
-        sess_id: sessId,
-        qns_id: 'two-sum', // this could be derived from this function or the matches one
       };
 
       const userToWrite = users[0];

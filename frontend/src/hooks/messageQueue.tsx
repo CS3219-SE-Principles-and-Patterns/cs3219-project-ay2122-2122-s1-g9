@@ -32,7 +32,7 @@ const useMessageQueue = function () {
 
       if (latestNotif.type === 'FOUND_SESSION') {
         dispatch(setIsQueuing(false));
-        dispatch(setSessionId(latestNotif.sess_id));
+        dispatch(setSessionId(latestNotif.sessId));
         history.replace('/collaborate');
       } else if (latestNotif.type === 'CANNOT_FIND_SESSION') {
         dispatch(setIsQueuing(false));
