@@ -27,6 +27,8 @@ function validateAndGetQueueName(data: any): string {
 
 export const addUserToQueue = functions.https.onCall(
   async (data: App.addUserToQueue, context: CallableContext) => {
+    // TODO: Make sure the user is not already in a currentSession
+
     const uid = validateAndGetUid(context);
     const queueName = validateAndGetQueueName(data);
 

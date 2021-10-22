@@ -1,6 +1,9 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { SESS_STATUS_STARTED } from './consts/values';
+import { SESS_STATUS_ENDED, SESS_STATUS_STARTED } from './consts/values';
+import { validateAndGetUid } from './util/auth';
+import { getCurrentSessionId, getSession } from './util/util';
+import { SUCCESS_MSG } from './consts/messages';
 
 export const initSession = functions.database
   .ref('/sessions/{sessId}')
@@ -15,7 +18,7 @@ export const initSession = functions.database
       const sessFromDb = snapshot.val();
       const sessId = snapshot.key;
       const users: string[] = sessFromDb['users'];
-      
+
       if (users.length != 2) {
         throw new functions.https.HttpsError(
           'failed-precondition',
@@ -45,7 +48,7 @@ export const initSession = functions.database
 
         await fs.collection('currentSessions').doc(user).set({
           sessId: sessId,
-        })
+        });
       }
 
       // Write Default Code
@@ -60,8 +63,45 @@ export const initSession = functions.database
     }
   );
 
-// export const stopSession = functions.https.onCall(async (data: any, context: CallableContext) => {
-//   // 1. We search if the person is in a current session
-//   // 2. 
-  
-// })
+export const stopSession = functions.https.onCall(
+  async (data: any, context: CallableContext) => {
+    const uid = validateAndGetUid(context);
+    const sessId = await getCurrentSessionId(uid);
+    if (!sessId) {
+      throw new functions.https.HttpsError(
+        'failed-precondition',
+        'User is not in a current session.'
+      );
+    }
+
+    const sess = await getSession(sessId);
+    if (!sess) {
+      throw new functions.https.HttpsError(
+        'not-found',
+        'Session cannot be found.'
+      );
+    }
+
+    const fs = admin.firestore();
+    const db = admin.database();
+
+    const sessRef = fs.collection('sessions').doc(sessId);
+    await sessRef.update({
+      status: SESS_STATUS_ENDED,
+      endedAt: Date.now(),
+    });
+
+    const stopSessionNotif = {
+      sessId,
+      type: 'STOP_SESSION',
+    };
+
+    for (const uid of sess.users) {
+      const currentSessUserRef = fs.collection('currentSessions').doc(uid);
+      await currentSessUserRef.delete();
+      await db.ref(`/users/${uid}`).push(stopSessionNotif);
+    }
+
+    return SUCCESS_MSG;
+  }
+);
