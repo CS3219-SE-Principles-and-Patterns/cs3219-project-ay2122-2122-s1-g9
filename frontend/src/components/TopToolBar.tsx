@@ -7,6 +7,8 @@ import { Button } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 
+import { getIsVisible, setIsVisible } from '../redux/chatSlice';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { Spacer } from './Styles';
 
 interface TopToolBarProps {
@@ -18,8 +20,6 @@ interface TopToolBarProps {
     defaultCode: string;
   }[];
   handleCopy: () => void;
-  isChatVisible: boolean;
-  toggleChat: () => void;
   questionLink: string;
 }
 
@@ -73,10 +73,15 @@ const TopToolBar: React.FC<TopToolBarProps> = function ({
   handleLanguageChange,
   questionTemplates,
   handleCopy,
-  isChatVisible,
-  toggleChat,
   questionLink,
 }) {
+  const dispatch = useAppDispatch();
+  const isChatVisible = useAppSelector(getIsVisible);
+
+  const toggleChat = () => {
+    dispatch(setIsVisible(!isChatVisible));
+  };
+
   return (
     <StyledTopToolBar>
       <LeftContainer>

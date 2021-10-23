@@ -28,5 +28,6 @@ export const matchSlice = createSlice({
 export const { setIsQueuing, setSessionId } = matchSlice.actions;
 
 export const getIsQueuing = (state: RootState) => state.match.isQueuing;
+export const getSessionId = (state: RootState) => state.match.sessionId;
 
 export default matchSlice.reducer;
