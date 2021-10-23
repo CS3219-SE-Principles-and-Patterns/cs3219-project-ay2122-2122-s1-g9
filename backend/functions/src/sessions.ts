@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { SESS_STATUS_ENDED, SESS_STATUS_STARTED } from './consts/values';
 import { validateAndGetUid } from './util/auth';
-import { getCurrentSessionId, getSession } from './util/util';
+import { cleanUpSession, getCurrentSessionId, getSession } from './util/util';
 import { SUCCESS_MSG } from './consts/messages';
 
 export const initSession = functions.database
@@ -82,26 +82,21 @@ export const stopSession = functions.https.onCall(
       );
     }
 
-    const fs = admin.firestore();
     const db = admin.database();
-
-    const sessRef = fs.collection('sessions').doc(sessId);
-    await sessRef.update({
-      status: SESS_STATUS_ENDED,
-      endedAt: Date.now(),
-    });
-
-    const stopSessionNotif = {
-      sessId,
-      type: 'STOP_SESSION',
-    };
-
-    for (const uid of sess.users) {
-      const currentSessUserRef = fs.collection('currentSessions').doc(uid);
-      await currentSessUserRef.delete();
-      await db.ref(`/users/${uid}`).push(stopSessionNotif);
-    }
-
+    await endSession(sessId);
     return SUCCESS_MSG;
-  }
+
+  //   const stopSessionNotif = {
+  //     sessId,
+  //     type: 'STOP_SESSION',
+  //   };
+
+  //   for (const uid of sess.users) {
+  //     await db.ref(`/users/${uid}`).push(stopSessionNotif);
+  //   }
+
+  //   return SUCCESS_MSG;
+  // }
 );
+
+// export const inSession = functions.https.onCall
