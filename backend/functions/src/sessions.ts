@@ -36,7 +36,7 @@ export const initSession = functions.database
         status: SESS_STATUS_STARTED,
       });
 
-      const foundSessionData = { sessId };
+      const foundSessionData = { sessId, qnsId };
       for (const user of users) {
         await sendMessage(user, FOUND_SESSION, foundSessionData);
         await fs.collection('currentSessions').doc(user).set({

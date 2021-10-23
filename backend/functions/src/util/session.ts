@@ -40,7 +40,6 @@ export async function findSessionPartner(
 
 export async function endSession(sessId: string): Promise<void> {
   const fs = admin.firestore();
-  const db = admin.database();
 
   const sessRef = fs.collection('sessions').doc(sessId);
   const sess = await getSession(sessId);

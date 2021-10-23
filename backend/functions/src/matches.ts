@@ -1,13 +1,11 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { getRandomQuestion } from './util/question';
-import { sendMessage } from './util/message';
 
 export const detectMatchesCreateSession = functions.database
   .ref('/queues/{difficulty}')
   .onWrite(async (change, context) => {
     const queueName = context.params.difficulty;
-    const MAX_NUMBER_OF_TRIES = 5;
 
     // Exit when the data is deleted.
     if (!change.after.exists()) {
@@ -46,7 +44,6 @@ export const detectMatchesCreateSession = functions.database
         users,
         qnsId,
         startedAt: Date.now(),
-        questionId: questionId,
       };
 
       sessionPath.push(session);
