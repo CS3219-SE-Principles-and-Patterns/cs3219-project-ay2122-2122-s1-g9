@@ -11,6 +11,7 @@ export async function sendMessage(
   const message = {
     type: msgType,
     data: msgData,
+    createdAt: Date.now(),
   };
 
   const userPath = db.ref(`/users/${userId}`);

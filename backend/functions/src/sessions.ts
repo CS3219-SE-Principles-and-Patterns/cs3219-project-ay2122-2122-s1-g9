@@ -1,10 +1,11 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import * as sessionUtil from './util/session';
-import { SESS_STATUS_STARTED } from './consts/values';
+import { SESS_STATUS_STARTED, SUCCESS_RESP } from './consts/values';
 import { validateAndGetUid } from './util/auth';
-import { SUCCESS_MSG } from './consts/messages';
 import { CallableContext } from 'firebase-functions/v1/https';
+import { sendMessage } from './util/message';
+import { FOUND_SESSION, WRITE_DEFAULT_CODE } from './consts/msgTypes';
 
 export const initSession = functions.database
   .ref('/sessions/{sessId}')
@@ -13,12 +14,12 @@ export const initSession = functions.database
       snapshot: functions.database.DataSnapshot,
       _context: functions.EventContext
     ) => {
-      const db = admin.database();
       const fs = admin.firestore();
 
       const sessFromDb = snapshot.val();
       const sessId = snapshot.key;
       const users: string[] = sessFromDb['users'];
+      const qnsId: string = sessFromDb['qnsId'];
 
       if (users.length != 2) {
         throw new functions.https.HttpsError(
@@ -27,40 +28,25 @@ export const initSession = functions.database
         );
       }
 
-      const qnsId = 'two-sum'; // this could be derived from this function or the matches one
-
       // Initialize session in firestore
       await fs.collection('sessions').doc(sessId).set({
         users,
         qnsId,
-        createdAt: sessFromDb['createdAt'],
+        startedAt: sessFromDb['startedAt'],
         status: SESS_STATUS_STARTED,
       });
 
-      // Initialize session for user
-      const foundSessNotif = {
-        sessId,
-        type: 'FOUND_SESSION',
-      };
-
+      const foundSessionData = { sessId };
       for (const user of users) {
-        const userPath = db.ref(`/users/${user}`);
-        await userPath.push(foundSessNotif);
-
+        await sendMessage(user, FOUND_SESSION, foundSessionData);
         await fs.collection('currentSessions').doc(user).set({
           sessId: sessId,
         });
       }
 
       // Write Default Code
-      const writeDefaultCodeNotif = {
-        sessId,
-        qnsId,
-        type: 'WRITE_DEFAULT_CODE',
-      };
-
-      const userToWrite = users[0];
-      await db.ref(`/users/${userToWrite}`).push(writeDefaultCodeNotif);
+      const writeDefaultCodeData = { sessId, qnsId };
+      await sendMessage(users[0], WRITE_DEFAULT_CODE, writeDefaultCodeData);
     }
   );
 
@@ -74,7 +60,7 @@ export const stopSession = functions.https.onCall(
     }
 
     await sessionUtil.endSession(sessId);
-    return SUCCESS_MSG;
+    return SUCCESS_RESP;
   }
 );
 

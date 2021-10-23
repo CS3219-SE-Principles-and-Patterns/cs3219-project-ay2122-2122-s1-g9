@@ -5,6 +5,7 @@ import * as matches from './matches';
 import * as questions from './questions';
 import * as queues from './queues';
 import * as sessions from './sessions';
+import { getRandomQuestion } from './util/question';
 
 admin.initializeApp();
 

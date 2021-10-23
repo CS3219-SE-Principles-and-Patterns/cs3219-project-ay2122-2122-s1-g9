@@ -39,40 +39,13 @@ export const detectMatchesCreateSession = functions.database
     while (count < numOfMatches) {
       const users = [queue[0], queue[1]];
 
-      // Try 5 times to get a random question, our random key may not always work
-      let questionId = null;
-      let retries = 0;
-
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        try {
-          questionId = await getRandomQuestion(queueName);
-          break;
-        } catch (err) {
-          if (retries >= MAX_NUMBER_OF_TRIES) {
-            // Remove both users from queue, ask them to rejoin
-            queue.shift();
-            queue.shift();
-
-            // Send an error to both users' message queues
-            for (const user of users) {
-              await sendMessage(
-                user,
-                'QUESTION_GENERATION_ERROR',
-                'Unable to generate question for session. Please rejoin the queue'
-              );
-            }
-
-            return { sucess: false };
-          }
-        }
-        retries++;
-      }
+      const qnsId = await getRandomQuestion(queueName);
 
       // First we create a session
       const session = {
         users,
-        createdAt: Date.now(),
+        qnsId,
+        startedAt: Date.now(),
         questionId: questionId,
       };
 

@@ -2,6 +2,8 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { isOnline } from './presence';
 import { SESS_STATUS_ENDED } from '../consts/values';
+import { sendMessage } from './message';
+import { STOP_SESSION } from '../consts/msgTypes';
 
 export async function getSession(sessId: string): Promise<any> {
   const fs = admin.firestore();
@@ -19,7 +21,7 @@ export async function getSession(sessId: string): Promise<any> {
 
 export async function getTimeElapsed(sessId: string): Promise<number> {
   const sess = await getSession(sessId);
-  return sess['createdAt'];
+  return sess['startedAt'];
 }
 
 export async function findSessionPartner(
@@ -53,13 +55,9 @@ export async function endSession(sessId: string): Promise<void> {
     await currentSessUserRef.delete();
   }
 
-  const stopSessionNotif = {
-    sessId,
-    type: 'STOP_SESSION',
-  };
-
+  const stopSessionData = { sessId };
   for (const uid of sess.users) {
-    await db.ref(`/users/${uid}`).push(stopSessionNotif);
+    await sendMessage(uid, STOP_SESSION, stopSessionData);
   }
 
   // TODO: For saving sessions, we need to make sure the user is online before sending the message to save

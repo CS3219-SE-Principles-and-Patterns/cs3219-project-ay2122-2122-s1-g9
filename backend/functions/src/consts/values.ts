@@ -6,3 +6,4 @@ export const ALL_LVLS = Object.freeze([LVL_EASY, LVL_MEDIUM, LVL_HARD]);
 export const SESS_STATUS_STARTED = 'started';
 export const SESS_STATUS_ENDED = 'ended';
 
+export const SUCCESS_RESP = { success: true };
