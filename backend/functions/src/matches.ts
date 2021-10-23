@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { getRandomQuestion } from './questions';
-import { sendMessageToUser } from './messages';
+import { getRandomQuestion } from './util/question';
+import { sendMessage } from './util/message';
 
 export const detectMatchesCreateSession = functions.database
   .ref('/queues/{difficulty}')
@@ -37,8 +37,7 @@ export const detectMatchesCreateSession = functions.database
     let count = 0;
 
     while (count < numOfMatches) {
-      const userOne = queue[0];
-      const userTwo = queue[1];
+      const users = [queue[0], queue[1]];
 
       // Try 5 times to get a random question, our random key may not always work
       let questionId = null;
@@ -56,13 +55,14 @@ export const detectMatchesCreateSession = functions.database
             queue.shift();
 
             // Send an error to both users' message queues
-            [userOne, userTwo].forEach((user) => {
-              sendMessageToUser(
+            for (const user of users) {
+              await sendMessage(
                 user,
                 'QUESTION_GENERATION_ERROR',
                 'Unable to generate question for session. Please rejoin the queue'
               );
-            });
+            }
+
             return { sucess: false };
           }
         }
@@ -71,7 +71,7 @@ export const detectMatchesCreateSession = functions.database
 
       // First we create a session
       const session = {
-        users: [userOne, userTwo],
+        users,
         createdAt: Date.now(),
         questionId: questionId,
       };
