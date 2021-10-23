@@ -28,5 +28,6 @@ module.exports = {
     'import/no-unresolved': 0,
     'require-jsdoc': 0,
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-explicit-any': 0,
   },
 };

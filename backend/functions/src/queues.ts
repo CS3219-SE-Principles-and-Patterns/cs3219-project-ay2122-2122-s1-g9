@@ -2,11 +2,15 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { CallableContext } from 'firebase-functions/v1/https';
 
-import { ALL_LVLS, LVL_EASY, LVL_HARD, LVL_MEDIUM } from './consts/values';
-import { SUCCESS_MSG } from './consts/messages';
+import {
+  ALL_LVLS,
+  LVL_EASY,
+  LVL_HARD,
+  LVL_MEDIUM,
+  SUCCESS_RESP,
+} from './consts/values';
 import { validateAndGetUid } from './util/auth';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function validateAndGetQueueName(data: any): string {
   if (!data || !data.queueName || data.queueName.length === 0) {
     throw new functions.https.HttpsError(
@@ -27,6 +31,8 @@ function validateAndGetQueueName(data: any): string {
 
 export const addUserToQueue = functions.https.onCall(
   async (data: App.addUserToQueue, context: CallableContext) => {
+    // TODO: Make sure the user is not already in a currentSession
+
     const uid = validateAndGetUid(context);
     const queueName = validateAndGetQueueName(data);
 
@@ -44,7 +50,7 @@ export const addUserToQueue = functions.https.onCall(
       queuePath.set(queue);
     });
 
-    return SUCCESS_MSG;
+    return SUCCESS_RESP;
   }
 );
 
@@ -58,7 +64,7 @@ export const removeUserFromQueue = functions.https.onCall(
     ).val() as string[];
 
     if (queue == null) {
-      return SUCCESS_MSG;
+      return SUCCESS_RESP;
     }
 
     // We assume that user is only added to the queue once
@@ -68,6 +74,6 @@ export const removeUserFromQueue = functions.https.onCall(
       await admin.database().ref(`/queues/${queueName}`).set(queue);
     }
 
-    return SUCCESS_MSG;
+    return SUCCESS_RESP;
   }
 );

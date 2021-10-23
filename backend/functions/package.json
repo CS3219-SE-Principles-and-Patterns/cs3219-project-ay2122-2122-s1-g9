@@ -8,12 +8,12 @@
     "start": "yarn shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test": "TS_NODE_FILES=true mocha -r ts-node/register --exit \"src/test/**/*.ts\""
+    "test": "TS_NODE_FILES=true mocha -r ts-node/register --exit \"test/**/*.ts\""
   },
   "engines": {
     "node": "14"
   },
-  "main": "lib/index.js",
+  "main": "lib/src/index.js",
   "dependencies": {
     "firebase-admin": "^9.8.0",
     "firebase-functions": "^3.14.1"
