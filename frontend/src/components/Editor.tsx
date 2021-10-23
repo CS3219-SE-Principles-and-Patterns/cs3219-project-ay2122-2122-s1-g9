@@ -70,7 +70,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
       const data = snapshot.val();
       setEditorLanguage(data);
     });
-  }, []);
+  }, [sessionId]);
 
   const handleEditorMount: EditorProps['onMount'] = (editor, monaco) => {
     editorRef.current = editor;
