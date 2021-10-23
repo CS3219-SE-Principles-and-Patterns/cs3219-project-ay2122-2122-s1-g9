@@ -1,4 +1,5 @@
 import * as admin from 'firebase-admin';
+import * as functions from 'firebase-functions';
 import { isOnline } from './presence';
 import { SESS_STATUS_ENDED } from '../consts/values';
 
@@ -16,12 +17,15 @@ export async function getSession(sessId: string): Promise<any> {
   return docRef.data();
 }
 
-export async function getTimeElapsed(sessId: string): number {
+export async function getTimeElapsed(sessId: string): Promise<number> {
   const sess = await getSession(sessId);
   return sess['createdAt'];
 }
 
-export async function findSessionPartner(uid: string, sessId: string): string {
+export async function findSessionPartner(
+  uid: string,
+  sessId: string
+): Promise<string> {
   const sess = await getSession(sessId);
   const users = sess['users'];
 
@@ -32,7 +36,7 @@ export async function findSessionPartner(uid: string, sessId: string): string {
   return users[0];
 }
 
-export async function endSession(sessId: string): void {
+export async function endSession(sessId: string): Promise<void> {
   const fs = admin.firestore();
   const db = admin.database();
 
@@ -69,22 +73,18 @@ export async function isInCurrentSession(uid: string): Promise<boolean> {
     .collection('currentSessions')
     .doc(uid)
     .get();
-
-  if (!currentSessUserRef.exists) {
+  const data = currentSessUserRef.data();
+  if (!data) {
     return false;
   }
 
-  const sessId = currentSessUserRef.data()['sessId'];
+  const sessId = data['sessId'];
 
   // 2. If partner is still online, we take it that the session is ongoing.
   const partnerId = await findSessionPartner(uid, sessId);
-  console.log(partnerId);
   if (await isOnline(partnerId)) {
-    // console.log('hello');
     return true;
   }
-
-  console.log('bye');
 
   // 3. If elapsed time of that currentSession is below some threshold, we take it that the session is ongoing.
   // 5 hours in milliseconds
@@ -107,5 +107,7 @@ export async function getCurrentSessionId(uid: string): Promise<string | null> {
 
   const fs = admin.firestore();
   const docRef = await fs.collection('currentSessions').doc(uid).get();
-  return docRef.data()['sessId'];
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return docRef.data()!['sessId'];
 }

@@ -6,7 +6,6 @@ import { ALL_LVLS, LVL_EASY, LVL_HARD, LVL_MEDIUM } from './consts/values';
 import { SUCCESS_MSG } from './consts/messages';
 import { validateAndGetUid } from './util/auth';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function validateAndGetQueueName(data: any): string {
   if (!data || !data.queueName || data.queueName.length === 0) {
     throw new functions.https.HttpsError(

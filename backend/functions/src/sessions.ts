@@ -67,15 +67,13 @@ export const initSession = functions.database
 export const stopSession = functions.https.onCall(
   async (data: any, context: CallableContext) => {
     const uid = validateAndGetUid(context);
-    const sessId = await getCurrentSessionId(uid);
+    const sessId = await sessionUtil.getCurrentSessionId(uid);
+
     if (!sessId) {
-      throw new functions.https.HttpsError(
-        'failed-precondition',
-        'User is not in a current session.'
-      );
+      throw new functions.https.HttpsError('not-found', 'Session not found.');
     }
 
-    await endSession(sessId);
+    await sessionUtil.endSession(sessId);
     return SUCCESS_MSG;
   }
 );
