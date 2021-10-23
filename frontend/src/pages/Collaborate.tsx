@@ -1,5 +1,8 @@
+import 'firebase/database';
+
 import { LoadingOutlined } from '@ant-design/icons';
 import { Collapse, Layout, Spin, Typography } from 'antd';
+import firebase from 'firebase';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -9,6 +12,7 @@ import PageLayout from '../components/PageLayout';
 import Sidebar from '../components/Sidebar';
 import { Spacer, TwoColLayout } from '../components/Styles';
 import { getQuestion } from '../firebase/functions';
+import useAuth from '../hooks/auth';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -55,6 +59,16 @@ const Separator = styled.span`
   border: 1px solid #bfbfbf;
 `;
 
+const isOfflineForDatabase = {
+  state: 'offline',
+  lastUpdated: firebase.database.ServerValue.TIMESTAMP,
+};
+
+const isOnlineForDatabase = {
+  state: 'online',
+  lastUpdated: firebase.database.ServerValue.TIMESTAMP,
+};
+
 const Collaborate: React.FC = function () {
   const [isChatVisible, setChatVisible] = useState<boolean>(false);
   const [question, setQuestion] = useState<Types.Question>(
@@ -62,6 +76,36 @@ const Collaborate: React.FC = function () {
   );
   const [pageLoaded, setPageLoaded] = useState<boolean>(false);
   const { Panel } = Collapse;
+
+  const auth = useAuth();
+
+  // Activate presence here
+  useEffect(() => {
+    if (auth?.user?.uid == null) {
+      return;
+    }
+
+    // See https://firebase.google.com/docs/firestore/solutions/presence
+    const uid = auth.user.uid;
+    const userStatusDatabaseRef = firebase.database().ref('/status/' + uid);
+
+    firebase
+      .database()
+      .ref('.info/connected')
+      .on('value', (snapshot) => {
+        if (snapshot.val() == false) {
+          return;
+        }
+
+        userStatusDatabaseRef
+          .onDisconnect()
+          .set(isOfflineForDatabase)
+          .then(() => {
+            userStatusDatabaseRef.set(isOnlineForDatabase);
+          });
+      });
+  });
+
   useEffect(() => {
     getQuestion({ id: 'two-sum' })
       .then((result) => {

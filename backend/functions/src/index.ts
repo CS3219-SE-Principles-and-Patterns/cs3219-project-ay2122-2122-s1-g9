@@ -5,7 +5,7 @@ import * as matches from './matches';
 import * as questions from './questions';
 import * as queues from './queues';
 import * as sessions from './sessions';
-import { isInSession } from './util/util';
+import { isInCurrentSession } from './util/session';
 
 admin.initializeApp();
 

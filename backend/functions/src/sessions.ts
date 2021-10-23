@@ -1,9 +1,10 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { SESS_STATUS_ENDED, SESS_STATUS_STARTED } from './consts/values';
+import * as sessionUtil from './util/session';
+import { SESS_STATUS_STARTED } from './consts/values';
 import { validateAndGetUid } from './util/auth';
-import { cleanUpSession, getCurrentSessionId, getSession } from './util/util';
 import { SUCCESS_MSG } from './consts/messages';
+import { CallableContext } from 'firebase-functions/v1/https';
 
 export const initSession = functions.database
   .ref('/sessions/{sessId}')
@@ -74,29 +75,23 @@ export const stopSession = functions.https.onCall(
       );
     }
 
-    const sess = await getSession(sessId);
-    if (!sess) {
-      throw new functions.https.HttpsError(
-        'not-found',
-        'Session cannot be found.'
-      );
-    }
-
-    const db = admin.database();
     await endSession(sessId);
     return SUCCESS_MSG;
-
-  //   const stopSessionNotif = {
-  //     sessId,
-  //     type: 'STOP_SESSION',
-  //   };
-
-  //   for (const uid of sess.users) {
-  //     await db.ref(`/users/${uid}`).push(stopSessionNotif);
-  //   }
-
-  //   return SUCCESS_MSG;
-  // }
+  }
 );
 
-// export const inSession = functions.https.onCall
+export const getCurrentSessionId = functions.https.onCall(
+  async (data: any, context: CallableContext) => {
+    const uid = validateAndGetUid(context);
+    const sessId = await sessionUtil.getCurrentSessionId(uid);
+    return { sessId };
+  }
+);
+
+export const isInCurrentSession = functions.https.onCall(
+  async (data: any, context: CallableContext) => {
+    const uid = validateAndGetUid(context);
+    const res = await sessionUtil.isInCurrentSession(uid);
+    return { isInCurrentSession: res };
+  }
+);
