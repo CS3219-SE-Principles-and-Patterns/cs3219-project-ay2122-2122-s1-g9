@@ -1,3 +1,4 @@
 export const FOUND_SESSION = 'FOUND_SESSION';
 export const STOP_SESSION = 'STOP_SESSION';
 export const WRITE_DEFAULT_CODE = 'WRITE_DEFAULT_CODE';
+export const NO_MATCH_FOUND = 'NO_MATCH_FOUND';
