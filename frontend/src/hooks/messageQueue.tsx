@@ -3,7 +3,7 @@ import { useHistory } from 'react-router';
 
 import firebaseApp from '../firebase/firebaseApp';
 import { useAppDispatch } from '../redux/hooks';
-import { setIsQueuing, setSessionId } from '../redux/matchSlice';
+import { setIsQueuing, setQnsId, setSessionId } from '../redux/matchSlice';
 import useAuth from './auth';
 
 const useMessageQueue = function () {
@@ -30,10 +30,12 @@ const useMessageQueue = function () {
       const latestNotif: Types.MessageQueueNotif =
         notifications[notifications.length - 1];
       const data = latestNotif.data;
+      console.log(latestNotif);
 
       if (latestNotif.type === 'FOUND_SESSION') {
         dispatch(setIsQueuing(false));
         dispatch(setSessionId(data.sessId));
+        dispatch(setQnsId(data.qnsId));
         history.replace('/collaborate');
       } else if (latestNotif.type === 'CANNOT_FIND_SESSION') {
         dispatch(setIsQueuing(false));
