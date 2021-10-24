@@ -80,7 +80,6 @@ const Collaborate: React.FC = function () {
     {} as Types.Question
   );
   const [pageLoaded, setPageLoaded] = useState<boolean>(false);
-  const { Panel } = Collapse;
 
   const auth = useAuth();
 

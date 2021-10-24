@@ -30,7 +30,6 @@ const useMessageQueue = function () {
       const latestNotif: Types.MessageQueueNotif =
         notifications[notifications.length - 1];
       const data = latestNotif.data;
-      console.log(latestNotif);
 
       if (latestNotif.type === 'FOUND_SESSION') {
         dispatch(setIsQueuing(false));

@@ -52,7 +52,6 @@ const Queue: React.FC = function () {
       if (timeLeft > 0) {
         setTimeLeft(timeLeft - 1);
       } else {
-        // TODO:inform server that user has left queue
         removeUserFromQueue({ queueName: location.state as string })
           .then(() => {
             dispatch(setIsQueuing(false));
@@ -65,10 +64,10 @@ const Queue: React.FC = function () {
     }, 1000);
 
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeLeft]);
 
   const handleCancelClick = () => {
-    // TODO: inform server that user has left queue
     removeUserFromQueue({ queueName: location.state as string })
       .then(() => {
         dispatch(setIsQueuing(false));
