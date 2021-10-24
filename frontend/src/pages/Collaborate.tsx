@@ -15,6 +15,7 @@ import { getQuestion } from '../firebase/functions';
 import useAuth from '../hooks/auth';
 import { getIsVisible } from '../redux/chatSlice';
 import { useAppSelector } from '../redux/hooks';
+import { getQnId } from '../redux/matchSlice';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -74,6 +75,7 @@ const isOnlineForDatabase = {
 
 const Collaborate: React.FC = function () {
   const isChatVisible = useAppSelector(getIsVisible);
+  const qnId = useAppSelector(getQnId) as string;
   const [question, setQuestion] = useState<Types.Question>(
     {} as Types.Question
   );
@@ -110,7 +112,7 @@ const Collaborate: React.FC = function () {
   });
 
   useEffect(() => {
-    getQuestion({ id: 'two-sum' })
+    getQuestion({ id: qnId })
       .then((result) => {
         setQuestion(result.data);
         setPageLoaded(true);
