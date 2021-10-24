@@ -4,7 +4,7 @@ import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { getQuestion } from '../firebase/functions';
+import { getQuestion, stopSession } from '../firebase/functions';
 import { useAppDispatch } from '../redux/hooks';
 import { setSessionId } from '../redux/matchSlice';
 import { Spacer } from './Styles';
@@ -62,9 +62,7 @@ const BottomToolBar: React.FC<BottomToolBarProps> = function ({ setQuestion }) {
         </p>
       ),
       onOk() {
-        return new Promise((resolve) => {
-          setTimeout(resolve, 1000);
-        })
+        return stopSession()
           .then(() => {
             dispatch(setSessionId(null));
             history.push('/', from);

@@ -56,7 +56,7 @@ const Home: React.FC = function () {
     addUserToQueue({ queueName: difficulty })
       .then(() => {
         dispatch(setIsQueuing(true));
-        history.replace('/queue', difficulty); // add here
+        history.replace('/queue', difficulty);
       })
       .catch((error) => {
         console.error(error);
