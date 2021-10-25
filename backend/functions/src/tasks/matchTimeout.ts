@@ -4,7 +4,7 @@ import {
   PROJECT_ID,
   PROJECT_LOCATION,
   USER_TIMEOUT_DURING_MATCH,
-  REMOVE_UMATCHED_USER_FUNCTION_URL,
+  REMOVE_UNMATCHED_USER_FUNCTION_URL,
 } from '../consts/values';
 
 export async function addUserToTimeoutQueue(
@@ -20,7 +20,7 @@ export async function addUserToTimeoutQueue(
   const task: any = {
     httpRequest: {
       httpMethod: 'POST',
-      url: REMOVE_UMATCHED_USER_FUNCTION_URL,
+      url: REMOVE_UNMATCHED_USER_FUNCTION_URL,
     },
   };
 

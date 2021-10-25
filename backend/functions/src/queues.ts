@@ -12,7 +12,7 @@ import {
 } from './consts/values';
 import { validateAndGetUid } from './util/auth';
 import { isInCurrentSession } from './util/session';
-import { addUserToTimeoutQueue } from './util/task-queue';
+import { addUserToTimeoutQueue } from './tasks/matchTimeout';
 import { sendMessage } from './util/message';
 import { NO_MATCH_FOUND } from './consts/msgTypes';
 
@@ -35,9 +35,8 @@ function validateAndGetQueueName(data: any): string {
 }
 
 export const addUserToQueue = functions.https.onCall(
-  async (data: App.addUserToQueue, _: CallableContext) => {
-    // const uid = validateAndGetUid(context);
-    const uid = '15';
+  async (data: App.addUserToQueue, context: CallableContext) => {
+    const uid = validateAndGetUid(context);
     const queueName = validateAndGetQueueName(data);
 
     const userIsInCurrentSession = await isInCurrentSession(uid);
@@ -84,19 +83,17 @@ export const removeUserFromQueue = functions.https.onCall(
 
 export const removeUnmatchedUserAfterTimeout = functions.https.onCall(
   async (data: App.userTimeoutDetails, _: CallableContext) => {
-    // If user is not in a session, remove them from the queue
+    // If user is in a session, do nothing
     const isUserInSession = await isInCurrentSession(data.userId);
-
-    // This is not an error
-    // TODO: Find better way to return expected sucesss = false responses
     if (isUserInSession) {
-      return {
-        sucess: false,
-        message: 'User has already joined a session',
-      };
+      functions.logger.info(
+        `User ${data.userId} is already in a session and will not be removed from the queue`
+      );
+      return;
     }
+
+    // If the user is not in a session, remove them from the queue
     validateAndGetQueueName(data);
-    functions.logger.info('came here');
     await _removeUserFromQueue(data.userId, data.queueName);
     await sendMessage(
       data.userId,
@@ -104,6 +101,7 @@ export const removeUnmatchedUserAfterTimeout = functions.https.onCall(
       'Unable to match user with another user'
     );
 
-    return SUCCESS_RESP;
+    functions.logger.info(`User ${data.userId} was removed from the queue`);
+    return;
   }
 );
