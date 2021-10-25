@@ -8,9 +8,11 @@ export const SESS_STATUS_ENDED = 'ended';
 
 export const SUCCESS_RESP = { success: true };
 
-export const PROJECT_ID = 'cs3219-project-dev';
+// https://cloud.google.com/functions/docs/configuring/env-var#nodejs_10_and_subsequent_runtimes
+export const PROJECT_ID = process.env['GCP_PROJECT'];
+export const PROJECT_LOCATION = process.env['FUNCTION_REGION'];
+
 export const MATCH_TIMEOUT_QUEUE_NAME = 'match-timeout-queue';
-export const PROJECT_LOCATION = 'us-central1';
 export const REMOVE_UMATCHED_USER_FUNCTION_NAME =
   'removeUnmatchedUserAfterTimeout';
 export const REMOVE_UMATCHED_USER_FUNCTION_URL = `https://${PROJECT_LOCATION}-${PROJECT_ID}.cloudfunctions.net/${REMOVE_UMATCHED_USER_FUNCTION_NAME}`;
