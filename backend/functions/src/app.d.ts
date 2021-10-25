@@ -8,4 +8,8 @@ declare namespace App {
   interface removeUserFromQueue {
     queueName: string;
   }
+  interface userTimeoutDetails {
+    userId: string;
+    queueName: string;
+  }
 }

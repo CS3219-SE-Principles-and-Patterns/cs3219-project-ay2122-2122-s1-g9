@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { CallableContext } from 'firebase-functions/v1/https';
+import { removeUserFromQueue as _removeUserFromQueue } from './util/queue';
 
 import {
   ALL_LVLS,
@@ -10,6 +11,10 @@ import {
   SUCCESS_RESP,
 } from './consts/values';
 import { validateAndGetUid } from './util/auth';
+import { isInCurrentSession } from './util/session';
+import { addUserToTimeoutQueue } from './tasks/matchTimeout';
+import { sendMessage } from './util/message';
+import { NO_MATCH_FOUND } from './consts/msgTypes';
 
 function validateAndGetQueueName(data: any): string {
   if (!data || !data.queueName || data.queueName.length === 0) {
@@ -31,10 +36,16 @@ function validateAndGetQueueName(data: any): string {
 
 export const addUserToQueue = functions.https.onCall(
   async (data: App.addUserToQueue, context: CallableContext) => {
-    // TODO: Make sure the user is not already in a currentSession
-
     const uid = validateAndGetUid(context);
     const queueName = validateAndGetQueueName(data);
+
+    const userIsInCurrentSession = await isInCurrentSession(uid);
+    if (userIsInCurrentSession) {
+      throw new functions.https.HttpsError(
+        'failed-precondition',
+        'User is already in an active session'
+      );
+    }
 
     const queuePath = admin
       .database()
@@ -50,6 +61,11 @@ export const addUserToQueue = functions.https.onCall(
       queuePath.set(queue);
     });
 
+    await addUserToTimeoutQueue({
+      userId: uid,
+      queueName: queueName,
+    });
+
     return SUCCESS_RESP;
   }
 );
@@ -59,21 +75,33 @@ export const removeUserFromQueue = functions.https.onCall(
     const uid = validateAndGetUid(context);
     const queueName = validateAndGetQueueName(data);
 
-    const queue = (
-      await admin.database().ref(`/queues/${queueName}`).once('value')
-    ).val() as string[];
-
-    if (queue == null) {
-      return SUCCESS_RESP;
-    }
-
-    // We assume that user is only added to the queue once
-    const elemIdx = queue.indexOf(uid);
-    if (elemIdx > -1) {
-      queue.splice(elemIdx, 1);
-      await admin.database().ref(`/queues/${queueName}`).set(queue);
-    }
+    await _removeUserFromQueue(uid, queueName);
 
     return SUCCESS_RESP;
+  }
+);
+
+export const removeUnmatchedUserAfterTimeout = functions.https.onCall(
+  async (data: App.userTimeoutDetails, _: CallableContext) => {
+    // If user is in a session, do nothing
+    const isUserInSession = await isInCurrentSession(data.userId);
+    if (isUserInSession) {
+      functions.logger.info(
+        `User ${data.userId} is already in a session and will not be removed from the queue`
+      );
+      return;
+    }
+
+    // If the user is not in a session, remove them from the queue
+    validateAndGetQueueName(data);
+    await _removeUserFromQueue(data.userId, data.queueName);
+    await sendMessage(
+      data.userId,
+      NO_MATCH_FOUND,
+      'Unable to match user with another user'
+    );
+
+    functions.logger.info(`User ${data.userId} was removed from the queue`);
+    return;
   }
 );
