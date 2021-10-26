@@ -8,7 +8,7 @@
     "start": "yarn shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test": "TS_NODE_FILES=true mocha -r ts-node/register --exit \"test/**/*.ts\""
+    "test": "mocha -r ts-node/register \"test/**/*.ts\""
   },
   "engines": {
     "node": "14"
