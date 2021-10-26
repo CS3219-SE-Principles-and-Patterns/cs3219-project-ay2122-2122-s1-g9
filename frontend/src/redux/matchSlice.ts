@@ -5,11 +5,13 @@ import { RootState } from './store';
 interface MatchState {
   isQueuing: boolean;
   sessionId: string | null;
+  qnsId: string | null;
 }
 
 const initialState: MatchState = {
   isQueuing: false,
   sessionId: null,
+  qnsId: null,
 };
 
 export const matchSlice = createSlice({
@@ -22,12 +24,16 @@ export const matchSlice = createSlice({
     setSessionId: (state, action) => {
       state.sessionId = action.payload;
     },
+    setQnsId: (state, action) => {
+      state.qnsId = action.payload;
+    },
   },
 });
 
-export const { setIsQueuing, setSessionId } = matchSlice.actions;
+export const { setIsQueuing, setQnsId, setSessionId } = matchSlice.actions;
 
 export const getIsQueuing = (state: RootState) => state.match.isQueuing;
 export const getSessionId = (state: RootState) => state.match.sessionId;
+export const getQnsId = (state: RootState) => state.match.qnsId;
 
 export default matchSlice.reducer;
