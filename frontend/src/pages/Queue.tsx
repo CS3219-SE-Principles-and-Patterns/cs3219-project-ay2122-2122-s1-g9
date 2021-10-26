@@ -51,15 +51,6 @@ const Queue: React.FC = function () {
     const timer = setTimeout(() => {
       if (timeLeft > 0) {
         setTimeLeft(timeLeft - 1);
-      } else {
-        removeUserFromQueue({ queueName: location.state as string })
-          .then(() => {
-            dispatch(setIsQueuing(false));
-            history.replace('/');
-          })
-          .catch((error) => {
-            console.error(error);
-          });
       }
     }, 1000);
 

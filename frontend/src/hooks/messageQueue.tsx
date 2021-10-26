@@ -36,7 +36,7 @@ const useMessageQueue = function () {
         dispatch(setSessionId(data.sessId));
         dispatch(setQnsId(data.qnsId));
         history.replace('/collaborate');
-      } else if (latestNotif.type === 'CANNOT_FIND_SESSION') {
+      } else if (latestNotif.type === 'NO_MATCH_FOUND') {
         dispatch(setIsQueuing(false));
         history.replace('/');
       }
