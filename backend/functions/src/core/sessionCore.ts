@@ -1,9 +1,14 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import { isOnline } from './presence';
-import { SESS_STATUS_ENDED } from '../consts/values';
-import { sendMessage } from './message';
-import { STOP_SESSION } from '../consts/msgTypes';
+import { isOnline } from './presenceCore';
+import { SESS_STATUS_ENDED, SESS_STATUS_STARTED } from '../consts/values';
+import { sendMessage } from './msgCore';
+import { getRandomQuestion } from './questionCore';
+import {
+  FOUND_SESSION,
+  STOP_SESSION,
+  WRITE_DEFAULT_CODE,
+} from '../consts/msgTypes';
 
 export async function getSession(sessId: string): Promise<any> {
   const fs = admin.firestore();
@@ -107,4 +112,41 @@ export async function getCurrentSessionId(uid: string): Promise<string | null> {
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return docRef.data()!['sessId'];
+}
+
+export async function initSession(
+  uid1: string,
+  uid2: string,
+  lvl: string
+): Promise<void> {
+  const sessRtdbPath = admin.database().ref('/sessions');
+  const qnsId = await getRandomQuestion(lvl);
+
+  const users = [uid1, uid2];
+  const session = {
+    users,
+    qnsId,
+    startedAt: Date.now(),
+  };
+
+  const sessId = (await sessRtdbPath.push(session)).key;
+  const sessFsPath = admin.firestore().doc(`/sessions/${sessId}`);
+
+  await sessFsPath.set({
+    ...session,
+    status: SESS_STATUS_STARTED,
+  });
+
+  const foundSessionData = { sessId, qnsId };
+  for (const user of users) {
+    await sendMessage(user, FOUND_SESSION, foundSessionData);
+    await admin.firestore().collection('currentSessions').doc(user).set({
+      sessId: sessId,
+    });
+  }
+
+  // Write Default Code
+  const writeDefaultCodeData = { sessId, qnsId };
+  await sendMessage(users[0], WRITE_DEFAULT_CODE, writeDefaultCodeData);
+  return;
 }

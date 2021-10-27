@@ -7,7 +7,7 @@ import fft from './testUtil/fft';
 
 import { matches } from '../src/index';
 import { createUser } from './testUtil/factory';
-import * as questionUtil from '../src/util/question';
+import * as questionUtil from '../src/core/questionCore';
 
 describe('detectMatchesCreateSession', () => {
   const func = fft.wrap(matches.detectMatchesCreateSession);

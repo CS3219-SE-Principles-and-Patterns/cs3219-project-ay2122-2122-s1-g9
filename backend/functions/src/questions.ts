@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
+import * as questionCore from './core/questionCore';
 import { CallableContext } from 'firebase-functions/v1/https';
 
 export const getQuestion = functions.https.onCall(
@@ -14,17 +14,6 @@ export const getQuestion = functions.https.onCall(
       );
     }
 
-    const db = admin.firestore();
-    const docRef = db.doc(`questions/${data.id}`);
-    const snap = await docRef.get();
-
-    if (!snap.exists) {
-      throw new functions.https.HttpsError(
-        'invalid-argument',
-        'Question with id cannot be found'
-      );
-    }
-
-    return snap.data();
+    return await questionCore.getQuestion(data.id);
   }
 );
