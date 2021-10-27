@@ -1,6 +1,6 @@
 import 'firebase/database';
 
-import { ExclamationCircleOutlined, LoadingOutlined } from '@ant-design/icons';
+import { LoadingOutlined } from '@ant-design/icons';
 import { Collapse, Layout, Modal, Spin, Typography } from 'antd';
 import firebase from 'firebase';
 import React, { useEffect, useState } from 'react';
@@ -110,12 +110,18 @@ const Collaborate: React.FC = function () {
             console.error(error);
           });
       },
+      onCancel() {
+        dispatch(setHasChangeQnRequest(false));
+      },
     });
   };
 
-  if (hasRequest) {
-    showChangeQuestionModal();
-  }
+  useEffect(() => {
+    if (hasRequest) {
+      showChangeQuestionModal();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasRequest]);
 
   // Activate presence here
   useEffect(() => {

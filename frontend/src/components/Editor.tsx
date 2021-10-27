@@ -117,7 +117,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
         }
         onMount={handleEditorMount}
       />
-      <BottomToolBar setQuestion={setQuestion} />
+      <BottomToolBar />
     </StyledContainer>
   );
 };

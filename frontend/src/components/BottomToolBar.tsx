@@ -4,18 +4,10 @@ import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
-import {
-  changeQuestionRequest,
-  getQuestion,
-  stopSession,
-} from '../firebase/functions';
+import { changeQuestionRequest, stopSession } from '../firebase/functions';
 import { useAppDispatch } from '../redux/hooks';
 import { setQnsId, setSessionId } from '../redux/matchSlice';
 import { Spacer } from './Styles';
-
-interface BottomToolBarProps {
-  setQuestion: React.Dispatch<React.SetStateAction<Types.Question>>;
-}
 
 type LocationState = {
   from: Location;
@@ -49,7 +41,7 @@ const RightContainer = styled.div`
 `;
 const { confirm } = Modal;
 
-const BottomToolBar: React.FC<BottomToolBarProps> = function ({ setQuestion }) {
+const BottomToolBar: React.FC = function () {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const location = useLocation<LocationState>();
