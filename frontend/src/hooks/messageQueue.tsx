@@ -32,21 +32,12 @@ const useMessageQueue = function () {
       const notifKeys = Object.keys(snapshot.val());
 
       const latestNotifKey = notifKeys[notifKeys.length - 1];
-      console.log(
-        'notifKey: ',
-        latestNotifKey,
-        ' corresponding notif: ',
-        snapshot.val()[latestNotifKey]
-      );
-
       const latestNotif: Types.MessageQueueNotif =
         snapshot.val()[latestNotifKey];
-      console.log('latestNotif: ', latestNotif);
       const data = latestNotif.data;
 
       switch (latestNotif.type) {
         case 'FOUND_SESSION':
-          console.log('found session block: ', latestNotif);
           dispatch(setIsQueuing(false));
           dispatch(setSessionId(data.sessId));
           dispatch(setQnsId(data.qnsId));
@@ -55,7 +46,6 @@ const useMessageQueue = function () {
           break;
         case 'NO_MATCH_FOUND':
         case 'STOP_SESSION':
-          console.log(latestNotif);
           dispatch(setIsQueuing(false));
           dispatch(setSessionId(null));
           dispatch(setQnsId(null));
@@ -63,7 +53,6 @@ const useMessageQueue = function () {
           history.replace('/');
           break;
         case 'CHANGE_QUESTION_REQUEST':
-          console.log('Change question request: ', latestNotif);
           dispatch(setHasChangeQnRequest(true));
           break;
         default:

@@ -100,7 +100,6 @@ const Collaborate: React.FC = function () {
       onOk() {
         return changeQuestion({ queueName: question.level })
           .then(() => {
-            console.log('changeQuestion sent');
             dispatch(setHasChangeQnRequest(false));
           })
           .catch((error) => {
@@ -153,20 +152,6 @@ const Collaborate: React.FC = function () {
         .then((result) => {
           setQuestion(result.data);
           setPageLoaded(true);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (qnId) {
-      getQuestion({ id: qnId })
-        .then((result) => {
-          setQuestion(result.data);
-          setPageLoaded(true);
           message.success('Question loaded for you and your teammate!');
         })
         .catch((error) => {
@@ -211,7 +196,6 @@ const Collaborate: React.FC = function () {
           <Editor
             questionTemplates={question.templates}
             questionLink={question.link}
-            setQuestion={setQuestion}
           />
           {isChatVisible && <Chat />}
         </EditorContent>
