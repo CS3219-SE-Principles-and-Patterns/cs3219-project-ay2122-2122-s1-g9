@@ -1,4 +1,4 @@
 module.exports = {
-	file: ['./test/setup.ts'],
+	file: ['./test/testUtil/fft.ts'],
 	exit: true,
 }

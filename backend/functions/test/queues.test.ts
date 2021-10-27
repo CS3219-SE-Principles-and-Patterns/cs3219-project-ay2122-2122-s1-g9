@@ -1,22 +1,19 @@
-import { expect } from 'chai';
 import * as admin from 'firebase-admin';
 import { queues } from '../src/index';
-import { createSession, createUser } from './util/factory';
+import { createSession, createUser } from './testUtil/factory';
+import { expect } from './testUtil/chai';
+import fft from './testUtil/fft';
 
-import fft = require('firebase-functions-test');
 import { NO_MATCH_FOUND } from '../src/consts/msgTypes';
-
-const test = fft();
 
 // Cannot test now due to usage of cloud task
 // describe('addUserToQueue', () => {
 //   after(async () => {
-//     test.cleanup();
 //     await admin.database().ref('/queues').set(null);
 //   });
 
 //   it('should add user to queue', async () => {
-//     const func = test.wrap(queues.addUserToQueue);
+//     const func = fft.wrap(queues.addUserToQueue);
 //     const data = { queueName: 'easy' };
 //     await func(data, { auth: { uid: 'fakeuid' } });
 
@@ -30,7 +27,7 @@ const test = fft();
 // });
 
 describe('removeUserFromQueue', () => {
-  const func = test.wrap(queues.removeUserFromQueue);
+  const func = fft.wrap(queues.removeUserFromQueue);
 
   after(async () => {
     await admin.database().ref('/queues').set(null);
@@ -57,7 +54,7 @@ describe('removeUserFromQueue', () => {
 });
 
 describe('removeUnmatchedUserAfterTimeout', () => {
-  const func = test.wrap(queues.removeUnmatchedUserAfterTimeout);
+  const func = fft.wrap(queues.removeUnmatchedUserAfterTimeout);
 
   describe('in current session', () => {
     it('should exit successfully', async () => {

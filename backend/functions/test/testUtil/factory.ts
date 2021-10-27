@@ -22,14 +22,18 @@ export async function createUser(): Promise<string> {
     );
   }
 
-  await setUserOnline(userId);
+  return userId;
+}
 
+export async function createOnlineUser(): Promise<string> {
+  const userId = await createUser();
+  await setUserOnline(userId);
   return userId;
 }
 
 export async function createSession(): Promise<App.Session> {
-  const userId1 = await createUser();
-  const userId2 = await createUser();
+  const userId1 = await createOnlineUser();
+  const userId2 = await createOnlineUser();
   const sessData: App.Session = {
     qnsId: 'two-sums',
     status: 'started',

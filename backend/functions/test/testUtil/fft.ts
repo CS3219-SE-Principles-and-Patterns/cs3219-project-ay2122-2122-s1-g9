@@ -2,6 +2,8 @@ import fft = require('firebase-functions-test');
 
 const test = fft();
 
-after(async () => {
+after(() => {
   test.cleanup();
 });
+
+export default test;
