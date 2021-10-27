@@ -3,7 +3,12 @@ import { useHistory } from 'react-router';
 
 import firebaseApp from '../firebase/firebaseApp';
 import { useAppDispatch } from '../redux/hooks';
-import { setIsQueuing, setQnsId, setSessionId } from '../redux/matchSlice';
+import {
+  setIsDefaultCodeWriter,
+  setIsQueuing,
+  setQnsId,
+  setSessionId,
+} from '../redux/matchSlice';
 import useAuth from './auth';
 
 const useMessageQueue = function () {
@@ -39,6 +44,8 @@ const useMessageQueue = function () {
       } else if (latestNotif.type === 'NO_MATCH_FOUND') {
         dispatch(setIsQueuing(false));
         history.replace('/');
+      } else if (latestNotif.type === 'WRITE_DEFAULT_CODE') {
+        dispatch(setIsDefaultCodeWriter(true));
       }
     });
   }, [authContext?.user, dispatch, history]);

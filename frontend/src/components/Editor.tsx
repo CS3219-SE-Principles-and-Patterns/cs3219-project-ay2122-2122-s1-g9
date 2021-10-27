@@ -7,7 +7,7 @@ import styled from 'styled-components';
 
 import firebaseApp from '../firebase/firebaseApp';
 import { useAppSelector } from '../redux/hooks';
-import { getSessionId } from '../redux/matchSlice';
+import { getIsDefaultCodeWriter, getSessionId } from '../redux/matchSlice';
 import BottomToolBar from './BottomToolBar';
 import TopToolBar from './TopToolBar';
 
@@ -36,6 +36,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
   setQuestion,
 }) {
   const sessionId = useAppSelector(getSessionId);
+  const isDefaultCodeWriter = useAppSelector(getIsDefaultCodeWriter);
   const monacoRef = useRef<Monaco | null>(null);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
@@ -43,6 +44,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
   const [editorLanguage, setEditorLanguage] = useState<string>(
     questionTemplates[0].value
   );
+  const [defaultCodeWritten, setDefaultCodeWritten] = useState<boolean>(false);
 
   const options: editor.IStandaloneEditorConstructionOptions = {
     cursorStyle: 'line',
@@ -68,7 +70,12 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
       .ref(`sessions/${sessionId}/language`);
     languageRef.on('value', (snapshot) => {
       const data = snapshot.val();
-      setEditorLanguage(data);
+      if (data == null) {
+        return;
+      }
+      setEditorLanguage(data.language);
+      console.log(data.defaultCodeWritten);
+      setDefaultCodeWritten(data.defaultCodeWritten?.[data.language] ?? false);
     });
   }, [sessionId]);
 
@@ -79,8 +86,11 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
   };
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const editorRef = firebaseApp.database().ref(`sessions/${sessionId}`);
-    editorRef.update({ language: e.target.value });
+    const editorRef = firebaseApp
+      .database()
+      .ref(`sessions/${sessionId}/language`);
+    editorRef.child('language').set(e.target.value);
+    editorRef.child('defaultCodeWritten').child(editorLanguage).set(true);
   };
 
   const handleCopy = () => {
@@ -111,9 +121,11 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
         path={editorLanguage}
         defaultLanguage={editorLanguage}
         defaultValue={
-          questionTemplates.find(
-            (language) => language.value === editorLanguage
-          )?.defaultCode
+          isDefaultCodeWriter && !defaultCodeWritten
+            ? questionTemplates.find(
+                (language) => language.value === editorLanguage
+              )?.defaultCode
+            : undefined
         }
         onMount={handleEditorMount}
       />
