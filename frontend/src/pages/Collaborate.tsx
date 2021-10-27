@@ -1,7 +1,7 @@
 import 'firebase/database';
 
 import { LoadingOutlined } from '@ant-design/icons';
-import { Collapse, Layout, Modal, Spin, Typography } from 'antd';
+import { Collapse, Layout, message, Modal, Spin, Typography } from 'antd';
 import firebase from 'firebase';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -83,7 +83,6 @@ const Collaborate: React.FC = function () {
   const isChatVisible = useAppSelector(getIsVisible);
   const qnId = useAppSelector(getQnsId) as string;
   const hasRequest = useAppSelector(getHasChangeQnRequest);
-  console.log('hasRequest', hasRequest);
   const [question, setQuestion] = useState<Types.Question>(
     {} as Types.Question
   );
@@ -149,26 +148,31 @@ const Collaborate: React.FC = function () {
   });
 
   useEffect(() => {
-    getQuestion({ id: qnId })
-      .then((result) => {
-        setQuestion(result.data);
-        setPageLoaded(true);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    if (qnId) {
+      getQuestion({ id: qnId })
+        .then((result) => {
+          setQuestion(result.data);
+          setPageLoaded(true);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    getQuestion({ id: qnId })
-      .then((result) => {
-        setQuestion(result.data);
-        setPageLoaded(true);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    if (qnId) {
+      getQuestion({ id: qnId })
+        .then((result) => {
+          setQuestion(result.data);
+          setPageLoaded(true);
+          message.success('Question loaded for you and your teammate!');
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
   }, [qnId]);
 
   if (!pageLoaded) {

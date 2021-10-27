@@ -78,7 +78,7 @@ const useMessageQueue = function () {
         .remove()
         .then(() => {
           console.log(
-            'Latest Message removed: ',
+            'Latest message removed: ',
             snapshot.val()[latestNotifKey]
           );
         })

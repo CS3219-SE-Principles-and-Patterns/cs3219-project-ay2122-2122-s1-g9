@@ -1,5 +1,5 @@
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, Modal } from 'antd';
+import { Button, message, Modal } from 'antd';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
@@ -83,8 +83,9 @@ const BottomToolBar: React.FC = function () {
       onOk() {
         return changeQuestionRequest()
           .then(() => {
-            console.log('changeQuestion request sent');
-            //TODO: make a toast appear saying request sent
+            message.success(
+              'Change question request was sent to your teammate! '
+            );
           })
           .catch((error) => {
             console.error(error);
