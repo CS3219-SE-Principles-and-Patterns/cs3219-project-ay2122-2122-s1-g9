@@ -16,6 +16,14 @@ const stopSessionFunc = firebaseApp
   .functions()
   .httpsCallable('sessions-stopSession');
 
+const changeQuestionRequestFunc = firebaseApp
+  .functions()
+  .httpsCallable('sessions-changeQuestionRequest');
+
+const changeQuestionFunc = firebaseApp
+  .functions()
+  .httpsCallable('sessions-changeQuestion');
+
 export const getQuestion = async (data: FunctionTypes.getQuestionData) => {
   return await getQuestionFunc(data);
 };
@@ -34,4 +42,14 @@ export const removeUserFromQueue = async (
 
 export const stopSession = async () => {
   return await stopSessionFunc();
+};
+
+export const changeQuestionRequest = async () => {
+  return await changeQuestionRequestFunc();
+};
+
+export const changeQuestion = async (
+  data: FunctionTypes.changeQuestionData
+) => {
+  return await changeQuestionFunc(data);
 };

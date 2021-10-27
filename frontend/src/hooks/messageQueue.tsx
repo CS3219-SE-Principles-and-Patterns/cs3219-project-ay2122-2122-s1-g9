@@ -3,7 +3,12 @@ import { useHistory } from 'react-router';
 
 import firebaseApp from '../firebase/firebaseApp';
 import { useAppDispatch } from '../redux/hooks';
-import { setIsQueuing, setQnsId, setSessionId } from '../redux/matchSlice';
+import {
+  setHasChangeQnRequest,
+  setIsQueuing,
+  setQnsId,
+  setSessionId,
+} from '../redux/matchSlice';
 import useAuth from './auth';
 
 const useMessageQueue = function () {
@@ -32,13 +37,29 @@ const useMessageQueue = function () {
       const data = latestNotif.data;
 
       if (latestNotif.type === 'FOUND_SESSION') {
+        console.log('found session block: ', latestNotif);
         dispatch(setIsQueuing(false));
         dispatch(setSessionId(data.sessId));
         dispatch(setQnsId(data.qnsId));
+        dispatch(setHasChangeQnRequest(false));
         history.replace('/collaborate');
       } else if (latestNotif.type === 'NO_MATCH_FOUND') {
+        console.log('no match found block: ', latestNotif);
         dispatch(setIsQueuing(false));
+        dispatch(setSessionId(null));
+        dispatch(setQnsId(null));
+        dispatch(setHasChangeQnRequest(false));
         history.replace('/');
+      } else if (latestNotif.type === 'STOP_SESSION') {
+        console.log('Stop session block: ', latestNotif);
+        dispatch(setIsQueuing(false));
+        dispatch(setSessionId(null));
+        dispatch(setQnsId(null));
+        dispatch(setHasChangeQnRequest(false));
+        history.replace('/');
+      } else if (latestNotif.type === 'CHANGE_QUESTION_REQUEST') {
+        console.log('Change question request: ', latestNotif);
+        dispatch(setHasChangeQnRequest(true));
       }
     });
   }, [authContext?.user, dispatch, history]);

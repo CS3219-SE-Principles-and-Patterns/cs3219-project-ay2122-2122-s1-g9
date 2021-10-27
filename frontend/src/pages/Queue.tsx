@@ -40,6 +40,7 @@ const Queue: React.FC = function () {
   // Should only run on initial page load
   useEffect(() => {
     if (sessionId != null) {
+      console.log('sessionId: ', sessionId);
       history.replace('/collaborate');
     } else if (!isQueueing) {
       history.replace('/');

@@ -4,7 +4,11 @@ import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { getQuestion, stopSession } from '../firebase/functions';
+import {
+  changeQuestionRequest,
+  getQuestion,
+  stopSession,
+} from '../firebase/functions';
 import { useAppDispatch } from '../redux/hooks';
 import { setQnsId, setSessionId } from '../redux/matchSlice';
 import { Spacer } from './Styles';
@@ -73,7 +77,7 @@ const BottomToolBar: React.FC<BottomToolBarProps> = function ({ setQuestion }) {
     });
   };
 
-  const changeQuestion = () => {
+  const changeTheQuestion = () => {
     confirm({
       title: 'Not so fast...',
       icon: <ExclamationCircleOutlined />,
@@ -85,9 +89,10 @@ const BottomToolBar: React.FC<BottomToolBarProps> = function ({ setQuestion }) {
         </p>
       ),
       onOk() {
-        getQuestion({ id: 'find-minimum-in-rotated-sorted-array' })
-          .then((result) => {
-            setQuestion(result.data);
+        return changeQuestionRequest()
+          .then(() => {
+            console.log('changeQuestion request sent');
+            //TODO: make a toast appear saying request sent
           })
           .catch((error) => {
             console.error(error);
@@ -102,7 +107,7 @@ const BottomToolBar: React.FC<BottomToolBarProps> = function ({ setQuestion }) {
     <StyledBottomToolBar>
       <LeftContainer>
         <Spacer $width="16px" />
-        <ChangeQuestionButton onClick={changeQuestion}>
+        <ChangeQuestionButton onClick={changeTheQuestion}>
           Change the question
         </ChangeQuestionButton>
       </LeftContainer>
