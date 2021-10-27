@@ -74,20 +74,17 @@ describe('removeUnmatchedUserAfterTimeout', () => {
   describe('not in current session', () => {
     it('should remove user from queue', async () => {
       const userId = await createUser();
+      const db = admin.database();
 
-      await admin.database().ref('/queues/easy').set([userId]);
+      await db.ref('/queues/easy').set([userId]);
       await func({ queueName: 'easy', userId });
 
-      await admin
-        .database()
-        .ref('/queues/easy')
-        .once('value', (snapshot) => {
-          // If there is nothing in queue, the val will be null
-          expect(snapshot.val()).to.be.null;
-        });
+      await db.ref('/queues/easy').once('value', (snapshot) => {
+        // If there is nothing in queue, the val will be null
+        expect(snapshot.val()).to.be.null;
+      });
 
-      await admin
-        .database()
+      await db
         .ref(`/users/${userId}`)
         .limitToLast(1)
         .once('value', (snapshot) => {

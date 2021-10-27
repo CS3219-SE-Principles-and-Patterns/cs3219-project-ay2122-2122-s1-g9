@@ -22,7 +22,7 @@ describe('detectMatchesCreateSession', () => {
       );
 
       await admin.database().ref('/queues/easy').set([uid]); // manually write the user into queue
-      await func(change); // trigger the onwrite function
+      await func(change, { params: { difficulty: 'easy' } }); // trigger the onwrite function
 
       const createdSnap = await admin
         .database()
