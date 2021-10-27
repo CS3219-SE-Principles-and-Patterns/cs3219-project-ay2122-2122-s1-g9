@@ -4,8 +4,6 @@ import { initSession } from './sessionCore';
 
 export async function processQueue(lvl: string): Promise<void> {
   const queuePath = admin.database().ref(`/queues/${lvl}`);
-  // const sessionPath = admin.database().ref('/sessions');
-
   const queueSnapshot = await queuePath.get();
 
   if (!queueSnapshot.exists()) {
@@ -29,18 +27,6 @@ export async function processQueue(lvl: string): Promise<void> {
   let count = 0;
 
   while (count < numOfMatches) {
-    // const users = [queue[0], queue[1]];
-
-    // const qnsId = await questionCore.getRandomQuestion(queueName);
-
-    // // First we create a session
-    // const session = {
-    //   users,
-    //   qnsId,
-    //   startedAt: Date.now(),
-    // };
-
-    // sessionPath.push(session);
     await initSession(queue[0], queue[1], lvl);
 
     // Pop the first 2 elements from the queue
