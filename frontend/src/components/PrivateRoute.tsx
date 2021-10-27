@@ -14,7 +14,7 @@ const PrivateRoute: React.FC<RouteProps> = function (props) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (location?.pathname === '/collaborate') {
+    if (auth?.user == null || location?.pathname === '/collaborate') {
       setIsLoading(false);
       return;
     }
@@ -25,7 +25,7 @@ const PrivateRoute: React.FC<RouteProps> = function (props) {
       }
       setIsLoading(false);
     });
-  }, [history, location?.pathname]);
+  }, [auth?.user, history, location?.pathname]);
 
   if (isLoading) {
     const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
