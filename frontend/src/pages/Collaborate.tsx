@@ -93,8 +93,6 @@ const Collaborate: React.FC = function () {
   const dispatch = useAppDispatch();
   useMessageQueue();
 
-  console.log('qnId: ', qnId);
-
   const showChangeQuestionModal = () => {
     confirm({
       title: 'Change question?',

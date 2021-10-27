@@ -32,8 +32,19 @@ const useMessageQueue = function () {
       const notifications: Types.MessageQueueNotif[] = Object.values(
         snapshot.val()
       );
+      const notifKeys = Object.keys(snapshot.val());
+
+      const latestNotifKey = notifKeys[notifKeys.length - 1];
+      console.log(
+        'notifKey: ',
+        latestNotifKey,
+        ' corresponding notif: ',
+        snapshot.val()[latestNotifKey]
+      );
+
       const latestNotif: Types.MessageQueueNotif =
         notifications[notifications.length - 1];
+      console.log('latestNotif: ', latestNotif);
       const data = latestNotif.data;
 
       if (latestNotif.type === 'FOUND_SESSION') {
@@ -61,6 +72,23 @@ const useMessageQueue = function () {
         console.log('Change question request: ', latestNotif);
         dispatch(setHasChangeQnRequest(true));
       }
+
+      //TODO: consume the message queue message
+
+      const latestMessageRef = firebaseApp
+        .database()
+        .ref(`users/${uid}/${latestNotifKey}`);
+      latestMessageRef
+        .remove()
+        .then(() => {
+          console.log(
+            'Latest Message removed: ',
+            snapshot.val()[latestNotifKey]
+          );
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     });
   }, [authContext?.user, dispatch, history]);
 };
