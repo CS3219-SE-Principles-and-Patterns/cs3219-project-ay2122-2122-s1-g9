@@ -12,4 +12,7 @@ declare namespace App {
     userId: string;
     queueName: string;
   }
+  interface changeQuestionRequest {
+    queueName: string;
+  }
 }

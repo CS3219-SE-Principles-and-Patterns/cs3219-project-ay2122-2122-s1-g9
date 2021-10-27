@@ -5,7 +5,13 @@ import { SESS_STATUS_STARTED, SUCCESS_RESP } from './consts/values';
 import { validateAndGetUid } from './util/auth';
 import { CallableContext } from 'firebase-functions/v1/https';
 import { sendMessage } from './util/message';
-import { FOUND_SESSION, WRITE_DEFAULT_CODE } from './consts/msgTypes';
+import { validateAndGetQueueName } from './util/queue';
+import {
+  CHANGE_QUESTION_REQUEST,
+  FOUND_SESSION,
+  WRITE_DEFAULT_CODE,
+} from './consts/msgTypes';
+import { getRandomQuestion } from './util/question';
 
 export const initSession = functions.database
   .ref('/sessions/{sessId}')
@@ -77,5 +83,48 @@ export const isInCurrentSession = functions.https.onCall(
     const uid = validateAndGetUid(context);
     const res = await sessionUtil.isInCurrentSession(uid);
     return { isInCurrentSession: res };
+  }
+);
+
+export const changeQuestionRequest = functions.https.onCall(
+  async (data: any, context: CallableContext) => {
+    const currUid = validateAndGetUid(context);
+    const sessId = await sessionUtil.getCurrentSessionId(currUid);
+    if (!sessId) {
+      throw new functions.https.HttpsError('not-found', 'Session not found.');
+    }
+
+    const session = await sessionUtil.getSession(sessId);
+    functions.logger.info('Current session: ', session);
+    for (const uid of session.users) {
+      if (uid != currUid) {
+        sendMessage(uid, CHANGE_QUESTION_REQUEST, null);
+      }
+    }
+  }
+);
+
+export const changeQuestion = functions.https.onCall(
+  async (data: App.changeQuestionRequest, context: CallableContext) => {
+    const queueName = validateAndGetQueueName(data);
+    const uid = validateAndGetUid(context);
+    const sessionPath = admin.database().ref('/sessions');
+    const sessId = await sessionUtil.getCurrentSessionId(uid);
+    if (!sessId) {
+      throw new functions.https.HttpsError('not-found', 'Session not found.');
+    }
+    const currentSession = await sessionUtil.getSession(sessId);
+    functions.logger.info('Current session: ', currentSession);
+    const users = currentSession.users;
+
+    const qnsId = await getRandomQuestion(queueName);
+
+    const session = {
+      users,
+      qnsId,
+      startedAt: Date.now(),
+    };
+
+    sessionPath.push(session);
   }
 );

@@ -1,44 +1,23 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { CallableContext } from 'firebase-functions/v1/https';
-import { removeUserFromQueue as _removeUserFromQueue } from './util/queue';
-
 import {
-  ALL_LVLS,
-  LVL_EASY,
-  LVL_HARD,
-  LVL_MEDIUM,
-  SUCCESS_RESP,
-} from './consts/values';
+  removeUserFromQueue as _removeUserFromQueue,
+  validateAndGetQueueName,
+} from './util/queue';
+
+import { SUCCESS_RESP } from './consts/values';
 import { validateAndGetUid } from './util/auth';
 import { isInCurrentSession } from './util/session';
 import { addUserToTimeoutQueue } from './tasks/matchTimeout';
 import { sendMessage } from './util/message';
 import { NO_MATCH_FOUND } from './consts/msgTypes';
 
-function validateAndGetQueueName(data: any): string {
-  if (!data || !data.queueName || data.queueName.length === 0) {
-    throw new functions.https.HttpsError(
-      'invalid-argument',
-      'The function must be called with a single argument "queueName"'
-    );
-  }
-
-  if (!ALL_LVLS.includes(data.queueName.toLowerCase())) {
-    throw new functions.https.HttpsError(
-      'invalid-argument',
-      `The queueName must be one of ${LVL_EASY}, ${LVL_MEDIUM}, ${LVL_HARD}`
-    );
-  }
-
-  return data.queueName;
-}
-
 export const addUserToQueue = functions.https.onCall(
   async (data: App.addUserToQueue, context: CallableContext) => {
     const uid = validateAndGetUid(context);
     const queueName = validateAndGetQueueName(data);
-
+    functions.logger.info('Data: ', data);
     const userIsInCurrentSession = await isInCurrentSession(uid);
     if (userIsInCurrentSession) {
       throw new functions.https.HttpsError(
