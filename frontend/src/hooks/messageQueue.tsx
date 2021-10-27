@@ -29,9 +29,6 @@ const useMessageQueue = function () {
         return;
       }
 
-      const notifications: Types.MessageQueueNotif[] = Object.values(
-        snapshot.val()
-      );
       const notifKeys = Object.keys(snapshot.val());
 
       const latestNotifKey = notifKeys[notifKeys.length - 1];
@@ -43,41 +40,40 @@ const useMessageQueue = function () {
       );
 
       const latestNotif: Types.MessageQueueNotif =
-        notifications[notifications.length - 1];
+        snapshot.val()[latestNotifKey];
       console.log('latestNotif: ', latestNotif);
       const data = latestNotif.data;
 
-      if (latestNotif.type === 'FOUND_SESSION') {
-        console.log('found session block: ', latestNotif);
-        dispatch(setIsQueuing(false));
-        dispatch(setSessionId(data.sessId));
-        dispatch(setQnsId(data.qnsId));
-        dispatch(setHasChangeQnRequest(false));
-        history.replace('/collaborate');
-      } else if (latestNotif.type === 'NO_MATCH_FOUND') {
-        console.log('no match found block: ', latestNotif);
-        dispatch(setIsQueuing(false));
-        dispatch(setSessionId(null));
-        dispatch(setQnsId(null));
-        dispatch(setHasChangeQnRequest(false));
-        history.replace('/');
-      } else if (latestNotif.type === 'STOP_SESSION') {
-        console.log('Stop session block: ', latestNotif);
-        dispatch(setIsQueuing(false));
-        dispatch(setSessionId(null));
-        dispatch(setQnsId(null));
-        dispatch(setHasChangeQnRequest(false));
-        history.replace('/');
-      } else if (latestNotif.type === 'CHANGE_QUESTION_REQUEST') {
-        console.log('Change question request: ', latestNotif);
-        dispatch(setHasChangeQnRequest(true));
+      switch (latestNotif.type) {
+        case 'FOUND_SESSION':
+          console.log('found session block: ', latestNotif);
+          dispatch(setIsQueuing(false));
+          dispatch(setSessionId(data.sessId));
+          dispatch(setQnsId(data.qnsId));
+          dispatch(setHasChangeQnRequest(false));
+          history.replace('/collaborate');
+          break;
+        case 'NO_MATCH_FOUND':
+        case 'STOP_SESSION':
+          console.log(latestNotif);
+          dispatch(setIsQueuing(false));
+          dispatch(setSessionId(null));
+          dispatch(setQnsId(null));
+          dispatch(setHasChangeQnRequest(false));
+          history.replace('/');
+          break;
+        case 'CHANGE_QUESTION_REQUEST':
+          console.log('Change question request: ', latestNotif);
+          dispatch(setHasChangeQnRequest(true));
+          break;
+        default:
+          break;
       }
-
-      //TODO: consume the message queue message
 
       const latestMessageRef = firebaseApp
         .database()
         .ref(`users/${uid}/${latestNotifKey}`);
+
       latestMessageRef
         .remove()
         .then(() => {
