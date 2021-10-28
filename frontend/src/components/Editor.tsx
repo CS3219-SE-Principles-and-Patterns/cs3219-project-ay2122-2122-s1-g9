@@ -76,16 +76,49 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
       return;
     }
 
-    const contentRef = sessDbRef.child('content');
+    const contentRef = sessDbRef.child(`content/${editorLanguage}`);
     const firepad = fromMonaco(contentRef, editorRef.current);
     if (currentUser?.displayName) {
       firepad.setUserName(currentUser.displayName);
     }
 
+    // firepad.set
+
     return () => {
       firepad.dispose();
     };
-  }, [editorLoaded, sessDbRef, currentUser]);
+  }, [
+    editorLoaded,
+    sessDbRef,
+    currentUser,
+    editorLanguage,
+    defaultWriter,
+    questionTemplates,
+  ]);
+
+  useEffect(() => {
+    if (!editorLoaded || editorRef.current == null) {
+      return;
+    }
+
+    if (defaultWriter) {
+      const codeToWrite =
+        questionTemplates.find((language) => language.value === editorLanguage)
+          ?.defaultCode ?? '';
+
+      console.log(`writing code for ${editorLanguage}`);
+      setTimeout(() => {
+        if (!editorLoaded || editorRef.current == null) {
+          return;
+        }
+
+        if (editorRef.current.getValue() === '') {
+          editorRef.current.setValue(codeToWrite);
+        }
+      }, 500); // cheap tricks, if don't use this, the code will be written on the previous firepad instance
+      console.log(editorRef.current.getValue().substring(0, 10));
+    }
+  }, [editorLoaded, defaultWriter, editorLanguage, questionTemplates]);
 
   // Listen for when the language changes
   useEffect(() => {
@@ -95,33 +128,34 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
 
     // Need to execute the effect again on defaultWriter change so that the internals of onLanguageChange is updated correctly
 
-    console.log('executed use effect');
+    console.log('executed use effect to change language');
     const languageRef = sessDbRef.child('language');
 
     const onLanguageChange = (snapshot: firebase.database.DataSnapshot) => {
       const newLang = snapshot.val();
       setEditorLanguage(newLang);
 
-      console.log('editorRef current info');
-      console.log(editorRef.current == null);
-      console.log('end');
+      // console.log('editorRef current info');
+      // console.log(editorRef.current == null);
+      // console.log('end');
 
-      if (editorRef.current != null) {
-        if (defaultWriter) {
-          const codeToWrite =
-            questionTemplates.find((language) => language.value === newLang)
-              ?.defaultCode ?? '';
+      // if (editorRef.current != null) {
+      //   if (defaultWriter) {
+      //     const codeToWrite =
+      //       questionTemplates.find((language) => language.value === newLang)
+      //         ?.defaultCode ?? '';
 
-          editorRef.current.setValue(codeToWrite);
-        }
-      }
+      //     editorRef.current.setValue(codeToWrite);
+      //   }
+      // }
     };
 
     languageRef.on('value', onLanguageChange);
     return () => {
       languageRef.off('value', onLanguageChange);
     };
-  }, [defaultWriter]); // only attach once
+  }, []); // only attach once
+  // }, [defaultWriter]); // only attach once
 
   // useEffect(() => {
   //   console.log(`[Plain useEffect] Writing default code of ${editorLanguage}`);
