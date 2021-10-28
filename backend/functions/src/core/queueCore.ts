@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { addUserToTimeoutQueue } from '../tasks/matchTimeout';
+import { RUNNING_IN_EMULATOR } from '../consts/values';
 
 export async function removeUserFromQueue(
   uid: string,
@@ -38,10 +39,13 @@ export async function addUserToQueue(
 
   queue.push(uid);
   await queuePath.set(queue);
-  await addUserToTimeoutQueue({
-    userId: uid,
-    queueName: queueName,
-  });
+
+  if (!RUNNING_IN_EMULATOR) {
+    await addUserToTimeoutQueue({
+      userId: uid,
+      queueName: queueName,
+    });
+  }
 
   functions.logger.log(`Successfully added user ${uid} to ${queueName} queue`);
   return;
