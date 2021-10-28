@@ -3,7 +3,7 @@ import { Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Redirect, Route, RouteProps, useHistory } from 'react-router';
 
-import { getCurrentSessionId } from '../firebase/functions';
+import { getCurrentSessionId, getSession } from '../firebase/functions';
 import useAuth from '../hooks/auth';
 import useMessageQueue from '../hooks/messageQueue';
 import { useAppDispatch } from '../redux/hooks';
@@ -26,13 +26,18 @@ const PrivateRoute: React.FC<RouteProps> = function (props) {
       return;
     }
 
+    console.log('hello');
     getCurrentSessionId().then((res) => {
       const sessId = res.data.sessId;
-      dispatch(setSessionId(sessId));
-      dispatch(setQnsId('two-sum'));
-      dispatch(setIsQueuing(false));
-      setIsLoading(false);
-      history.replace('/collaborate');
+
+      getSession({ sessId }).then((res) => {
+        // We have all the data we need for collaborate page
+        dispatch(setSessionId(sessId));
+        dispatch(setQnsId(res.data.qnsId));
+        dispatch(setIsQueuing(false));
+        setIsLoading(false);
+        history.replace('/collaborate');
+      });
     });
   }, [auth?.user, history, dispatch]);
 

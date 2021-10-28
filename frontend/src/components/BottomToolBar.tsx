@@ -85,7 +85,7 @@ const BottomToolBar: React.FC<BottomToolBarProps> = function ({ setQuestion }) {
         </p>
       ),
       onOk() {
-        getQuestion({ id: 'find-minimum-in-rotated-sorted-array' })
+        getQuestion({ qnsId: 'find-minimum-in-rotated-sorted-array' })
           .then((result) => {
             setQuestion(result.data);
           })

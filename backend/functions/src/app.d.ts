@@ -1,6 +1,6 @@
 declare namespace App {
   interface getQuestionData {
-    id: string;
+    qnsId: string;
   }
 
   interface addUserToQueue {
@@ -14,6 +14,10 @@ declare namespace App {
   interface userTimeoutDetails {
     userId: string;
     queueName: string;
+  }
+
+  interface getSessionData {
+    sessId?: string;
   }
 
   interface Session {

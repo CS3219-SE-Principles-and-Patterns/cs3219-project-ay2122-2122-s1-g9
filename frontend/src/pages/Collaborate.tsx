@@ -115,7 +115,7 @@ const Collaborate: React.FC = function () {
 
   useEffect(() => {
     if (qnId) {
-      getQuestion({ id: qnId })
+      getQuestion({ qnsId: qnId })
         .then((result) => {
           setQuestion(result.data);
           setPageLoaded(true);
@@ -125,7 +125,7 @@ const Collaborate: React.FC = function () {
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [qnId]);
 
   if (!pageLoaded) {
     const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;

@@ -12,6 +12,10 @@ const removeUserFromQueueFunc = firebaseApp
   .functions()
   .httpsCallable('queues-removeUserFromQueue');
 
+const getSessionFunc = firebaseApp
+  .functions()
+  .httpsCallable('sessions-getSession');
+
 const stopSessionFunc = firebaseApp
   .functions()
   .httpsCallable('sessions-stopSession');
@@ -38,6 +42,10 @@ export const removeUserFromQueue = async (
   data: FunctionTypes.removeUserFromQueueData
 ) => {
   return await removeUserFromQueueFunc(data);
+};
+
+export const getSession = async (data: FunctionTypes.getSessionData) => {
+  return await getSessionFunc(data);
 };
 
 export const stopSession = async () => {

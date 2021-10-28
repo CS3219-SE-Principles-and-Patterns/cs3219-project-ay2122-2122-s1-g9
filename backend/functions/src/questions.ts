@@ -4,9 +4,9 @@ import { CallableContext } from 'firebase-functions/v1/https';
 
 export const getQuestion = functions.https.onCall(
   async (data: App.getQuestionData, _context: CallableContext) => {
-    // data: { "id": "two-sum" }
+    // data: { "qnsId": "two-sum" }
 
-    if (!data || !data.id || data.id.length === 0) {
+    if (!data || !data.qnsId || data.qnsId.length === 0) {
       throw new functions.https.HttpsError(
         'invalid-argument',
         'The function must be called with ' +
@@ -14,6 +14,6 @@ export const getQuestion = functions.https.onCall(
       );
     }
 
-    return await questionCore.getQuestion(data.id);
+    return await questionCore.getQuestion(data.qnsId);
   }
 );
