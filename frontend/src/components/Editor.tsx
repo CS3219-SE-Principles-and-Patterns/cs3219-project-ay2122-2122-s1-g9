@@ -1,6 +1,6 @@
 import 'firebase/database';
 
-import { fromMonaco } from '@hackerrank/firepad';
+import Firepad, { FirepadEvent, fromMonaco } from '@hackerrank/firepad';
 import MonacoEditor, { EditorProps, Monaco } from '@monaco-editor/react';
 import { message } from 'antd';
 import firebase from 'firebase/app';
@@ -82,9 +82,22 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
       firepad.setUserName(currentUser.displayName);
     }
 
-    // firepad.set
+    const firepadOnReady = () => {
+      if (defaultWriter) {
+        const codeToWrite =
+          questionTemplates.find(
+            (language) => language.value === editorLanguage
+          )?.defaultCode ?? '';
 
+        if (firepad.getText() === '') {
+          firepad.setText(codeToWrite);
+        }
+      }
+    };
+
+    firepad.on(FirepadEvent.Ready, firepadOnReady);
     return () => {
+      firepad.off(FirepadEvent.Ready, firepadOnReady);
       firepad.dispose();
     };
   }, [
@@ -96,29 +109,29 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
     questionTemplates,
   ]);
 
-  useEffect(() => {
-    if (!editorLoaded || editorRef.current == null) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!editorLoaded || editorRef.current == null) {
+  //     return;
+  //   }
 
-    if (defaultWriter) {
-      const codeToWrite =
-        questionTemplates.find((language) => language.value === editorLanguage)
-          ?.defaultCode ?? '';
+  //   if (defaultWriter) {
+  //     const codeToWrite =
+  //       questionTemplates.find((language) => language.value === editorLanguage)
+  //         ?.defaultCode ?? '';
 
-      console.log(`writing code for ${editorLanguage}`);
-      setTimeout(() => {
-        if (!editorLoaded || editorRef.current == null) {
-          return;
-        }
+  //     console.log(`writing code for ${editorLanguage}`);
+  //     setTimeout(() => {
+  //       if (!editorLoaded || editorRef.current == null) {
+  //         return;
+  //       }
 
-        if (editorRef.current.getValue() === '') {
-          editorRef.current.setValue(codeToWrite);
-        }
-      }, 500); // cheap tricks, if don't use this, the code will be written on the previous firepad instance
-      console.log(editorRef.current.getValue().substring(0, 10));
-    }
-  }, [editorLoaded, defaultWriter, editorLanguage, questionTemplates]);
+  //       if (editorRef.current.getValue() === '') {
+  //         editorRef.current.setValue(codeToWrite);
+  //       }
+  //     }, 500); // cheap tricks, if don't use this, the code will be written on the previous firepad instance
+  //     console.log(editorRef.current.getValue().substring(0, 10));
+  //   }
+  // }, [editorLoaded, defaultWriter, editorLanguage, questionTemplates]);
 
   // Listen for when the language changes
   useEffect(() => {
