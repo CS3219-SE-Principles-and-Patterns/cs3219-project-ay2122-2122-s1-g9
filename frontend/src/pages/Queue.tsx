@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import PageLayout from '../components/PageLayout';
 import { Spacer } from '../components/Styles';
-import useMessageQueue from '../hooks/messageQueue';
+// import useMessageQueue from '../hooks/messageQueue';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { getIsQueuing, getSessionId, setIsQueuing } from '../redux/matchSlice';
 
@@ -33,7 +33,7 @@ const Queue: React.FC = function () {
   const sessionId = useAppSelector(getSessionId);
   const [timeLeft, setTimeLeft] = useState<number>(30);
 
-  useMessageQueue();
+  // useMessageQueue();
 
   // Should only run on initial page load
   useEffect(() => {

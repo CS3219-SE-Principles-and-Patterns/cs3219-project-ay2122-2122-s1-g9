@@ -2,7 +2,7 @@ import 'firebase/database';
 
 import { LoadingOutlined } from '@ant-design/icons';
 import { Collapse, Layout, Spin, Typography } from 'antd';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -13,6 +13,7 @@ import Sidebar from '../components/Sidebar';
 import { Spacer, TwoColLayout } from '../components/Styles';
 import { getQuestion } from '../firebase/functions';
 import useAuth from '../hooks/auth';
+// import useMessageQueue from '../hooks/messageQueue';
 import { getIsVisible } from '../redux/chatSlice';
 import { useAppSelector } from '../redux/hooks';
 
@@ -80,6 +81,8 @@ const Collaborate: React.FC = function () {
   const [pageLoaded, setPageLoaded] = useState<boolean>(false);
 
   const auth = useAuth();
+
+  // useMessageQueue();
 
   // Activate presence here
   useEffect(() => {
