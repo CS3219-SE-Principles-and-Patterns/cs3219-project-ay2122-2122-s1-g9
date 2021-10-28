@@ -23,6 +23,7 @@ const reducers = combineReducers({
 const persistConfig = {
   key: 'root',
   storage,
+  blacklist: ['match'], // Should only stop persisting match things
 };
 
 const persistedReducer = persistReducer(persistConfig, reducers);

@@ -22,6 +22,7 @@ const useMessageQueue = function () {
 
     userRef.on('child_added', (msgSnapshot, _prevMsgSnapshot) => {
       const msg: Types.MessageQueueNotif = msgSnapshot.val();
+      const data = msg.data;
       // console.log(`Processing msg with type ${msg.type}`);
       console.log(msg);
 
@@ -39,10 +40,11 @@ const useMessageQueue = function () {
           dispatch(setQnsId(null));
           history.replace('/');
           break;
-        case 'CHANGE_QUESTION_REQUEST':
-          dispatch(setHasChangeQnRequest(true));
-          break;
+        // case 'CHANGE_QUESTION_REQUEST':
+        //   dispatch(setHasChangeQnRequest(true));
+        //   break;
         default:
+          console.log(`Unable to process ${msg.type}`);
           break;
       }
 

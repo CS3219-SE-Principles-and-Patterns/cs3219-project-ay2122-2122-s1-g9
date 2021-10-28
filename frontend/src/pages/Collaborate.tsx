@@ -114,14 +114,16 @@ const Collaborate: React.FC = function () {
   });
 
   useEffect(() => {
-    getQuestion({ id: qnId })
-      .then((result) => {
-        setQuestion(result.data);
-        setPageLoaded(true);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    if (qnId) {
+      getQuestion({ id: qnId })
+        .then((result) => {
+          setQuestion(result.data);
+          setPageLoaded(true);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
