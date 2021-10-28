@@ -12,7 +12,12 @@ export async function addUserToTimeoutQueue(
   data: App.userTimeoutDetails
 ): Promise<any> {
   if (!data) {
-    return;
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      'The function must be called with ' +
+        'one argument "userId", the user\'s identifier,' +
+        'one argument "queueName", the queue\'s name,'
+    );
   }
 
   const client = new CloudTasksClient();
