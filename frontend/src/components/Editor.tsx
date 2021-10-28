@@ -33,10 +33,6 @@ const StyledMonacoEditor = styled(MonacoEditor)`
   flex: flex-grow;
 `;
 
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 const Editor: React.FC<PeerprepEditorProps> = function ({
   questionLink,
   questionTemplates,
