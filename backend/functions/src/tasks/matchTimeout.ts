@@ -15,7 +15,6 @@ export async function addUserToTimeoutQueue(
     return;
   }
 
-  functions.logger.info('Env variables:', [PROJECT_ID, PROJECT_LOCATION]);
   const client = new CloudTasksClient();
   const parent = client.queuePath(
     PROJECT_ID,

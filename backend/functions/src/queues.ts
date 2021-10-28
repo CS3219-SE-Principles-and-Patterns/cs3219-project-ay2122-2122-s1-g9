@@ -17,7 +17,8 @@ export const addUserToQueue = functions.https.onCall(
   async (data: App.addUserToQueue, context: CallableContext) => {
     const uid = validateAndGetUid(context);
     const queueName = validateAndGetQueueName(data);
-    functions.logger.info('Data: ', data);
+    functions.logger.info('Parameters received: ', data);
+
     const userIsInCurrentSession = await isInCurrentSession(uid);
     if (userIsInCurrentSession) {
       throw new functions.https.HttpsError(

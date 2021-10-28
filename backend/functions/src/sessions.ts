@@ -62,7 +62,10 @@ export const stopSession = functions.https.onCall(
     const sessId = await sessionUtil.getCurrentSessionId(uid);
 
     if (!sessId) {
-      throw new functions.https.HttpsError('not-found', 'Session not found.');
+      throw new functions.https.HttpsError(
+        'not-found',
+        'User is currently not in a session.'
+      );
     }
 
     await sessionUtil.endSession(sessId);
@@ -91,27 +94,27 @@ export const changeQuestionRequest = functions.https.onCall(
     const currUid = validateAndGetUid(context);
     const sessId = await sessionUtil.getCurrentSessionId(currUid);
     if (!sessId) {
-      throw new functions.https.HttpsError('not-found', 'Session not found.');
+      throw new functions.https.HttpsError(
+        'not-found',
+        'User is currently not in a session.'
+      );
     }
-
-    const session = await sessionUtil.getSession(sessId);
-    functions.logger.info('Current session: ', session);
-    for (const uid of session.users) {
-      if (uid != currUid) {
-        sendMessage(uid, CHANGE_QUESTION_REQUEST, null);
-      }
-    }
+    const partnerId = await sessionUtil.findSessionPartner(currUid, sessId);
+    await sendMessage(partnerId, CHANGE_QUESTION_REQUEST, null);
   }
 );
 
 export const changeQuestion = functions.https.onCall(
-  async (data: App.changeQuestionRequest, context: CallableContext) => {
+  async (data: App.changeQuestionData, context: CallableContext) => {
     const queueName = validateAndGetQueueName(data);
     const uid = validateAndGetUid(context);
     const sessionPath = admin.database().ref('/sessions');
     const sessId = await sessionUtil.getCurrentSessionId(uid);
     if (!sessId) {
-      throw new functions.https.HttpsError('not-found', 'Session not found.');
+      throw new functions.https.HttpsError(
+        'not-found',
+        'User is currently not in a session.'
+      );
     }
     const currentSession = await sessionUtil.getSession(sessId);
     functions.logger.info('Current session: ', currentSession);
