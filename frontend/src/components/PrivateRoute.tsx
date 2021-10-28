@@ -35,7 +35,7 @@ const PrivateRoute: React.FC<RouteProps> = function (props) {
       }
 
       getSession({ sessId }).then((res) => {
-        // We have all the data we need for collaborate page
+        // Only replace history when we have all the data we need
         dispatch(setSessionId(sessId));
         dispatch(setQnsId(res.data.qnsId));
         dispatch(setIsQueuing(false));
@@ -67,46 +67,3 @@ const PrivateRoute: React.FC<RouteProps> = function (props) {
 };
 
 export default PrivateRoute;
-
-// const PrivateRoute: React.FC<RouteProps> = function (props) {
-//   const { children, location, ...rest } = props;
-//   const auth = useAuth();
-//   const history = useHistory();
-//   const [isLoading, setIsLoading] = useState<boolean>(true);
-
-//   useEffect(() => {
-//     if (auth?.user == null || location?.pathname === '/collaborate') {
-//       setIsLoading(false);
-//       return;
-//     }
-
-//     isInCurrentSession().then((res) => {
-//       if (res.data.isInCurrentSession) {
-//         history.push('/collaborate');
-//       }
-//       setIsLoading(false);
-//     });
-//   }, [auth?.user, history, location?.pathname]);
-
-//   if (isLoading) {
-//     const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
-//     return <Spin indicator={antIcon} />;
-//   }
-
-//   return (
-//     <Route {...rest}>
-//       {auth?.user ? (
-//         children
-//       ) : (
-//         <Redirect
-//           to={{
-//             pathname: '/signin',
-//             state: { from: location },
-//           }}
-//         />
-//       )}
-//     </Route>
-//   );
-// };
-
-// export default PrivateRoute;
