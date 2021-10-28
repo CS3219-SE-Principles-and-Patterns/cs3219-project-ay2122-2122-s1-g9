@@ -4,11 +4,7 @@ import { isOnline } from './presenceCore';
 import { SESS_STATUS_ENDED, SESS_STATUS_STARTED } from '../consts/values';
 import { sendMessage } from './msgCore';
 import { getQuestion, getRandomQuestion } from './questionCore';
-import {
-  FOUND_SESSION,
-  STOP_SESSION,
-  WRITE_DEFAULT_CODE,
-} from '../consts/msgTypes';
+import { FOUND_SESSION, STOP_SESSION } from '../consts/msgTypes';
 
 export async function getSession(sessId: string): Promise<any> {
   const fs = admin.firestore();
@@ -150,8 +146,5 @@ export async function initSession(
     });
   }
 
-  // Write Default Code
-  // const writeDefaultCodeData = { sessId, qnsId };
-  // await sendMessage(users[0], WRITE_DEFAULT_CODE, writeDefaultCodeData);
   return;
 }
