@@ -26,7 +26,6 @@ const PrivateRoute: React.FC<RouteProps> = function (props) {
       return;
     }
 
-    console.log('hello');
     getCurrentSessionId().then((res) => {
       const sessId = res.data.sessId;
 

@@ -40,6 +40,8 @@ const useMessageQueue = function () {
           dispatch(setQnsId(null));
           history.replace('/');
           break;
+        // case 'write_default_code':
+        //   break;
         // case 'CHANGE_QUESTION_REQUEST':
         //   dispatch(setHasChangeQnRequest(true));
         //   break;
