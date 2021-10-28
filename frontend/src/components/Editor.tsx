@@ -33,6 +33,10 @@ const StyledMonacoEditor = styled(MonacoEditor)`
   flex: flex-grow;
 `;
 
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 const Editor: React.FC<PeerprepEditorProps> = function ({
   questionLink,
   questionTemplates,
@@ -69,10 +73,10 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
     return () => {
       defaultWriterPath.off('value', onWriterChange);
     };
-  }, [sessDbRef, currentUser]);
+  }, [sessDbRef, currentUser?.uid]);
 
   useEffect(() => {
-    if (!editorLoaded || editorRef.current == null) {
+    if (!editorLoaded || editorRef.current == null || !editorLanguage) {
       return;
     }
 
@@ -89,7 +93,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
             (language) => language.value === editorLanguage
           )?.defaultCode ?? '';
 
-        if (firepad.getText() === '') {
+        if (firepad.isHistoryEmpty()) {
           firepad.setText(codeToWrite);
         }
       }
@@ -100,14 +104,15 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
       firepad.off(FirepadEvent.Ready, firepadOnReady);
       firepad.dispose();
     };
-  }, [
-    editorLoaded,
-    sessDbRef,
-    currentUser,
-    editorLanguage,
-    defaultWriter,
-    questionTemplates,
-  ]);
+  }, [editorLoaded, editorRef.current, editorLanguage, defaultWriter]); // Should not touch the dependencies here
+
+  // useEffect(() => {
+  //   return () => {
+  //     setTimeout(async () => {
+  //       await console.log('Do nothing');
+  //     }, 1000);
+  //   };
+  // }, []);
 
   // useEffect(() => {
   //   if (!editorLoaded || editorRef.current == null) {

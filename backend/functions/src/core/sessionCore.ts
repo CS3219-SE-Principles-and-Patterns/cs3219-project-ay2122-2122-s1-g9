@@ -3,7 +3,7 @@ import * as functions from 'firebase-functions';
 import { isOnline } from './presenceCore';
 import { SESS_STATUS_ENDED, SESS_STATUS_STARTED } from '../consts/values';
 import { sendMessage } from './msgCore';
-import { getRandomQuestion } from './questionCore';
+import { getQuestion, getRandomQuestion } from './questionCore';
 import {
   FOUND_SESSION,
   STOP_SESSION,
@@ -121,19 +121,24 @@ export async function initSession(
 ): Promise<void> {
   const sessRtdbPath = admin.database().ref('/sessions');
   const qnsId = await getRandomQuestion(lvl);
+  const qns = await getQuestion(qnsId);
 
   const users = [uid1, uid2];
   const session = {
     users,
     qnsId,
     startedAt: Date.now(),
+    defaultWriter: users[0],
+    language: qns.templates[0].value,
   };
 
   const sessId = (await sessRtdbPath.push(session)).key;
   const sessFsPath = admin.firestore().doc(`/sessions/${sessId}`);
 
   await sessFsPath.set({
-    ...session,
+    users,
+    qnsId,
+    startedAt: session.startedAt,
     status: SESS_STATUS_STARTED,
   });
 
@@ -146,7 +151,7 @@ export async function initSession(
   }
 
   // Write Default Code
-  const writeDefaultCodeData = { sessId, qnsId };
-  await sendMessage(users[0], WRITE_DEFAULT_CODE, writeDefaultCodeData);
+  // const writeDefaultCodeData = { sessId, qnsId };
+  // await sendMessage(users[0], WRITE_DEFAULT_CODE, writeDefaultCodeData);
   return;
 }

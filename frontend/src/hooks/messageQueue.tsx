@@ -34,8 +34,10 @@ const useMessageQueue = function () {
           history.replace('/collaborate');
           break;
         case 'NO_MATCH_FOUND':
-        case 'STOP_SESSION':
           dispatch(setIsQueuing(false));
+          history.replace('/');
+          break;
+        case 'STOP_SESSION':
           dispatch(setSessionId(null));
           dispatch(setQnsId(null));
           history.replace('/');

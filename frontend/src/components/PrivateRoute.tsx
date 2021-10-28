@@ -29,6 +29,11 @@ const PrivateRoute: React.FC<RouteProps> = function (props) {
     getCurrentSessionId().then((res) => {
       const sessId = res.data.sessId;
 
+      if (!sessId) {
+        setIsLoading(false);
+        return;
+      }
+
       getSession({ sessId }).then((res) => {
         // We have all the data we need for collaborate page
         dispatch(setSessionId(sessId));
