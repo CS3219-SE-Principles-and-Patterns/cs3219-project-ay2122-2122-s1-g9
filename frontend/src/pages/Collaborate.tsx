@@ -16,6 +16,7 @@ import useAuth from '../hooks/auth';
 // import useMessageQueue from '../hooks/messageQueue';
 import { getIsVisible } from '../redux/chatSlice';
 import { useAppSelector } from '../redux/hooks';
+import { getQnsId } from '../redux/matchSlice';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -75,6 +76,7 @@ const isOnlineForDatabase = {
 
 const Collaborate: React.FC = function () {
   const isChatVisible = useAppSelector(getIsVisible);
+  const qnId = useAppSelector(getQnsId) as string;
   const [question, setQuestion] = useState<Types.Question>(
     {} as Types.Question
   );
@@ -112,7 +114,7 @@ const Collaborate: React.FC = function () {
   });
 
   useEffect(() => {
-    getQuestion({ id: 'two-sum' })
+    getQuestion({ id: qnId })
       .then((result) => {
         setQuestion(result.data);
         setPageLoaded(true);

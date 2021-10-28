@@ -6,4 +6,7 @@ declare namespace FunctionTypes {
   interface addUserToQueueData {
     queueName: string;
   }
+  interface removeUserFromQueueData {
+    queueName: string;
+  }
 }

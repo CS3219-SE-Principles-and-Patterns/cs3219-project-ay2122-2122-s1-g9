@@ -1,12 +1,13 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Button, Layout, Spin, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import styled from 'styled-components';
 
 import PageLayout from '../components/PageLayout';
 import { Spacer } from '../components/Styles';
 // import useMessageQueue from '../hooks/messageQueue';
+import { removeUserFromQueue } from '../firebase/functions';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { getIsQueuing, getSessionId, setIsQueuing } from '../redux/matchSlice';
 
@@ -32,6 +33,7 @@ const Queue: React.FC = function () {
   const isQueueing = useAppSelector(getIsQueuing);
   const sessionId = useAppSelector(getSessionId);
   const [timeLeft, setTimeLeft] = useState<number>(30);
+  const location = useLocation();
 
   // useMessageQueue();
 
@@ -53,12 +55,18 @@ const Queue: React.FC = function () {
     }, 1000);
 
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeLeft]);
 
   const handleCancelClick = () => {
-    dispatch(setIsQueuing(false));
-    history.replace('/');
-    // TODO: inform server that user has left queue
+    removeUserFromQueue({ queueName: location.state as string })
+      .then(() => {
+        dispatch(setIsQueuing(false));
+        history.replace('/');
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (

@@ -3,7 +3,7 @@ import { useHistory } from 'react-router';
 
 import firebaseApp from '../firebase/firebaseApp';
 import { useAppDispatch } from '../redux/hooks';
-import { setIsQueuing, setSessionId } from '../redux/matchSlice';
+import { setIsQueuing, setQnsId, setSessionId } from '../redux/matchSlice';
 import useAuth from './auth';
 
 const useMessageQueue = function () {
