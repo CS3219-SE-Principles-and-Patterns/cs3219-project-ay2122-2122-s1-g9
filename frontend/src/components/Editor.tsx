@@ -47,7 +47,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const sessDbRef = firebaseApp.database().ref(`/sessions/${sessionId}`);
   const currentUser = firebaseApp.auth().currentUser;
-  const [defaultWriter, setdefaultWriter] = useState<boolean>(false);
+  // const [defaultWriter, setdefaultWriter] = useState<boolean>(false);
 
   const [editorLoaded, setEditorLoaded] = useState<boolean>(false);
   const [editorLanguage, setEditorLanguage] = useState<string>(
@@ -58,53 +58,91 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
     cursorStyle: 'line',
   };
 
-  useEffect(() => {
-    const defaultWriterPath = sessDbRef.child('defaultWriter');
+  // useEffect(() => {
+  //   const defaultWriterPath = sessDbRef.child('defaultWriter');
 
-    const onWriterChange = (snapshot: firebase.database.DataSnapshot) => {
-      const writerUid = snapshot.val();
-      if (currentUser?.uid) {
-        // currentUser will not be null
-        setdefaultWriter(writerUid === currentUser.uid);
-      }
-    };
+  //   const onWriterChange = (snapshot: firebase.database.DataSnapshot) => {
+  //     const writerUid = snapshot.val();
+  //     if (currentUser?.uid) {
+  //       // currentUser will not be null
+  //       setdefaultWriter(writerUid === currentUser.uid);
+  //     }
+  //   };
 
-    defaultWriterPath.on('value', onWriterChange);
-    return () => {
-      defaultWriterPath.off('value', onWriterChange);
-    };
-  }, [sessDbRef, currentUser?.uid]);
+  //   defaultWriterPath.on('value', onWriterChange);
+  //   return () => {
+  //     defaultWriterPath.off('value', onWriterChange);
+  //   };
+  // }, [sessDbRef, currentUser?.uid]);
 
   useEffect(() => {
     if (!editorLoaded || editorRef.current == null || !editorLanguage) {
       return;
     }
 
+    // console.log('defaultWriter: ' + defaultWriter);
+
     const contentRef = sessDbRef.child(`content/${editorLanguage}`);
+    console.log('a');
+    console.log(sessDbRef.key);
     const firepad = fromMonaco(contentRef, editorRef.current);
+    console.log('b');
     if (currentUser?.displayName) {
       firepad.setUserName(currentUser.displayName);
     }
+    console.log('c');
 
     const firepadOnReady = () => {
-      if (defaultWriter) {
-        const codeToWrite =
-          questionTemplates.find(
-            (language) => language.value === editorLanguage
-          )?.defaultCode ?? '';
+      console.log('d');
+      sessDbRef
+        .child('defaultWriter')
+        .get()
+        .then((snapshot) => {
+          const defaultWriterUid = snapshot.val(); // guaranteed to be inside because written by backend
+          const defaultWriter = defaultWriterUid === currentUser?.uid; // currentUser guaranteed to be there
 
-        if (firepad.isHistoryEmpty()) {
-          firepad.setText(codeToWrite);
-        }
-      }
+          console.log(defaultWriter);
+
+          if (defaultWriter) {
+            const codeToWrite =
+              questionTemplates.find(
+                (language) => language.value === editorLanguage
+              )?.defaultCode ?? '';
+            console.log('e');
+            console.log(questionTemplates);
+
+            console.log(firepad.isHistoryEmpty());
+
+            if (firepad.isHistoryEmpty()) {
+              console.log('f');
+              firepad.setText(codeToWrite);
+            }
+          }
+        });
     };
+
+    //   const defaultWriter = defaultWriterUid == currentUser?.uid;
+
+    //   if (defaultWriter) {
+    //     const codeToWrite =
+    //       questionTemplates.find(
+    //         (language) => language.value === editorLanguage
+    //       )?.defaultCode ?? '';
+    //     console.log('e');
+
+    //     if (firepad.isHistoryEmpty()) {
+    //       firepad.setText(codeToWrite);
+    //     }
+    //     console.log('f');
+    //   }
+    // };
 
     firepad.on(FirepadEvent.Ready, firepadOnReady);
     return () => {
       firepad.off(FirepadEvent.Ready, firepadOnReady);
       firepad.dispose();
     };
-  }, [editorLoaded, editorRef.current, editorLanguage, defaultWriter]); // Should not touch the dependencies here
+  }, [editorLoaded, editorLanguage, questionTemplates]); // Should not touch the dependencies here
 
   // useEffect(() => {
   //   return () => {
