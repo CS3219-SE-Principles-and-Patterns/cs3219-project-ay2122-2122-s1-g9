@@ -38,6 +38,7 @@ describe('detectMatchesCreateSession', () => {
         .stub(questionCore, 'getRandomQuestion')
         .returns(Promise.resolve('two-sum'));
 
+      // TODO: Can change to question fixture here
       const stub2 = sinon.stub(questionCore, 'getQuestion').returns(
         Promise.resolve({
           slug: 'two-sum',
