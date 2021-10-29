@@ -17,7 +17,7 @@ declare namespace App {
   }
 
   interface changeQuestionData {
-    queueName: string;
+    level: string;
   }
 
   interface Session {

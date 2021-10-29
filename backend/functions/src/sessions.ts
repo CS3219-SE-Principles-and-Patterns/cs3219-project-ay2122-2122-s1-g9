@@ -48,7 +48,7 @@ export const changeQuestionRequest = functions.https.onCall(
 
 export const changeQuestion = functions.https.onCall(
   async (data: App.changeQuestionData, context: CallableContext) => {
-    const lvl = validateAndGetLevel(data, 'lvl');
+    const lvl = validateAndGetLevel(data, 'level');
     const uid = validateAndGetUid(context);
     const sessId = await sessionCore.getCurrentSessionId(uid);
     if (!sessId) {
