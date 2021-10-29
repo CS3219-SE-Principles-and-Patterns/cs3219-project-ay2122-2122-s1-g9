@@ -1,8 +1,8 @@
 import * as functions from 'firebase-functions';
 import * as sessionCore from './core/sessionCore';
-import { SUCCESS_RESP } from './consts/values';
 import { validateAndGetUid } from './core/authCore';
 import { CallableContext } from 'firebase-functions/v1/https';
+import { SUCCESS_RESP } from './consts/values';
 
 export const stopSession = functions.https.onCall(
   async (data: any, context: CallableContext) => {
@@ -10,7 +10,10 @@ export const stopSession = functions.https.onCall(
     const sessId = await sessionCore.getCurrentSessionId(uid);
 
     if (!sessId) {
-      throw new functions.https.HttpsError('not-found', 'Session not found.');
+      throw new functions.https.HttpsError(
+        'not-found',
+        'User is currently not in a session.'
+      );
     }
 
     await sessionCore.endSession(sessId);
@@ -47,5 +50,29 @@ export const getSession = functions.https.onCall(
 
     const sessId = data.sessId;
     return sessionCore.getSession(sessId);
+  }
+);
+
+export const changeQuestionRequest = functions.https.onCall(
+  async (data: any, context: CallableContext) => {
+    const currUid = validateAndGetUid(context);
+    await sessionCore.processChangeQuestionRequest(currUid);
+    return SUCCESS_RESP;
+  }
+);
+
+export const changeQuestion = functions.https.onCall(
+  async (_, context: CallableContext) => {
+    const uid = validateAndGetUid(context);
+    const sessId = await sessionCore.getCurrentSessionId(uid);
+    if (!sessId) {
+      throw new functions.https.HttpsError(
+        'not-found',
+        'User is currently not in a session.'
+      );
+    }
+
+    await sessionCore.changeQuestionInSession(sessId);
+    return SUCCESS_RESP;
   }
 );

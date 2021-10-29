@@ -4,9 +4,13 @@ import { SESS_STATUS_ENDED, SESS_STATUS_STARTED } from '../consts/values';
 import { sendMessage } from './msgCore';
 import { getQuestion, getRandomQuestion } from './questionCore';
 import { isOnline } from './presenceCore';
-import { FOUND_SESSION, STOP_SESSION } from '../consts/msgTypes';
+import {
+  FOUND_SESSION,
+  STOP_SESSION,
+  CHANGE_QUESTION_REQUEST,
+} from '../consts/msgTypes';
 
-export async function getSession(sessId: string): Promise<any> {
+export async function getSession(sessId: string): Promise<App.Session> {
   const fs = admin.firestore();
   const docRef = await fs.collection('sessions').doc(sessId).get();
 
@@ -17,7 +21,8 @@ export async function getSession(sessId: string): Promise<any> {
     );
   }
 
-  return docRef.data();
+  const data = docRef.data() as App.Session;
+  return data;
 }
 
 export async function getTimeElapsed(sessId: string): Promise<number> {
@@ -39,7 +44,10 @@ export async function findSessionPartner(
   return users[0];
 }
 
-export async function endSession(sessId: string): Promise<void> {
+export async function endSession(
+  sessId: string,
+  startNextSession = false
+): Promise<void> {
   const fs = admin.firestore();
 
   const sessRef = fs.collection('sessions').doc(sessId);
@@ -55,8 +63,9 @@ export async function endSession(sessId: string): Promise<void> {
     await currentSessUserRef.delete();
   }
 
-  const stopSessionData = { sessId };
+  const stopSessionData = { sessId, startNextSession };
   for (const uid of sess.users) {
+    // TODO: We should probably split the immedate starting of next session in another message.
     await sendMessage(uid, STOP_SESSION, stopSessionData);
   }
 
@@ -123,6 +132,7 @@ export async function initSession(
   const session = {
     users,
     qnsId,
+    lvl,
     startedAt: Date.now(),
     defaultWriter: users[0],
     language: qns.templates[0].value,
@@ -146,5 +156,43 @@ export async function initSession(
     });
   }
 
+  return;
+}
+
+export async function processChangeQuestionRequest(
+  requesterUid: string
+): Promise<void> {
+  const sessId = await getCurrentSessionId(requesterUid);
+  if (!sessId) {
+    throw new functions.https.HttpsError(
+      'not-found',
+      'User who requested to change question is currently not in a session.'
+    );
+  }
+
+  const partnerId = await findSessionPartner(requesterUid, sessId);
+  await sendMessage(partnerId, CHANGE_QUESTION_REQUEST, null);
+  return;
+}
+
+export async function isSessionOngoing(sessId: string): Promise<boolean> {
+  const sess = await getSession(sessId);
+  return sess.status === 'started';
+}
+
+export async function changeQuestionInSession(sessId: string): Promise<void> {
+  // Create a new session and send the guys in
+  if (!(await isSessionOngoing(sessId))) {
+    throw new functions.https.HttpsError(
+      'failed-precondition',
+      `Session ${sessId} is not currently running.`
+    );
+  }
+
+  const session = await getSession(sessId);
+  const userIds = session.users;
+
+  await endSession(sessId, true);
+  await initSession(userIds[0], userIds[1], session.lvl);
   return;
 }

@@ -1,14 +1,14 @@
 declare namespace App {
   interface getQuestionData {
-    qnsId: string;
+    qnsId?: string;
   }
 
   interface addUserToQueue {
-    queueName: string;
+    queueName?: string;
   }
 
   interface removeUserFromQueue {
-    queueName: string;
+    queueName?: string;
   }
 
   interface userTimeoutDetails {
@@ -20,11 +20,16 @@ declare namespace App {
     sessId?: string;
   }
 
+  interface changeQuestionData {
+    level: string;
+  }
+
   interface Session {
     qnsId: string;
     status: 'started' | 'ended';
     startedAt: number;
     endedAt?: number;
     users: [string, string];
+    lvl: string;
   }
 }
