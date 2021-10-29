@@ -14,7 +14,6 @@ import TopToolBar from './TopToolBar';
 interface PeerprepEditorProps {
   questionTemplates: Types.QuestionTemplate[];
   questionLink: string;
-  setQuestion: React.Dispatch<React.SetStateAction<Types.Question>>;
 }
 
 const StyledContainer = styled.div`
@@ -33,7 +32,6 @@ const StyledMonacoEditor = styled(MonacoEditor)`
 const Editor: React.FC<PeerprepEditorProps> = function ({
   questionLink,
   questionTemplates,
-  setQuestion,
 }) {
   const sessionId = useAppSelector(getSessionId);
   const monacoRef = useRef<Monaco | null>(null);
@@ -117,7 +115,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
         }
         onMount={handleEditorMount}
       />
-      <BottomToolBar setQuestion={setQuestion} />
+      <BottomToolBar />
     </StyledContainer>
   );
 };
