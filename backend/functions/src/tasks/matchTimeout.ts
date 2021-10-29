@@ -6,7 +6,7 @@ import {
   PROJECT_LOCATION,
   USER_TIMEOUT_DURING_MATCH,
   REMOVE_UNMATCHED_USER_FUNCTION_URL,
-} from '../consts/values';
+} from '../consts/tasks';
 
 export async function addUserToTimeoutQueue(
   data: App.userTimeoutDetails
