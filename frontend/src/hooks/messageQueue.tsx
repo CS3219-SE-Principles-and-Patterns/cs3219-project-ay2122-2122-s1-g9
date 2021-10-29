@@ -50,7 +50,9 @@ const useMessageQueue = function () {
           dispatch(setSessionId(null));
           dispatch(setQnsId(null));
           dispatch(setHasChangeQnRequest(false));
-          history.replace('/');
+          if (!data.startNextSession) {
+            history.replace('/');
+          }
           break;
         case 'CHANGE_QUESTION_REQUEST':
           dispatch(setHasChangeQnRequest(true));

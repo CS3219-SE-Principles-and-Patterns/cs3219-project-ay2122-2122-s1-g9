@@ -9,7 +9,4 @@ declare namespace FunctionTypes {
   interface removeUserFromQueueData {
     queueName: string;
   }
-  interface changeQuestionData {
-    queueName: string;
-  }
 }

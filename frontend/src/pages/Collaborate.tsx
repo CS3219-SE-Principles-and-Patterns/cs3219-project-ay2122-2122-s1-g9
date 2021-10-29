@@ -98,7 +98,7 @@ const Collaborate: React.FC = function () {
       content:
         'Your teammate has requested to change question. Will you allow it?',
       onOk() {
-        return changeQuestion({ queueName: question.level })
+        return changeQuestion()
           .then(() => {
             dispatch(setHasChangeQnRequest(false));
           })

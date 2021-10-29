@@ -48,8 +48,6 @@ export const changeQuestionRequest = async () => {
   return await changeQuestionRequestFunc();
 };
 
-export const changeQuestion = async (
-  data: FunctionTypes.changeQuestionData
-) => {
-  return await changeQuestionFunc(data);
+export const changeQuestion = async () => {
+  return await changeQuestionFunc();
 };
