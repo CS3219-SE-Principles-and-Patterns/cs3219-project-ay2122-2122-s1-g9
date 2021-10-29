@@ -10,7 +10,7 @@ import {
   WRITE_DEFAULT_CODE,
 } from '../consts/msgTypes';
 
-export async function getSession(sessId: string): Promise<any> {
+export async function getSession(sessId: string): Promise<App.Session> {
   const fs = admin.firestore();
   const docRef = await fs.collection('sessions').doc(sessId).get();
 
@@ -148,5 +148,48 @@ export async function initSession(
   // Write Default Code
   const writeDefaultCodeData = { sessId, qnsId };
   await sendMessage(users[0], WRITE_DEFAULT_CODE, writeDefaultCodeData);
+  return;
+}
+
+export async function processChangeQuestionRequest(
+  requesterUid: string
+): Promise<void> {
+  const sessId = await getCurrentSessionId(requesterUid);
+  if (!sessId) {
+    throw new functions.https.HttpsError(
+      'not-found',
+      'User who requested to change question is currently not in a session.'
+    );
+  }
+
+  const partnerId = await findSessionPartner(requesterUid, sessId);
+  await sendMessage(partnerId, CHANGE_QUESTION_REQUEST, null);
+  return;
+}
+
+export async function isSessionOngoing(sessId: string): Promise<boolean> {
+  const sess = await getSession(sessId);
+  return sess.status === 'started';
+}
+
+export async function changeQuestionInSession(
+  newQnsLvl: string,
+  sessId: string
+): Promise<void> {
+  // Create a new session and send the guys in
+  if (!(await isSessionOngoing(sessId))) {
+    throw new functions.https.HttpsError(
+      'failed-precondition',
+      `Session ${sessId} is not currently running.`
+    );
+  }
+
+  const session = await getSession(sessId);
+  const userIds = session.users;
+
+  // const qnsId = await getRandomQuestion(newQnsLvl);
+
+  await endSession(sessId);
+  await initSession(userIds[0], userIds[1], newQnsLvl);
   return;
 }

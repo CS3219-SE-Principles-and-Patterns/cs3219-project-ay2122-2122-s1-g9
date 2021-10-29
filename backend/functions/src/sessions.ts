@@ -1,12 +1,14 @@
 import * as functions from 'firebase-functions';
-import * as sessionUtil from './core/sessionCore';
+import * as sessionCore from './core/sessionCore';
 import { validateAndGetUid } from './core/authCore';
+import { validateAndGetQueueName } from './core/queueCore';
 import { CallableContext } from 'firebase-functions/v1/https';
+import { SUCCESS_RESP } from './consts/values';
 
 export const stopSession = functions.https.onCall(
   async (data: any, context: CallableContext) => {
     const uid = validateAndGetUid(context);
-    const sessId = await sessionUtil.getCurrentSessionId(uid);
+    const sessId = await sessionCore.getCurrentSessionId(uid);
 
     if (!sessId) {
       throw new functions.https.HttpsError(
@@ -15,7 +17,7 @@ export const stopSession = functions.https.onCall(
       );
     }
 
-    await sessionUtil.endSession(sessId);
+    await sessionCore.endSession(sessId);
     return SUCCESS_RESP;
   }
 );
@@ -23,7 +25,7 @@ export const stopSession = functions.https.onCall(
 export const getCurrentSessionId = functions.https.onCall(
   async (data: any, context: CallableContext) => {
     const uid = validateAndGetUid(context);
-    const sessId = await sessionUtil.getCurrentSessionId(uid);
+    const sessId = await sessionCore.getCurrentSessionId(uid);
     return { sessId };
   }
 );
@@ -31,7 +33,7 @@ export const getCurrentSessionId = functions.https.onCall(
 export const isInCurrentSession = functions.https.onCall(
   async (data: any, context: CallableContext) => {
     const uid = validateAndGetUid(context);
-    const res = await sessionUtil.isInCurrentSession(uid);
+    const res = await sessionCore.isInCurrentSession(uid);
     return { isInCurrentSession: res };
   }
 );
@@ -39,42 +41,24 @@ export const isInCurrentSession = functions.https.onCall(
 export const changeQuestionRequest = functions.https.onCall(
   async (data: any, context: CallableContext) => {
     const currUid = validateAndGetUid(context);
-    const sessId = await sessionUtil.getCurrentSessionId(currUid);
-    if (!sessId) {
-      throw new functions.https.HttpsError(
-        'not-found',
-        'User is currently not in a session.'
-      );
-    }
-    const partnerId = await sessionUtil.findSessionPartner(currUid, sessId);
-    await sendMessage(partnerId, CHANGE_QUESTION_REQUEST, null);
+    await sessionCore.processChangeQuestionRequest(currUid);
+    return SUCCESS_RESP;
   }
 );
 
 export const changeQuestion = functions.https.onCall(
   async (data: App.changeQuestionData, context: CallableContext) => {
-    const queueName = validateAndGetQueueName(data);
+    const lvl = validateAndGetQueueName(data);
     const uid = validateAndGetUid(context);
-    const sessionPath = admin.database().ref('/sessions');
-    const sessId = await sessionUtil.getCurrentSessionId(uid);
+    const sessId = await sessionCore.getCurrentSessionId(uid);
     if (!sessId) {
       throw new functions.https.HttpsError(
         'not-found',
         'User is currently not in a session.'
       );
     }
-    const currentSession = await sessionUtil.getSession(sessId);
-    functions.logger.info('Current session: ', currentSession);
-    const users = currentSession.users;
 
-    const qnsId = await getRandomQuestion(queueName);
-
-    const session = {
-      users,
-      qnsId,
-      startedAt: Date.now(),
-    };
-
-    sessionPath.push(session);
+    await sessionCore.changeQuestionInSession(lvl, sessId);
+    return SUCCESS_RESP;
   }
 );

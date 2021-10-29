@@ -5,11 +5,12 @@ import { isInCurrentSession } from './core/sessionCore';
 import { sendMessage } from './core/msgCore';
 import { NO_MATCH_FOUND } from './consts/msgTypes';
 import * as queueCore from './core/queueCore';
+import { SUCCESS_RESP } from './consts/values';
 
 export const addUserToQueue = functions.https.onCall(
   async (data: App.addUserToQueue, context: CallableContext) => {
     const uid = validateAndGetUid(context);
-    const queueName = validateAndGetQueueName(data);
+    const queueName = queueCore.validateAndGetQueueName(data);
     functions.logger.info('Parameters received: ', data);
 
     const userIsInCurrentSession = await isInCurrentSession(uid);
@@ -28,7 +29,7 @@ export const addUserToQueue = functions.https.onCall(
 export const removeUserFromQueue = functions.https.onCall(
   async (data: App.removeUserFromQueue, context: CallableContext) => {
     const uid = validateAndGetUid(context);
-    const queueName = validateAndGetQueueName(data);
+    const queueName = queueCore.validateAndGetQueueName(data);
 
     await queueCore.removeUserFromQueue(uid, queueName);
     return SUCCESS_RESP;
@@ -47,8 +48,8 @@ export const removeUnmatchedUserAfterTimeout = functions.https.onCall(
     }
 
     // If the user is not in a session, remove them from the queue
-    validateAndGetQueueName(data);
-    await queueCore.removeUserFromQueue(data.userId, data.queueName);
+    const queueName = queueCore.validateAndGetQueueName(data);
+    await queueCore.removeUserFromQueue(data.userId, queueName);
     await sendMessage(
       data.userId,
       NO_MATCH_FOUND,
