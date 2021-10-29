@@ -1,41 +1,17 @@
 import * as functions from 'firebase-functions';
 import { CallableContext } from 'firebase-functions/v1/https';
-
-import {
-  ALL_LVLS,
-  LVL_EASY,
-  LVL_HARD,
-  LVL_MEDIUM,
-  SUCCESS_RESP,
-} from './consts/values';
 import { validateAndGetUid } from './core/authCore';
 import { isInCurrentSession } from './core/sessionCore';
 import { sendMessage } from './core/msgCore';
 import { NO_MATCH_FOUND } from './consts/msgTypes';
 import * as queueCore from './core/queueCore';
-
-function validateAndGetQueueName(data: any): string {
-  if (!data || !data.queueName || data.queueName.length === 0) {
-    throw new functions.https.HttpsError(
-      'invalid-argument',
-      'The function must be called with a single argument "queueName"'
-    );
-  }
-
-  if (!ALL_LVLS.includes(data.queueName.toLowerCase())) {
-    throw new functions.https.HttpsError(
-      'invalid-argument',
-      `The queueName must be one of ${LVL_EASY}, ${LVL_MEDIUM}, ${LVL_HARD}`
-    );
-  }
-
-  return data.queueName;
-}
+import { SUCCESS_RESP } from './consts/values';
 
 export const addUserToQueue = functions.https.onCall(
   async (data: App.addUserToQueue, context: CallableContext) => {
     const uid = validateAndGetUid(context);
-    const queueName = validateAndGetQueueName(data);
+    const queueName = queueCore.validateAndGetLevel(data);
+    functions.logger.info('Parameters received: ', data);
 
     const userIsInCurrentSession = await isInCurrentSession(uid);
     if (userIsInCurrentSession) {
@@ -53,7 +29,7 @@ export const addUserToQueue = functions.https.onCall(
 export const removeUserFromQueue = functions.https.onCall(
   async (data: App.removeUserFromQueue, context: CallableContext) => {
     const uid = validateAndGetUid(context);
-    const queueName = validateAndGetQueueName(data);
+    const queueName = queueCore.validateAndGetLevel(data);
 
     await queueCore.removeUserFromQueue(uid, queueName);
     return SUCCESS_RESP;
@@ -72,8 +48,8 @@ export const removeUnmatchedUserAfterTimeout = functions.https.onCall(
     }
 
     // If the user is not in a session, remove them from the queue
-    validateAndGetQueueName(data);
-    await queueCore.removeUserFromQueue(data.userId, data.queueName);
+    const queueName = queueCore.validateAndGetLevel(data);
+    await queueCore.removeUserFromQueue(data.userId, queueName);
     await sendMessage(
       data.userId,
       NO_MATCH_FOUND,

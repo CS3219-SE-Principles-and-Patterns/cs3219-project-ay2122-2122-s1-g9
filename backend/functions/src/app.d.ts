@@ -16,11 +16,16 @@ declare namespace App {
     queueName: string;
   }
 
+  interface changeQuestionData {
+    level: string;
+  }
+
   interface Session {
     qnsId: string;
     status: 'started' | 'ended';
     startedAt: number;
     endedAt?: number;
     users: [string, string];
+    lvl: string;
   }
 }

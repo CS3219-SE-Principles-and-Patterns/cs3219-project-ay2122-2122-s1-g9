@@ -39,6 +39,7 @@ export async function createSession(): Promise<App.Session> {
     status: 'started',
     startedAt: Date.now(),
     users: [userId1, userId2],
+    lvl: 'easy',
   };
 
   const fs = admin.firestore();

@@ -1,6 +1,28 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { addUserToTimeoutQueue } from '../tasks/matchTimeout';
+import { ALL_LVLS, LVL_EASY, LVL_MEDIUM, LVL_HARD } from '../consts/values';
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export function validateAndGetLevel(data: any, keyName = 'queueName'): string {
+  if (!data || !data[keyName] || data[keyName].length === 0) {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      `The function must be called with a single argument ${keyName}`
+    );
+  }
+
+  const lvl = data[keyName].toLowerCase();
+
+  if (!ALL_LVLS.includes(lvl)) {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      `The queueName must be one of ${LVL_EASY}, ${LVL_MEDIUM}, ${LVL_HARD}`
+    );
+  }
+
+  return lvl;
+}
 
 export async function removeUserFromQueue(
   uid: string,
