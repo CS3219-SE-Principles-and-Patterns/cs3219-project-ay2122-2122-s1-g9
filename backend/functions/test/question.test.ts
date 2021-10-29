@@ -19,12 +19,12 @@ describe('getQuestion', () => {
   });
 
   it('should return a qns when given the correct id', async () => {
-    const result = await func({ id: slug });
+    const result = await func({ qnsId: slug });
     expect(result['slug']).to.equal(slug);
   });
 
   it('should throw and error when question cannot be found', async () => {
-    const result = func({ id: 'wrong-id' });
+    const result = func({ qnsId: 'wrong-id' });
     expect(result).to.eventually.be.rejected;
   });
 });

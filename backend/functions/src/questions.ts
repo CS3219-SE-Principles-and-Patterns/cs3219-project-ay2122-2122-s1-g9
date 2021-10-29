@@ -10,7 +10,7 @@ export const getQuestion = functions.https.onCall(
       throw new functions.https.HttpsError(
         'invalid-argument',
         'The function must be called with ' +
-          'one argument "id", the title slug of the question.'
+          'one argument "qnsId", the title slug of the question.'
       );
     }
 
