@@ -11,5 +11,13 @@
   "compileOnSave": true,
   "include": [
     "src", "test"
-  ]
+  ],
+  "ts-node": {
+    "files": true,
+    "transpileOnly": false,
+
+    "compilerOptions": {
+      "strict": false,
+    },
+  }
 }
