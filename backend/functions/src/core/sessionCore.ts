@@ -144,6 +144,7 @@ export async function initSession(
   await sessFsPath.set({
     users,
     qnsId,
+    lvl,
     startedAt: session.startedAt,
     status: SESS_STATUS_STARTED,
   });
