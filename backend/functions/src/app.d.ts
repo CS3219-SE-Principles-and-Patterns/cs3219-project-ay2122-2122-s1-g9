@@ -26,5 +26,6 @@ declare namespace App {
     startedAt: number;
     endedAt?: number;
     users: [string, string];
+    lvl: string;
   }
 }

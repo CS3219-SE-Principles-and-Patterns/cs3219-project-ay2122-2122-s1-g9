@@ -45,7 +45,10 @@ export async function findSessionPartner(
   return users[0];
 }
 
-export async function endSession(sessId: string): Promise<void> {
+export async function endSession(
+  sessId: string,
+  startNextSession: boolean
+): Promise<void> {
   const fs = admin.firestore();
 
   const sessRef = fs.collection('sessions').doc(sessId);
@@ -61,7 +64,7 @@ export async function endSession(sessId: string): Promise<void> {
     await currentSessUserRef.delete();
   }
 
-  const stopSessionData = { sessId };
+  const stopSessionData = { sessId, startNextSession };
   for (const uid of sess.users) {
     await sendMessage(uid, STOP_SESSION, stopSessionData);
   }
@@ -100,7 +103,7 @@ export async function isInCurrentSession(uid: string): Promise<boolean> {
   }
 
   // Exceeded threshold
-  await endSession(sessId);
+  await endSession(sessId, false);
   return false;
 }
 
@@ -129,6 +132,7 @@ export async function initSession(
     users,
     qnsId,
     startedAt: Date.now(),
+    lvl: lvl,
   };
 
   const sessId = (await sessRtdbPath.push(session)).key;
@@ -174,10 +178,7 @@ export async function isSessionOngoing(sessId: string): Promise<boolean> {
   return sess.status === 'started';
 }
 
-export async function changeQuestionInSession(
-  newQnsLvl: string,
-  sessId: string
-): Promise<void> {
+export async function changeQuestionInSession(sessId: string): Promise<void> {
   // Create a new session and send the guys in
   if (!(await isSessionOngoing(sessId))) {
     throw new functions.https.HttpsError(
@@ -189,9 +190,7 @@ export async function changeQuestionInSession(
   const session = await getSession(sessId);
   const userIds = session.users;
 
-  // const qnsId = await getRandomQuestion(newQnsLvl);
-
-  await endSession(sessId);
-  await initSession(userIds[0], userIds[1], newQnsLvl);
+  await endSession(sessId, true);
+  await initSession(userIds[0], userIds[1], session.lvl);
   return;
 }

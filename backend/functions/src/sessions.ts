@@ -1,7 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as sessionCore from './core/sessionCore';
 import { validateAndGetUid } from './core/authCore';
-import { validateAndGetLevel } from './core/queueCore';
 import { CallableContext } from 'firebase-functions/v1/https';
 import { SUCCESS_RESP } from './consts/values';
 
@@ -17,7 +16,7 @@ export const stopSession = functions.https.onCall(
       );
     }
 
-    await sessionCore.endSession(sessId);
+    await sessionCore.endSession(sessId, false);
     return SUCCESS_RESP;
   }
 );
@@ -47,8 +46,7 @@ export const changeQuestionRequest = functions.https.onCall(
 );
 
 export const changeQuestion = functions.https.onCall(
-  async (data: App.changeQuestionData, context: CallableContext) => {
-    const lvl = validateAndGetLevel(data, 'level');
+  async (_, context: CallableContext) => {
     const uid = validateAndGetUid(context);
     const sessId = await sessionCore.getCurrentSessionId(uid);
     if (!sessId) {
@@ -58,7 +56,7 @@ export const changeQuestion = functions.https.onCall(
       );
     }
 
-    await sessionCore.changeQuestionInSession(lvl, sessId);
+    await sessionCore.changeQuestionInSession(sessId);
     return SUCCESS_RESP;
   }
 );
