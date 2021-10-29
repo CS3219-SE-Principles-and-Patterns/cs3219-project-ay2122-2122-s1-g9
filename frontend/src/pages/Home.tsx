@@ -43,6 +43,7 @@ const Home: React.FC = function () {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const [difficulty, setDifficulty] = useState<Types.Difficulty | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSelect = (value: Types.Difficulty) => {
     setDifficulty(value);
@@ -52,13 +53,16 @@ const Home: React.FC = function () {
     if (!difficulty) {
       return;
     }
+    setIsLoading(true);
 
     addUserToQueue({ queueName: difficulty })
       .then(() => {
+        setIsLoading(false);
         dispatch(setIsQueuing(true));
         history.replace('/queue', difficulty);
       })
       .catch((error) => {
+        setIsLoading(false);
         console.error(error);
       });
   };
@@ -93,6 +97,7 @@ const Home: React.FC = function () {
               size="large"
               disabled={difficulty == null}
               onClick={handleClick}
+              loading={isLoading}
             >
               Get matched
             </StyledButton>

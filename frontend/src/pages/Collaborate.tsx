@@ -1,7 +1,7 @@
 import 'firebase/database';
 
 import { LoadingOutlined } from '@ant-design/icons';
-import { Collapse, Layout, Spin, Typography } from 'antd';
+import { Collapse, Layout, message, Modal, Spin, Typography } from 'antd';
 import firebase from 'firebase/app';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -11,15 +11,21 @@ import Editor from '../components/Editor';
 import PageLayout from '../components/PageLayout';
 import Sidebar from '../components/Sidebar';
 import { Spacer, TwoColLayout } from '../components/Styles';
-import { getQuestion } from '../firebase/functions';
+import { changeQuestion, getQuestion } from '../firebase/functions';
 import useAuth from '../hooks/auth';
+import useMessageQueue from '../hooks/messageQueue';
 import { getIsVisible } from '../redux/chatSlice';
-import { useAppSelector } from '../redux/hooks';
-import { getQnsId } from '../redux/matchSlice';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import {
+  getHasChangeQnRequest,
+  getQnsId,
+  setHasChangeQnRequest,
+} from '../redux/matchSlice';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
 const { Panel } = Collapse;
+const { confirm } = Modal;
 
 const Container = styled.div`
   flex-grow: 1;
@@ -76,12 +82,42 @@ const isOnlineForDatabase = {
 const Collaborate: React.FC = function () {
   const isChatVisible = useAppSelector(getIsVisible);
   const qnId = useAppSelector(getQnsId) as string;
+  const hasRequest = useAppSelector(getHasChangeQnRequest);
   const [question, setQuestion] = useState<Types.Question>(
     {} as Types.Question
   );
   const [pageLoaded, setPageLoaded] = useState<boolean>(false);
 
   const auth = useAuth();
+  const dispatch = useAppDispatch();
+  useMessageQueue();
+
+  const showChangeQuestionModal = () => {
+    confirm({
+      title: 'Change question?',
+      content:
+        'Your teammate has requested to change question. Will you allow it?',
+      onOk() {
+        return changeQuestion()
+          .then(() => {
+            dispatch(setHasChangeQnRequest(false));
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      },
+      onCancel() {
+        dispatch(setHasChangeQnRequest(false));
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (hasRequest) {
+      showChangeQuestionModal();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasRequest]);
 
   // Activate presence here
   useEffect(() => {
@@ -116,6 +152,7 @@ const Collaborate: React.FC = function () {
         .then((result) => {
           setQuestion(result.data);
           setPageLoaded(true);
+          message.success('Question loaded for you and your teammate!');
         })
         .catch((error) => {
           console.error(error);
@@ -160,7 +197,6 @@ const Collaborate: React.FC = function () {
           <Editor
             questionTemplates={question.templates}
             questionLink={question.link}
-            setQuestion={setQuestion}
           />
           {isChatVisible && <Chat />}
         </EditorContent>

@@ -28,6 +28,14 @@ const getCurrentSessionIdFunc = firebaseApp
   .functions()
   .httpsCallable('sessions-getCurrentSessionId');
 
+const changeQuestionRequestFunc = firebaseApp
+  .functions()
+  .httpsCallable('sessions-changeQuestionRequest');
+
+const changeQuestionFunc = firebaseApp
+  .functions()
+  .httpsCallable('sessions-changeQuestion');
+
 export const getQuestion = async (data: FunctionTypes.getQuestionData) => {
   return await getQuestionFunc(data);
 };
@@ -58,4 +66,12 @@ export const isInCurrentSession = async () => {
 
 export const getCurrentSessionId = async () => {
   return await getCurrentSessionIdFunc();
+};
+
+export const changeQuestionRequest = async () => {
+  return await changeQuestionRequestFunc();
+};
+
+export const changeQuestion = async () => {
+  return await changeQuestionFunc();
 };

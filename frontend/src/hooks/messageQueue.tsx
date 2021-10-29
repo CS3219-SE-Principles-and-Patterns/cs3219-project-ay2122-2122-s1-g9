@@ -3,7 +3,12 @@ import { useHistory } from 'react-router';
 
 import firebaseApp from '../firebase/firebaseApp';
 import { useAppDispatch } from '../redux/hooks';
-import { setIsQueuing, setQnsId, setSessionId } from '../redux/matchSlice';
+import {
+  setHasChangeQnRequest,
+  setIsQueuing,
+  setQnsId,
+  setSessionId,
+} from '../redux/matchSlice';
 import useAuth from './auth';
 
 const useMessageQueue = function () {
@@ -29,6 +34,7 @@ const useMessageQueue = function () {
           dispatch(setIsQueuing(false));
           dispatch(setSessionId(data.sessId));
           dispatch(setQnsId(data.qnsId));
+          dispatch(setHasChangeQnRequest(false));
           history.replace('/collaborate');
           break;
         case 'NO_MATCH_FOUND':
@@ -38,7 +44,13 @@ const useMessageQueue = function () {
         case 'STOP_SESSION':
           dispatch(setSessionId(null));
           dispatch(setQnsId(null));
-          history.replace('/');
+          dispatch(setHasChangeQnRequest(false));
+          if (!data.startNextSession) {
+            history.replace('/');
+          }
+          break;
+        case 'CHANGE_QUESTION_REQUEST':
+          dispatch(setHasChangeQnRequest(true));
           break;
         default:
           console.log(`Unable to process ${msg.type}`);
