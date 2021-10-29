@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as sessionCore from './core/sessionCore';
 import { validateAndGetUid } from './core/authCore';
-import { validateAndGetQueueName } from './core/queueCore';
+import { validateAndGetLevel } from './core/queueCore';
 import { CallableContext } from 'firebase-functions/v1/https';
 import { SUCCESS_RESP } from './consts/values';
 
@@ -48,7 +48,7 @@ export const changeQuestionRequest = functions.https.onCall(
 
 export const changeQuestion = functions.https.onCall(
   async (data: App.changeQuestionData, context: CallableContext) => {
-    const lvl = validateAndGetQueueName(data);
+    const lvl = validateAndGetLevel(data, 'lvl');
     const uid = validateAndGetUid(context);
     const sessId = await sessionCore.getCurrentSessionId(uid);
     if (!sessId) {

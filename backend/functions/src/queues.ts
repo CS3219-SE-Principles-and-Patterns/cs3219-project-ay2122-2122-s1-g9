@@ -10,7 +10,7 @@ import { SUCCESS_RESP } from './consts/values';
 export const addUserToQueue = functions.https.onCall(
   async (data: App.addUserToQueue, context: CallableContext) => {
     const uid = validateAndGetUid(context);
-    const queueName = queueCore.validateAndGetQueueName(data);
+    const queueName = queueCore.validateAndGetLevel(data);
     functions.logger.info('Parameters received: ', data);
 
     const userIsInCurrentSession = await isInCurrentSession(uid);
@@ -29,7 +29,7 @@ export const addUserToQueue = functions.https.onCall(
 export const removeUserFromQueue = functions.https.onCall(
   async (data: App.removeUserFromQueue, context: CallableContext) => {
     const uid = validateAndGetUid(context);
-    const queueName = queueCore.validateAndGetQueueName(data);
+    const queueName = queueCore.validateAndGetLevel(data);
 
     await queueCore.removeUserFromQueue(uid, queueName);
     return SUCCESS_RESP;
@@ -48,7 +48,7 @@ export const removeUnmatchedUserAfterTimeout = functions.https.onCall(
     }
 
     // If the user is not in a session, remove them from the queue
-    const queueName = queueCore.validateAndGetQueueName(data);
+    const queueName = queueCore.validateAndGetLevel(data);
     await queueCore.removeUserFromQueue(data.userId, queueName);
     await sendMessage(
       data.userId,

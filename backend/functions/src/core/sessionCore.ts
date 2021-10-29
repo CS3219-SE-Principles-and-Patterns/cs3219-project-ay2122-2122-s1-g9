@@ -8,6 +8,7 @@ import {
   FOUND_SESSION,
   STOP_SESSION,
   WRITE_DEFAULT_CODE,
+  CHANGE_QUESTION_REQUEST,
 } from '../consts/msgTypes';
 
 export async function getSession(sessId: string): Promise<App.Session> {
@@ -21,7 +22,8 @@ export async function getSession(sessId: string): Promise<App.Session> {
     );
   }
 
-  return docRef.data();
+  const data = docRef.data() as App.Session;
+  return data;
 }
 
 export async function getTimeElapsed(sessId: string): Promise<number> {
