@@ -1,10 +1,18 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import { isOnline } from './presenceCore';
 import { SESS_STATUS_ENDED, SESS_STATUS_STARTED } from '../consts/values';
 import { sendMessage } from './msgCore';
-import { getQuestion, getRandomQuestion } from './questionCore';
-import { FOUND_SESSION, STOP_SESSION } from '../consts/msgTypes';
+import {
+  getQuestion,
+  getRandomQuestion,
+  getRandomQuestion,
+} from './questionCore';
+import {
+  FOUND_SESSION,
+  STOP_SESSION,
+  FOUND_SESSION,
+  STOP_SESSION,
+} from '../consts/msgTypes';
 
 export async function getSession(sessId: string): Promise<any> {
   const fs = admin.firestore();

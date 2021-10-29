@@ -6,7 +6,7 @@ export async function isOnline(uid: string): Promise<boolean> {
 
   const data = (await path.once('value')).val();
 
-  if (!Object.keys(data).includes('state')) {
+  if (!data || !Object.keys(data).includes('state')) {
     return false;
   }
 
