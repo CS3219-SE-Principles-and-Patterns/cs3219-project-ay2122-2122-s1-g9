@@ -2,7 +2,7 @@ import 'firebase/database';
 
 import { LoadingOutlined } from '@ant-design/icons';
 import { Collapse, Layout, message, Modal, Spin, Typography } from 'antd';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -148,7 +148,7 @@ const Collaborate: React.FC = function () {
 
   useEffect(() => {
     if (qnId) {
-      getQuestion({ id: qnId })
+      getQuestion({ qnsId: qnId })
         .then((result) => {
           setQuestion(result.data);
           setPageLoaded(true);
@@ -158,6 +158,7 @@ const Collaborate: React.FC = function () {
           console.error(error);
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [qnId]);
 
   if (!pageLoaded) {

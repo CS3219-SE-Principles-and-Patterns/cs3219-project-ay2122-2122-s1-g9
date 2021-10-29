@@ -6,25 +6,25 @@ import fft from './testUtil/fft';
 
 import { NO_MATCH_FOUND } from '../src/consts/msgTypes';
 
-// Cannot test now due to usage of cloud task
-// describe('addUserToQueue', () => {
-//   after(async () => {
-//     await admin.database().ref('/queues').set(null);
-//   });
+describe('addUserToQueue', () => {
+  after(async () => {
+    await admin.database().ref('/queues').set(null);
+  });
 
-//   it('should add user to queue', async () => {
-//     const func = fft.wrap(queues.addUserToQueue);
-//     const data = { queueName: 'easy' };
-//     await func(data, { auth: { uid: 'fakeuid' } });
+  it('should add user to queue', async () => {
+    // addUserToQueue function does not use cloud tasks when run in tests
+    const func = fft.wrap(queues.addUserToQueue);
+    const data = { queueName: 'easy' };
+    await func(data, { auth: { uid: 'fakeuid' } });
 
-//     await admin
-//       .database()
-//       .ref('/queues/easy')
-//       .once('value', (snapshot) => {
-//         expect(snapshot.val()).to.contain('fakeuid');
-//       });
-//   });
-// });
+    await admin
+      .database()
+      .ref('/queues/easy')
+      .once('value', (snapshot) => {
+        expect(snapshot.val()).to.contain('fakeuid');
+      });
+  });
+});
 
 describe('removeUserFromQueue', () => {
   const func = fft.wrap(queues.removeUserFromQueue);

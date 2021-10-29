@@ -1,7 +1,13 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { addUserToTimeoutQueue } from '../tasks/matchTimeout';
-import { ALL_LVLS, LVL_EASY, LVL_MEDIUM, LVL_HARD } from '../consts/values';
+import {
+  RUNNING_IN_EMULATOR,
+  ALL_LVLS,
+  LVL_EASY,
+  LVL_MEDIUM,
+  LVL_HARD,
+} from '../consts/values';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function validateAndGetLevel(data: any, keyName = 'queueName'): string {
@@ -60,10 +66,13 @@ export async function addUserToQueue(
 
   queue.push(uid);
   await queuePath.set(queue);
-  await addUserToTimeoutQueue({
-    userId: uid,
-    queueName: queueName,
-  });
+
+  if (!RUNNING_IN_EMULATOR) {
+    await addUserToTimeoutQueue({
+      userId: uid,
+      queueName: queueName,
+    });
+  }
 
   functions.logger.log(`Successfully added user ${uid} to ${queueName} queue`);
   return;

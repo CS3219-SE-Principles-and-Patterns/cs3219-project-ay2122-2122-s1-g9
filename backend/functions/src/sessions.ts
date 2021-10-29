@@ -16,7 +16,7 @@ export const stopSession = functions.https.onCall(
       );
     }
 
-    await sessionCore.endSession(sessId, false);
+    await sessionCore.endSession(sessId);
     return SUCCESS_RESP;
   }
 );
@@ -34,6 +34,22 @@ export const isInCurrentSession = functions.https.onCall(
     const uid = validateAndGetUid(context);
     const res = await sessionCore.isInCurrentSession(uid);
     return { isInCurrentSession: res };
+  }
+);
+
+export const getSession = functions.https.onCall(
+  async (data: App.getSessionData, context: CallableContext) => {
+    validateAndGetUid(context); // Only logged in users can get session data
+
+    if (!data || !data.sessId) {
+      throw new functions.https.HttpsError(
+        'invalid-argument',
+        'The function must be called with a single argument "sessId"'
+      );
+    }
+
+    const sessId = data.sessId;
+    return sessionCore.getSession(sessId);
   }
 );
 

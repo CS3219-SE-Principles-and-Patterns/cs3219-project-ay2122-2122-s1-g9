@@ -24,19 +24,12 @@ const useMessageQueue = function () {
 
     const uid = user.uid;
     const userRef = firebaseApp.database().ref(`users/${uid}`);
-    userRef.on('value', (snapshot) => {
-      if (snapshot.val() == null) {
-        return;
-      }
 
-      const notifKeys = Object.keys(snapshot.val());
+    userRef.on('child_added', (msgSnapshot, _prevMsgSnapshot) => {
+      const msg: Types.MessageQueueNotif = msgSnapshot.val();
+      const data = msg.data;
 
-      const latestNotifKey = notifKeys[notifKeys.length - 1];
-      const latestNotif: Types.MessageQueueNotif =
-        snapshot.val()[latestNotifKey];
-      const data = latestNotif.data;
-
-      switch (latestNotif.type) {
+      switch (msg.type) {
         case 'FOUND_SESSION':
           dispatch(setIsQueuing(false));
           dispatch(setSessionId(data.sessId));
@@ -45,8 +38,10 @@ const useMessageQueue = function () {
           history.replace('/collaborate');
           break;
         case 'NO_MATCH_FOUND':
-        case 'STOP_SESSION':
           dispatch(setIsQueuing(false));
+          history.replace('/');
+          break;
+        case 'STOP_SESSION':
           dispatch(setSessionId(null));
           dispatch(setQnsId(null));
           dispatch(setHasChangeQnRequest(false));
@@ -58,24 +53,11 @@ const useMessageQueue = function () {
           dispatch(setHasChangeQnRequest(true));
           break;
         default:
+          console.log(`Unable to process ${msg.type}`);
           break;
       }
 
-      const latestMessageRef = firebaseApp
-        .database()
-        .ref(`users/${uid}/${latestNotifKey}`);
-
-      latestMessageRef
-        .remove()
-        .then(() => {
-          console.log(
-            'Latest message removed: ',
-            snapshot.val()[latestNotifKey]
-          );
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      msgSnapshot.ref.remove();
     });
   }, [authContext?.user, dispatch, history]);
 };

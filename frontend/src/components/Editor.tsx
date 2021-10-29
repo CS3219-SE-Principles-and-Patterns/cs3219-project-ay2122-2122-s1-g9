@@ -1,6 +1,9 @@
-import { fromMonaco } from '@hackerrank/firepad';
+import 'firebase/database';
+
+import { FirepadEvent, fromMonaco } from '@hackerrank/firepad';
 import MonacoEditor, { EditorProps, Monaco } from '@monaco-editor/react';
 import { message } from 'antd';
+import firebase from 'firebase/app';
 import { editor } from 'monaco-editor';
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -36,6 +39,8 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
   const sessionId = useAppSelector(getSessionId);
   const monacoRef = useRef<Monaco | null>(null);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const sessDbRef = firebaseApp.database().ref(`/sessions/${sessionId}`);
+  const currentUser = firebaseApp.auth().currentUser;
 
   const [editorLoaded, setEditorLoaded] = useState<boolean>(false);
   const [editorLanguage, setEditorLanguage] = useState<string>(
@@ -47,28 +52,62 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
   };
 
   useEffect(() => {
-    if (!editorLoaded || editorRef.current == null) {
+    if (!editorLoaded || editorRef.current == null || !editorLanguage) {
       return;
     }
 
-    const dbRef = firebaseApp.database().ref(`sessions/${sessionId}/content`);
-    const currentUser = firebaseApp.auth().currentUser;
-    const firepad = fromMonaco(dbRef, editorRef.current);
+    const contentRef = sessDbRef.child(`content/${editorLanguage}`);
+    const firepad = fromMonaco(contentRef, editorRef.current);
     if (currentUser?.displayName) {
       firepad.setUserName(currentUser.displayName);
     }
-  }, [editorLoaded, sessionId]);
+
+    const firepadOnReady = () => {
+      sessDbRef
+        .child('defaultWriter')
+        .get()
+        .then((snapshot) => {
+          const defaultWriterUid = snapshot.val(); // guaranteed to be inside because written by backend
+          const defaultWriter = defaultWriterUid === currentUser?.uid; // currentUser guaranteed to be there
+
+          if (defaultWriter) {
+            const codeToWrite =
+              questionTemplates.find(
+                (language) => language.value === editorLanguage
+              )?.defaultCode ?? '';
+
+            if (firepad.isHistoryEmpty()) {
+              firepad.setText(codeToWrite);
+            }
+          }
+        });
+    };
+
+    firepad.on(FirepadEvent.Ready, firepadOnReady);
+    return () => {
+      firepad.off(FirepadEvent.Ready, firepadOnReady);
+      firepad.dispose();
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editorLoaded, editorLanguage, questionTemplates]);
 
   // Listen for when the language changes
   useEffect(() => {
-    const languageRef = firebaseApp
-      .database()
-      .ref(`sessions/${sessionId}/language`);
-    languageRef.on('value', (snapshot) => {
-      const data = snapshot.val();
-      setEditorLanguage(data);
-    });
-  }, [sessionId]);
+    const languageRef = sessDbRef.child('language');
+
+    const onLanguageChange = (snapshot: firebase.database.DataSnapshot) => {
+      const newLang = snapshot.val();
+      setEditorLanguage(newLang);
+    };
+
+    languageRef.on('value', onLanguageChange);
+    return () => {
+      languageRef.off('value', onLanguageChange);
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // only attach once
 
   const handleEditorMount: EditorProps['onMount'] = (editor, monaco) => {
     editorRef.current = editor;
@@ -77,8 +116,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
   };
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const editorRef = firebaseApp.database().ref(`sessions/${sessionId}`);
-    editorRef.update({ language: e.target.value });
+    sessDbRef.update({ language: e.target.value });
   };
 
   const handleCopy = () => {
@@ -108,11 +146,6 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
         options={options}
         path={editorLanguage}
         defaultLanguage={editorLanguage}
-        defaultValue={
-          questionTemplates.find(
-            (language) => language.value === editorLanguage
-          )?.defaultCode
-        }
         onMount={handleEditorMount}
       />
       <BottomToolBar />

@@ -1,19 +1,23 @@
 declare namespace App {
   interface getQuestionData {
-    id: string;
+    qnsId?: string;
   }
 
   interface addUserToQueue {
-    queueName: string;
+    queueName?: string;
   }
 
   interface removeUserFromQueue {
-    queueName: string;
+    queueName?: string;
   }
 
   interface userTimeoutDetails {
     userId: string;
     queueName: string;
+  }
+
+  interface getSessionData {
+    sessId?: string;
   }
 
   interface changeQuestionData {

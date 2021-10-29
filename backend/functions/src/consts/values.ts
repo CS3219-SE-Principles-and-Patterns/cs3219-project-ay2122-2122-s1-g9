@@ -1,3 +1,6 @@
+// Cannot use FUNCTIONS_EMULATOR env var because it does not exist when running tests through emulator
+export const RUNNING_IN_EMULATOR = 'FIRESTORE_EMULATOR_HOST' in process.env;
+
 export const LVL_EASY = 'easy';
 export const LVL_MEDIUM = 'medium';
 export const LVL_HARD = 'hard';

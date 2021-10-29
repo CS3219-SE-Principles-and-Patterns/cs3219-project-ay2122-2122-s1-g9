@@ -7,7 +7,7 @@ import fft from './testUtil/fft';
 
 import { matches } from '../src/index';
 import { createUser } from './testUtil/factory';
-import * as questionUtil from '../src/core/questionCore';
+import * as questionCore from '../src/core/questionCore';
 
 describe('detectMatchesCreateSession', () => {
   const func = fft.wrap(matches.detectMatchesCreateSession);
@@ -35,8 +35,19 @@ describe('detectMatchesCreateSession', () => {
   describe('two users in queue', () => {
     it('should create a session for the users', async () => {
       const stub = sinon
-        .stub(questionUtil, 'getRandomQuestion')
+        .stub(questionCore, 'getRandomQuestion')
         .returns(Promise.resolve('two-sum'));
+
+      // TODO: Can change to question fixture here
+      const stub2 = sinon.stub(questionCore, 'getQuestion').returns(
+        Promise.resolve({
+          slug: 'two-sum',
+          id: 1,
+          category: 'algorithms',
+          desc: 'a description of the problem',
+          templates: [{ value: 'cpp' }],
+        })
+      );
 
       const db = admin.database();
 
@@ -60,6 +71,7 @@ describe('detectMatchesCreateSession', () => {
       expect(createdSnap).to.not.be.null;
 
       stub.restore();
+      stub2.restore();
     });
   });
 });

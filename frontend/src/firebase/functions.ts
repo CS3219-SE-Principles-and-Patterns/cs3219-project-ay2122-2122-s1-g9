@@ -12,9 +12,21 @@ const removeUserFromQueueFunc = firebaseApp
   .functions()
   .httpsCallable('queues-removeUserFromQueue');
 
+const getSessionFunc = firebaseApp
+  .functions()
+  .httpsCallable('sessions-getSession');
+
 const stopSessionFunc = firebaseApp
   .functions()
   .httpsCallable('sessions-stopSession');
+
+const isInCurrentSessionFunc = firebaseApp
+  .functions()
+  .httpsCallable('sessions-isInCurrentSession');
+
+const getCurrentSessionIdFunc = firebaseApp
+  .functions()
+  .httpsCallable('sessions-getCurrentSessionId');
 
 const changeQuestionRequestFunc = firebaseApp
   .functions()
@@ -40,8 +52,20 @@ export const removeUserFromQueue = async (
   return await removeUserFromQueueFunc(data);
 };
 
+export const getSession = async (data: FunctionTypes.getSessionData) => {
+  return await getSessionFunc(data);
+};
+
 export const stopSession = async () => {
   return await stopSessionFunc();
+};
+
+export const isInCurrentSession = async () => {
+  return await isInCurrentSessionFunc();
+};
+
+export const getCurrentSessionId = async () => {
+  return await getCurrentSessionIdFunc();
 };
 
 export const changeQuestionRequest = async () => {

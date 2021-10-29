@@ -1,13 +1,12 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import { isOnline } from './presenceCore';
 import { SESS_STATUS_ENDED, SESS_STATUS_STARTED } from '../consts/values';
 import { sendMessage } from './msgCore';
-import { getRandomQuestion } from './questionCore';
+import { getQuestion, getRandomQuestion } from './questionCore';
+import { isOnline } from './presenceCore';
 import {
   FOUND_SESSION,
   STOP_SESSION,
-  WRITE_DEFAULT_CODE,
   CHANGE_QUESTION_REQUEST,
 } from '../consts/msgTypes';
 
@@ -47,7 +46,7 @@ export async function findSessionPartner(
 
 export async function endSession(
   sessId: string,
-  startNextSession: boolean
+  startNextSession = false
 ): Promise<void> {
   const fs = admin.firestore();
 
@@ -66,6 +65,7 @@ export async function endSession(
 
   const stopSessionData = { sessId, startNextSession };
   for (const uid of sess.users) {
+    // TODO: We should probably split the immedate starting of next session in another message.
     await sendMessage(uid, STOP_SESSION, stopSessionData);
   }
 
@@ -103,7 +103,7 @@ export async function isInCurrentSession(uid: string): Promise<boolean> {
   }
 
   // Exceeded threshold
-  await endSession(sessId, false);
+  await endSession(sessId);
   return false;
 }
 
@@ -126,20 +126,25 @@ export async function initSession(
 ): Promise<void> {
   const sessRtdbPath = admin.database().ref('/sessions');
   const qnsId = await getRandomQuestion(lvl);
+  const qns = await getQuestion(qnsId);
 
   const users = [uid1, uid2];
   const session = {
     users,
     qnsId,
+    lvl,
     startedAt: Date.now(),
-    lvl: lvl,
+    defaultWriter: users[0],
+    language: qns.templates[0].value,
   };
 
   const sessId = (await sessRtdbPath.push(session)).key;
   const sessFsPath = admin.firestore().doc(`/sessions/${sessId}`);
 
   await sessFsPath.set({
-    ...session,
+    users,
+    qnsId,
+    startedAt: session.startedAt,
     status: SESS_STATUS_STARTED,
   });
 
@@ -151,9 +156,6 @@ export async function initSession(
     });
   }
 
-  // Write Default Code
-  const writeDefaultCodeData = { sessId, qnsId };
-  await sendMessage(users[0], WRITE_DEFAULT_CODE, writeDefaultCodeData);
   return;
 }
 

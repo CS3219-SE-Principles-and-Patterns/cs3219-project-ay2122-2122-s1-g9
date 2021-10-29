@@ -23,6 +23,7 @@ const reducers = combineReducers({
 const persistConfig = {
   key: 'root',
   storage,
+  blacklist: ['match'], // Stop persisting match so as to keep state consistent with backend
 };
 
 const persistedReducer = persistReducer(persistConfig, reducers);
