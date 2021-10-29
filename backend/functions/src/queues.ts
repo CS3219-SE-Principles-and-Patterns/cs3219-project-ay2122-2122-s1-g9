@@ -1,7 +1,5 @@
 import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
 import { CallableContext } from 'firebase-functions/v1/https';
-import { removeUserFromQueue as _removeUserFromQueue } from './util/queue';
 
 import {
   ALL_LVLS,
@@ -10,11 +8,11 @@ import {
   LVL_MEDIUM,
   SUCCESS_RESP,
 } from './consts/values';
-import { validateAndGetUid } from './util/auth';
-import { isInCurrentSession } from './util/session';
-import { addUserToTimeoutQueue } from './tasks/matchTimeout';
-import { sendMessage } from './util/message';
+import { validateAndGetUid } from './core/authCore';
+import { isInCurrentSession } from './core/sessionCore';
+import { sendMessage } from './core/msgCore';
 import { NO_MATCH_FOUND } from './consts/msgTypes';
+import * as queueCore from './core/queueCore';
 
 function validateAndGetQueueName(data: any): string {
   if (!data || !data.queueName || data.queueName.length === 0) {
@@ -47,25 +45,7 @@ export const addUserToQueue = functions.https.onCall(
       );
     }
 
-    const queuePath = admin
-      .database()
-      .ref(`/queues/${queueName.toLowerCase()}`);
-
-    await queuePath.once('value', (snapshot) => {
-      let queue = snapshot.val();
-      // If the queue does not exist (i.e its currently empty)
-      if (queue == null) {
-        queue = [];
-      }
-      queue.push(uid);
-      queuePath.set(queue);
-    });
-
-    await addUserToTimeoutQueue({
-      userId: uid,
-      queueName: queueName,
-    });
-
+    await queueCore.addUserToQueue(uid, queueName);
     return SUCCESS_RESP;
   }
 );
@@ -75,8 +55,7 @@ export const removeUserFromQueue = functions.https.onCall(
     const uid = validateAndGetUid(context);
     const queueName = validateAndGetQueueName(data);
 
-    await _removeUserFromQueue(uid, queueName);
-
+    await queueCore.removeUserFromQueue(uid, queueName);
     return SUCCESS_RESP;
   }
 );
@@ -94,7 +73,7 @@ export const removeUnmatchedUserAfterTimeout = functions.https.onCall(
 
     // If the user is not in a session, remove them from the queue
     validateAndGetQueueName(data);
-    await _removeUserFromQueue(data.userId, data.queueName);
+    await queueCore.removeUserFromQueue(data.userId, data.queueName);
     await sendMessage(
       data.userId,
       NO_MATCH_FOUND,
