@@ -63,6 +63,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
       return;
     }
 
+    editorRef.current.setValue('');
     const contentRef = sessDbRef.child(`content/${editorLanguage}`);
     const firepad = fromMonaco(contentRef, editorRef.current);
     if (currentUser?.displayName) {
