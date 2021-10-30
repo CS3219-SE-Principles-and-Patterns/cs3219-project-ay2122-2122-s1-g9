@@ -52,7 +52,6 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
 
   useEffect(() => {
     return () => {
-      console.log('editor dispose');
       editorRef.current?.getModel()?.dispose();
       editorRef.current?.dispose();
     };
@@ -85,7 +84,6 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
               )?.defaultCode ?? '';
 
             if (firepad.isHistoryEmpty()) {
-              console.log('writing default code');
               firepad.setText(codeToWrite);
             }
           }
@@ -94,7 +92,6 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
 
     firepad.on(FirepadEvent.Ready, firepadOnReady);
     return () => {
-      console.log('firepad dispose');
       firepad.off(FirepadEvent.Ready, firepadOnReady);
       firepad.dispose();
     };
