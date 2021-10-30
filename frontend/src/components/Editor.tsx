@@ -51,13 +51,6 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
   };
 
   useEffect(() => {
-    return () => {
-      editorRef.current?.getModel()?.dispose();
-      editorRef.current?.dispose();
-    };
-  }, []);
-
-  useEffect(() => {
     if (!editorLoaded || editorRef.current == null || !editorLanguage) {
       return;
     }
