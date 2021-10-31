@@ -1,7 +1,7 @@
 import 'firebase/database';
 
 import { FirepadEvent, fromMonaco } from '@hackerrank/firepad';
-import MonacoEditor, { EditorProps, Monaco } from '@monaco-editor/react';
+import MonacoEditor, { EditorProps } from '@monaco-editor/react';
 import { message } from 'antd';
 import firebase from 'firebase/app';
 import { editor } from 'monaco-editor';
@@ -37,7 +37,6 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
   questionTemplates,
 }) {
   const sessionId = useAppSelector(getSessionId);
-  const monacoRef = useRef<Monaco | null>(null);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const sessDbRef = firebaseApp.database().ref(`/sessions/${sessionId}`);
   const currentUser = firebaseApp.auth().currentUser;
@@ -56,6 +55,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
       return;
     }
 
+    editorRef.current.setValue('');
     const contentRef = sessDbRef.child(`content/${editorLanguage}`);
     const firepad = fromMonaco(contentRef, editorRef.current);
     if (currentUser?.displayName) {
@@ -88,7 +88,6 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
       firepad.off(FirepadEvent.Ready, firepadOnReady);
       firepad.dispose();
     };
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editorLoaded, editorLanguage, questionTemplates]);
 
@@ -105,13 +104,11 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
     return () => {
       languageRef.off('value', onLanguageChange);
     };
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // only attach once
 
-  const handleEditorMount: EditorProps['onMount'] = (editor, monaco) => {
+  const handleEditorMount: EditorProps['onMount'] = (editor, _monaco) => {
     editorRef.current = editor;
-    monacoRef.current = monaco;
     setEditorLoaded(true);
   };
 
