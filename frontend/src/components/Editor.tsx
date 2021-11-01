@@ -61,7 +61,12 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
       return;
     }
 
+    // Monaco editor somehow caches the value that was displayed in the previous session.
+    // The default behaviour for Firepad is to write existing values in the editor into the RTDB.
+    // Hence, we have to set the value of the editor to empty before initialising Firepad
+    // as we do not want content from the previous session to be used in the new session.
     editorRef.current.setValue('');
+
     const contentRef = sessDbRef.child(`content/${editorLanguage}`);
     const firepad = fromMonaco(contentRef, editorRef.current);
     if (currentUser?.displayName) {
@@ -90,8 +95,15 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
       firepad.off(FirepadEvent.Ready, firepadOnReady);
       firepad.dispose();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editorLoaded, editorLanguage, questionTemplates]);
+  }, [
+    editorLoaded,
+    editorLanguage,
+    questionTemplates,
+    sessDbRef,
+    sessionId,
+    currentUser?.displayName,
+    currentUser?.uid,
+  ]);
 
   // Listen for when the language changes
   useEffect(() => {
