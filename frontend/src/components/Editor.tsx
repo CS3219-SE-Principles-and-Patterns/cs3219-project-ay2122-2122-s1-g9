@@ -9,6 +9,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import firebaseApp from '../firebase/firebaseApp';
+import { updateAndGetWriter } from '../firebase/functions';
 import { useAppSelector } from '../redux/hooks';
 import { getSessionId } from '../redux/matchSlice';
 import BottomToolBar from './BottomToolBar';
@@ -51,7 +52,12 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
   };
 
   useEffect(() => {
-    if (!editorLoaded || editorRef.current == null || !editorLanguage) {
+    if (
+      !editorLoaded ||
+      editorRef.current == null ||
+      !editorLanguage ||
+      !sessionId
+    ) {
       return;
     }
 
@@ -63,24 +69,20 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
     }
 
     const firepadOnReady = () => {
-      sessDbRef
-        .child('defaultWriter')
-        .get()
-        .then((snapshot) => {
-          const defaultWriterUid = snapshot.val(); // guaranteed to be inside because written by backend
-          const defaultWriter = defaultWriterUid === currentUser?.uid; // currentUser guaranteed to be there
+      updateAndGetWriter({ sessId: sessionId }).then((res) => {
+        const isWriter = res.data.writerId === currentUser?.uid; // currentUser guaranteed to be there
 
-          if (defaultWriter) {
-            const codeToWrite =
-              questionTemplates.find(
-                (language) => language.value === editorLanguage
-              )?.defaultCode ?? '';
+        if (isWriter) {
+          const codeToWrite =
+            questionTemplates.find(
+              (language) => language.value === editorLanguage
+            )?.defaultCode ?? '';
 
-            if (firepad.isHistoryEmpty()) {
-              firepad.setText(codeToWrite);
-            }
+          if (firepad.isHistoryEmpty()) {
+            firepad.setText(codeToWrite);
           }
-        });
+        }
+      });
     };
 
     firepad.on(FirepadEvent.Ready, firepadOnReady);

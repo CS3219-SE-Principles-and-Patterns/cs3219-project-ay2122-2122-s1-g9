@@ -29,7 +29,18 @@ declare namespace App {
     status: 'started' | 'ended';
     startedAt: number;
     endedAt?: number;
+    writer: string;
     users: [string, string];
     lvl: string;
+  }
+
+  interface sessionUpdateData {
+    status?: 'started' | 'ended';
+    endedAt?: number;
+    writer?: string;
+  }
+
+  interface getWriterData {
+    sessId?: string;
   }
 }

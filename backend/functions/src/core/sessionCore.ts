@@ -25,6 +25,11 @@ export async function getSession(sessId: string): Promise<App.Session> {
   return data;
 }
 
+export async function isSessionOngoing(sessId: string): Promise<boolean> {
+  const sess = await getSession(sessId);
+  return sess.status === 'started';
+}
+
 export async function getTimeElapsed(sessId: string): Promise<number> {
   const sess = await getSession(sessId);
   return sess['startedAt'];
@@ -44,16 +49,64 @@ export async function findSessionPartner(
   return users[0];
 }
 
+export async function updateSession(
+  sessId: string,
+  data: App.sessionUpdateData
+): Promise<void> {
+  const fs = admin.firestore();
+  const sessRef = fs.collection('sessions').doc(sessId);
+  await sessRef.update(data);
+}
+
+export async function initSession(
+  uid1: string,
+  uid2: string,
+  lvl: string
+): Promise<void> {
+  const sessRtdbPath = admin.database().ref('/sessions');
+  const qnsId = await getRandomQuestion(lvl);
+  const qns = await getQuestion(qnsId);
+
+  const users = [uid1, uid2];
+  const session = {
+    users,
+    qnsId,
+    lvl,
+    startedAt: Date.now(),
+    language: qns.templates[0].value,
+  };
+
+  const sessId = (await sessRtdbPath.push(session)).key;
+  const sessFsPath = admin.firestore().doc(`/sessions/${sessId}`);
+
+  await sessFsPath.set({
+    users,
+    qnsId,
+    lvl,
+    writer: users[0],
+    startedAt: session.startedAt,
+    status: SESS_STATUS_STARTED,
+  });
+
+  const foundSessionData = { sessId, qnsId };
+  for (const user of users) {
+    await sendMessage(user, FOUND_SESSION, foundSessionData);
+    await admin.firestore().collection('currentSessions').doc(user).set({
+      sessId: sessId,
+    });
+  }
+
+  return;
+}
+
 export async function endSession(
   sessId: string,
   startNextSession = false
 ): Promise<void> {
   const fs = admin.firestore();
-
-  const sessRef = fs.collection('sessions').doc(sessId);
   const sess = await getSession(sessId);
 
-  await sessRef.update({
+  await updateSession(sessId, {
     status: SESS_STATUS_ENDED,
     endedAt: Date.now(),
   });
@@ -119,47 +172,6 @@ export async function getCurrentSessionId(uid: string): Promise<string | null> {
   return docRef.data()!['sessId'];
 }
 
-export async function initSession(
-  uid1: string,
-  uid2: string,
-  lvl: string
-): Promise<void> {
-  const sessRtdbPath = admin.database().ref('/sessions');
-  const qnsId = await getRandomQuestion(lvl);
-  const qns = await getQuestion(qnsId);
-
-  const users = [uid1, uid2];
-  const session = {
-    users,
-    qnsId,
-    lvl,
-    startedAt: Date.now(),
-    defaultWriter: users[0],
-    language: qns.templates[0].value,
-  };
-
-  const sessId = (await sessRtdbPath.push(session)).key;
-  const sessFsPath = admin.firestore().doc(`/sessions/${sessId}`);
-
-  await sessFsPath.set({
-    users,
-    qnsId,
-    lvl,
-    startedAt: session.startedAt,
-    status: SESS_STATUS_STARTED,
-  });
-
-  const foundSessionData = { sessId, qnsId };
-  for (const user of users) {
-    await sendMessage(user, FOUND_SESSION, foundSessionData);
-    await admin.firestore().collection('currentSessions').doc(user).set({
-      sessId: sessId,
-    });
-  }
-
-  return;
-}
-
 export async function processChangeQuestionRequest(
   requesterUid: string
 ): Promise<void> {
@@ -174,11 +186,6 @@ export async function processChangeQuestionRequest(
   const partnerId = await findSessionPartner(requesterUid, sessId);
   await sendMessage(partnerId, CHANGE_QUESTION_REQUEST, null);
   return;
-}
-
-export async function isSessionOngoing(sessId: string): Promise<boolean> {
-  const sess = await getSession(sessId);
-  return sess.status === 'started';
 }
 
 export async function changeQuestionInSession(sessId: string): Promise<void> {
@@ -196,4 +203,37 @@ export async function changeQuestionInSession(sessId: string): Promise<void> {
   await endSession(sessId, true);
   await initSession(userIds[0], userIds[1], session.lvl);
   return;
+}
+
+export async function updateAndGetWriter(sessId: string): Promise<string> {
+  // Assumes the session is ongoing
+  if (!(await isSessionOngoing(sessId))) {
+    throw new functions.https.HttpsError(
+      'failed-precondition',
+      `Session ${sessId} is not currently running.`
+    );
+  }
+
+  const sess = await getSession(sessId);
+  const writer = sess.writer;
+
+  if (await isOnline(writer)) {
+    return writer;
+  }
+
+  const newWriter = await findSessionPartner(writer, sessId);
+
+  // sanity check because if both users are not online, this getWriter function should not be called at all
+  if (!(await isOnline(newWriter))) {
+    throw new functions.https.HttpsError(
+      'failed-precondition',
+      'Nobody is online in the session to be writer'
+    );
+  }
+
+  await updateSession(sessId, {
+    writer: newWriter,
+  });
+
+  return newWriter;
 }
