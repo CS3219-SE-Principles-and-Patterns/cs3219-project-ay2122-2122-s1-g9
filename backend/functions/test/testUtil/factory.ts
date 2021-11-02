@@ -40,6 +40,7 @@ export async function createSession(): Promise<App.Session> {
     startedAt: Date.now(),
     users: [userId1, userId2],
     lvl: 'easy',
+    writer: userId1,
   };
 
   const fs = admin.firestore();

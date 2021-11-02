@@ -9,6 +9,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import firebaseApp from '../firebase/firebaseApp';
+import { updateAndGetWriter } from '../firebase/functions';
 import { useAppSelector } from '../redux/hooks';
 import { getSessionId } from '../redux/matchSlice';
 import BottomToolBar from './BottomToolBar';
@@ -51,11 +52,21 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
   };
 
   useEffect(() => {
-    if (!editorLoaded || editorRef.current == null || !editorLanguage) {
+    if (
+      !editorLoaded ||
+      editorRef.current == null ||
+      !editorLanguage ||
+      !sessionId
+    ) {
       return;
     }
 
+    // Monaco editor somehow caches the value that was displayed in the previous session.
+    // The default behaviour for Firepad is to write existing values in the editor into the RTDB.
+    // Hence, we have to set the value of the editor to empty before initialising Firepad
+    // as we do not want content from the previous session to be used in the new session.
     editorRef.current.setValue('');
+
     const contentRef = sessDbRef.child(`content/${editorLanguage}`);
     const firepad = fromMonaco(contentRef, editorRef.current);
     if (currentUser?.displayName) {
@@ -63,24 +74,20 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
     }
 
     const firepadOnReady = () => {
-      sessDbRef
-        .child('defaultWriter')
-        .get()
-        .then((snapshot) => {
-          const defaultWriterUid = snapshot.val(); // guaranteed to be inside because written by backend
-          const defaultWriter = defaultWriterUid === currentUser?.uid; // currentUser guaranteed to be there
+      updateAndGetWriter({ sessId: sessionId }).then((res) => {
+        const isWriter = res.data.writerId === currentUser?.uid; // currentUser guaranteed to be there
 
-          if (defaultWriter) {
-            const codeToWrite =
-              questionTemplates.find(
-                (language) => language.value === editorLanguage
-              )?.defaultCode ?? '';
+        if (isWriter) {
+          const codeToWrite =
+            questionTemplates.find(
+              (language) => language.value === editorLanguage
+            )?.defaultCode ?? '';
 
-            if (firepad.isHistoryEmpty()) {
-              firepad.setText(codeToWrite);
-            }
+          if (firepad.isHistoryEmpty()) {
+            firepad.setText(codeToWrite);
           }
-        });
+        }
+      });
     };
 
     firepad.on(FirepadEvent.Ready, firepadOnReady);
@@ -88,8 +95,15 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
       firepad.off(FirepadEvent.Ready, firepadOnReady);
       firepad.dispose();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editorLoaded, editorLanguage, questionTemplates]);
+  }, [
+    editorLoaded,
+    editorLanguage,
+    questionTemplates,
+    sessDbRef,
+    sessionId,
+    currentUser?.displayName,
+    currentUser?.uid,
+  ]);
 
   // Listen for when the language changes
   useEffect(() => {
