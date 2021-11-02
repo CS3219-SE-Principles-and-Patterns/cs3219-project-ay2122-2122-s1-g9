@@ -32,25 +32,25 @@ const StyledMonacoEditor = styled(MonacoEditor)`
   flex: flex-grow;
 `;
 
-const mapToMonacoLanguage = (value: string) => {
-  let mappedLanguage = value;
-  switch (value) {
-    case 'golang':
-      mappedLanguage = 'go';
-      break;
-  }
-  return mappedLanguage;
-};
+// const mapToMonacoLanguage = (qnVal: string) => {
+//   let mappedLanguage = qnVal;
+//   switch (qnVal) {
+//     case 'golang':
+//       mappedLanguage = 'go';
+//       break;
+//   }
+//   return mappedLanguage;
+// };
 
-const mapToQnLanguage = (value: string) => {
-  let mappedLanguage = value;
-  switch (value) {
-    case 'go':
-      mappedLanguage = 'golang';
-      break;
-  }
-  return mappedLanguage;
-};
+// const mapToQnLanguage = (monacoVal: string) => {
+//   let mappedLanguage = monacoVal;
+//   switch (monacoVal) {
+//     case 'go':
+//       mappedLanguage = 'golang';
+//       break;
+//   }
+//   return mappedLanguage;
+// };
 
 const Editor: React.FC<PeerprepEditorProps> = function ({
   questionLink,
@@ -90,13 +90,14 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
         .then((snapshot) => {
           const defaultWriterUid = snapshot.val(); // guaranteed to be inside because written by backend
           const defaultWriter = defaultWriterUid === currentUser?.uid; // currentUser guaranteed to be there
+          console.log('questionTemplates: ', questionTemplates);
 
           if (defaultWriter) {
             console.log('editorLanguage: ', editorLanguage);
-            console.log('mapped: ', mapToQnLanguage(editorLanguage));
+            // console.log('mapped: ', mapToQnLanguage(editorLanguage));
             const codeToWrite =
               questionTemplates.find(
-                (language) => language.value === mapToQnLanguage(editorLanguage) // this is responsible for changing the default code here, how to make sure this doesnt get affected
+                (language) => language.value === editorLanguage // this is responsible for changing the default code here, how to make sure this doesnt get affected
               )?.defaultCode ?? '';
 
             if (firepad.isHistoryEmpty()) {
@@ -120,9 +121,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
 
     const onLanguageChange = (snapshot: firebase.database.DataSnapshot) => {
       const newLang = snapshot.val();
-      // TODO: may need to insert some mapping here to ensure the language is mapped properly
-      // setEditorLanguage(mapToMonacoLanguage(newLang));
-      setEditorLanguage(mapToMonacoLanguage(newLang));
+      setEditorLanguage(newLang);
     };
 
     languageRef.on('value', onLanguageChange);

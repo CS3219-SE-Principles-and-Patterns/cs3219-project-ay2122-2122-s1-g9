@@ -68,16 +68,6 @@ const RightContainer = styled.div`
   align-items: center;
 `;
 
-const mapToQnLanguage = (value: string) => {
-  let mappedLanguage = value;
-  switch (value) {
-    case 'go':
-      mappedLanguage = 'golang';
-      break;
-  }
-  return mappedLanguage;
-};
-
 const TopToolBar: React.FC<TopToolBarProps> = function ({
   editorLanguage,
   handleLanguageChange,
@@ -99,10 +89,7 @@ const TopToolBar: React.FC<TopToolBarProps> = function ({
         <Spacer $width="16px" />
         <CopyButton onClick={handleCopy} icon={<CopyOutlined />} size="large" />
         <Spacer $width="16px" />
-        <StyledSelect
-          value={mapToQnLanguage(editorLanguage)}
-          onChange={handleLanguageChange}
-        >
+        <StyledSelect value={editorLanguage} onChange={handleLanguageChange}>
           {questionTemplates.map((language) => {
             console.log('language.value: ', language.value);
             return (
