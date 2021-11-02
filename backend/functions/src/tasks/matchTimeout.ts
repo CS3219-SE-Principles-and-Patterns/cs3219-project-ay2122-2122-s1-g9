@@ -12,11 +12,6 @@ export async function addUserToTimeoutQueue(
   data: App.userTimeoutDetails
 ): Promise<any> {
   functions.logger.info('Parameters received: ', data);
-  functions.logger.info('Env variables: ', [
-    PROJECT_ID,
-    PROJECT_LOCATION,
-    MATCH_TIMEOUT_QUEUE_NAME,
-  ]);
 
   if (!data) {
     throw new functions.https.HttpsError(
