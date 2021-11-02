@@ -76,3 +76,11 @@ export const changeQuestion = functions.https.onCall(
     return SUCCESS_RESP;
   }
 );
+
+export const rejectChangeQuestion = functions.https.onCall(
+  async (_, context: CallableContext) => {
+    const uid = validateAndGetUid(context);
+    await sessionCore.rejectChangeQuestion(uid);
+    return SUCCESS_RESP;
+  }
+);
