@@ -68,6 +68,16 @@ const RightContainer = styled.div`
   align-items: center;
 `;
 
+const mapToQnLanguage = (value: string) => {
+  let mappedLanguage = value;
+  switch (value) {
+    case 'go':
+      mappedLanguage = 'golang';
+      break;
+  }
+  return mappedLanguage;
+};
+
 const TopToolBar: React.FC<TopToolBarProps> = function ({
   editorLanguage,
   handleLanguageChange,
@@ -82,18 +92,25 @@ const TopToolBar: React.FC<TopToolBarProps> = function ({
     dispatch(setIsVisible(!isChatVisible));
   };
 
+  // shows the golang one but the select shows C++
   return (
     <StyledTopToolBar>
       <LeftContainer>
         <Spacer $width="16px" />
         <CopyButton onClick={handleCopy} icon={<CopyOutlined />} size="large" />
         <Spacer $width="16px" />
-        <StyledSelect value={editorLanguage} onChange={handleLanguageChange}>
-          {questionTemplates.map((language) => (
-            <option key={language.value} value={language.value}>
-              {language.text}
-            </option>
-          ))}
+        <StyledSelect
+          value={mapToQnLanguage(editorLanguage)}
+          onChange={handleLanguageChange}
+        >
+          {questionTemplates.map((language) => {
+            console.log('language.value: ', language.value);
+            return (
+              <option key={language.value} value={language.value}>
+                {language.text}
+              </option>
+            );
+          })}
         </StyledSelect>
       </LeftContainer>
       <RightContainer>

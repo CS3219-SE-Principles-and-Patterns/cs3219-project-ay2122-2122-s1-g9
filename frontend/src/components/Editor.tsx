@@ -32,6 +32,26 @@ const StyledMonacoEditor = styled(MonacoEditor)`
   flex: flex-grow;
 `;
 
+const mapToMonacoLanguage = (value: string) => {
+  let mappedLanguage = value;
+  switch (value) {
+    case 'golang':
+      mappedLanguage = 'go';
+      break;
+  }
+  return mappedLanguage;
+};
+
+const mapToQnLanguage = (value: string) => {
+  let mappedLanguage = value;
+  switch (value) {
+    case 'go':
+      mappedLanguage = 'golang';
+      break;
+  }
+  return mappedLanguage;
+};
+
 const Editor: React.FC<PeerprepEditorProps> = function ({
   questionLink,
   questionTemplates,
@@ -63,6 +83,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
     }
 
     const firepadOnReady = () => {
+      console.log('firepadOnReady');
       sessDbRef
         .child('defaultWriter')
         .get()
@@ -71,9 +92,11 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
           const defaultWriter = defaultWriterUid === currentUser?.uid; // currentUser guaranteed to be there
 
           if (defaultWriter) {
+            console.log('editorLanguage: ', editorLanguage);
+            console.log('mapped: ', mapToQnLanguage(editorLanguage));
             const codeToWrite =
               questionTemplates.find(
-                (language) => language.value === editorLanguage
+                (language) => language.value === mapToQnLanguage(editorLanguage) // this is responsible for changing the default code here, how to make sure this doesnt get affected
               )?.defaultCode ?? '';
 
             if (firepad.isHistoryEmpty()) {
@@ -97,7 +120,9 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
 
     const onLanguageChange = (snapshot: firebase.database.DataSnapshot) => {
       const newLang = snapshot.val();
-      setEditorLanguage(newLang);
+      // TODO: may need to insert some mapping here to ensure the language is mapped properly
+      // setEditorLanguage(mapToMonacoLanguage(newLang));
+      setEditorLanguage(mapToMonacoLanguage(newLang));
     };
 
     languageRef.on('value', onLanguageChange);
@@ -113,6 +138,8 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
   };
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    console.log('handleLanguageChange: ', e.target.value);
+    // sessDbRef.update({ language: mapToMonacoLanguage(e.target.value) });
     sessDbRef.update({ language: e.target.value });
   };
 
