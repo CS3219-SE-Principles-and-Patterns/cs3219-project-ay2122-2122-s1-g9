@@ -113,7 +113,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
     return () => {
       languageRef.off('value', onLanguageChange);
     };
-  }, [sessionId]); // only attach once
+  }, [sessionId]);
 
   const handleEditorMount: EditorProps['onMount'] = (editor, _monaco) => {
     editorRef.current = editor;
