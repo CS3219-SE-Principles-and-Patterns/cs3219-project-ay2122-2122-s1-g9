@@ -2,7 +2,6 @@ import 'firebase/database';
 
 import { LoadingOutlined } from '@ant-design/icons';
 import { Collapse, Layout, message, Modal, Spin, Typography } from 'antd';
-import firebase from 'firebase/app';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -69,16 +68,6 @@ const Separator = styled.span`
   border: 1px solid #bfbfbf;
 `;
 
-const isOfflineForDatabase = {
-  state: 'offline',
-  lastUpdated: firebase.database.ServerValue.TIMESTAMP,
-};
-
-const isOnlineForDatabase = {
-  state: 'online',
-  lastUpdated: firebase.database.ServerValue.TIMESTAMP,
-};
-
 const Collaborate: React.FC = function () {
   const isChatVisible = useAppSelector(getIsVisible);
   const qnId = useAppSelector(getQnsId) as string;
@@ -88,7 +77,6 @@ const Collaborate: React.FC = function () {
   );
   const [pageLoaded, setPageLoaded] = useState<boolean>(false);
 
-  const auth = useAuth();
   const dispatch = useAppDispatch();
   useMessageQueue();
 
@@ -118,33 +106,6 @@ const Collaborate: React.FC = function () {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasRequest]);
-
-  // Activate presence here
-  useEffect(() => {
-    if (auth?.user?.uid == null) {
-      return;
-    }
-
-    // See https://firebase.google.com/docs/firestore/solutions/presence
-    const uid = auth.user.uid;
-    const userStatusDatabaseRef = firebase.database().ref('/status/' + uid);
-
-    firebase
-      .database()
-      .ref('.info/connected')
-      .on('value', (snapshot) => {
-        if (snapshot.val() == false) {
-          return;
-        }
-
-        userStatusDatabaseRef
-          .onDisconnect()
-          .set(isOfflineForDatabase)
-          .then(() => {
-            userStatusDatabaseRef.set(isOnlineForDatabase);
-          });
-      });
-  });
 
   useEffect(() => {
     if (qnId) {

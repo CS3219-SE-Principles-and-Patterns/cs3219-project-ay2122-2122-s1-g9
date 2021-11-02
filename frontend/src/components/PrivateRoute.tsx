@@ -6,6 +6,7 @@ import { Redirect, Route, RouteProps, useHistory } from 'react-router';
 import { getCurrentSessionId, getSession } from '../firebase/functions';
 import useAuth from '../hooks/auth';
 import useMessageQueue from '../hooks/messageQueue';
+import usePresence from '../hooks/presence';
 import { useAppDispatch } from '../redux/hooks';
 import { setIsQueuing, setQnsId, setSessionId } from '../redux/matchSlice';
 
@@ -14,6 +15,7 @@ const PrivateRoute: React.FC<RouteProps> = function (props) {
   const { children, location, ...rest } = props;
 
   useMessageQueue();
+  usePresence();
   const auth = useAuth();
   const history = useHistory();
   const dispatch = useAppDispatch();
