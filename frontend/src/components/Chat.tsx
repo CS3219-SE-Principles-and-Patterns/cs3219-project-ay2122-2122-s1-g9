@@ -1,5 +1,6 @@
 import { SendOutlined } from '@ant-design/icons';
 import { Button, Input, Typography } from 'antd';
+import firebase from 'firebase';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -93,7 +94,7 @@ const Chat: React.FC = function () {
         .ref(`sessions/${sessionId}/messages`)
         .push({
           content,
-          timeStamp: Date.now().toString(),
+          timeStamp: firebase.database.ServerValue.TIMESTAMP,
           uid,
           displayName,
         } as Types.ChatMessage);
