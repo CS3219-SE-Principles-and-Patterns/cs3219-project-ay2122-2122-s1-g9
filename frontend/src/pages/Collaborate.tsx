@@ -83,9 +83,7 @@ const Collaborate: React.FC = function () {
   const isChatVisible = useAppSelector(getIsVisible);
   const qnId = useAppSelector(getQnsId) as string;
   const hasRequest = useAppSelector(getHasChangeQnRequest);
-  const [question, setQuestion] = useState<Types.Question>(
-    {} as Types.Question
-  );
+  const [question, setQuestion] = useState<Types.Question | null>(null);
   const [pageLoaded, setPageLoaded] = useState<boolean>(false);
 
   const auth = useAuth();
@@ -161,7 +159,17 @@ const Collaborate: React.FC = function () {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [qnId]);
 
-  if (!pageLoaded) {
+  // If the user changes the question, we set question to null.
+  // This prevents the editor from writing the defaultCode for the old question
+  // in the initial language, as the editor might load before the
+  // getQuestion function completes.
+  useEffect(() => {
+    if (qnId == null) {
+      setQuestion(null);
+    }
+  }, [qnId]);
+
+  if (!pageLoaded || question == null) {
     const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
     return <Spin indicator={antIcon} />;
   }
