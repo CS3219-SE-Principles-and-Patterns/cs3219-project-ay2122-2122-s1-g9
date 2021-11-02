@@ -11,6 +11,7 @@ import Editor from '../components/Editor';
 import PageLayout from '../components/PageLayout';
 import Sidebar from '../components/Sidebar';
 import { Spacer, TwoColLayout } from '../components/Styles';
+import { MONACO_LANGS } from '../consts/monaco';
 import { changeQuestion, getQuestion } from '../firebase/functions';
 import useAuth from '../hooks/auth';
 import useMessageQueue from '../hooks/messageQueue';
@@ -79,92 +80,10 @@ const isOnlineForDatabase = {
   lastUpdated: firebase.database.ServerValue.TIMESTAMP,
 };
 
-// objective is to omit the ones that are not in the map
-// rename some stuff accordingly like python
 const cleanQnTemplates = (templates: Types.QuestionTemplate[]) => {
-  const monacoLangSet = new Set<string>();
-  monacoLangSet
-    .add('abap')
-    .add('apex')
-    .add('azcli')
-    .add('bat')
-    .add('bicep')
-    .add('cameligo')
-    .add('clojure')
-    .add('coffee')
-    .add('cpp')
-    .add('csharp')
-    .add('csp')
-    .add('css')
-    .add('dart')
-    .add('dockerfile')
-    .add('ecl')
-    .add('elixir')
-    .add('fillers')
-    .add('flow9')
-    .add('fsharp')
-    .add('go')
-    .add('graphql')
-    .add('handlebars')
-    .add('hcl')
-    .add('html')
-    .add('ini')
-    .add('java')
-    .add('javascript')
-    .add('julia')
-    .add('kotlin')
-    .add('less')
-    .add('lexon')
-    .add('liquid')
-    .add('lua')
-    .add('m3')
-    .add('markdown')
-    .add('mips')
-    .add('msdax')
-    .add('mysql')
-    .add('objective-c')
-    .add('pascal')
-    .add('pascaligo')
-    .add('perl')
-    .add('pgsql')
-    .add('php')
-    .add('postiats')
-    .add('powerquery')
-    .add('powershell')
-    .add('protobuf')
-    .add('pug')
-    .add('python')
-    .add('qsharp')
-    .add('r')
-    .add('razor')
-    .add('redis')
-    .add('redshift')
-    .add('restructuredtext')
-    .add('ruby')
-    .add('rust')
-    .add('sb')
-    .add('scala')
-    .add('scheme')
-    .add('scss')
-    .add('shell')
-    .add('solidity')
-    .add('sophia')
-    .add('sparql')
-    .add('sql')
-    .add('st')
-    .add('swift')
-    .add('systemverilog')
-    .add('tcl')
-    .add('twig')
-    .add('typescript')
-    .add('vb')
-    .add('xml')
-    .add('yaml');
-
   const omitPython = templates.filter(
     (template: Types.QuestionTemplate) => template.value != 'python'
   );
-  console.log('omitPython: ', omitPython);
 
   return omitPython
     .map((template: Types.QuestionTemplate) => {
@@ -181,7 +100,7 @@ const cleanQnTemplates = (templates: Types.QuestionTemplate[]) => {
       return updatedTemplate;
     })
     .filter((template: Types.QuestionTemplate) => {
-      return monacoLangSet.has(template.value);
+      return MONACO_LANGS.has(template.value);
     });
 };
 

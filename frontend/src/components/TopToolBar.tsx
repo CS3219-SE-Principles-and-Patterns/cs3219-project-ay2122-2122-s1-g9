@@ -90,14 +90,11 @@ const TopToolBar: React.FC<TopToolBarProps> = function ({
         <CopyButton onClick={handleCopy} icon={<CopyOutlined />} size="large" />
         <Spacer $width="16px" />
         <StyledSelect value={editorLanguage} onChange={handleLanguageChange}>
-          {questionTemplates.map((language) => {
-            console.log('language.value: ', language.value);
-            return (
-              <option key={language.value} value={language.value}>
-                {language.text}
-              </option>
-            );
-          })}
+          {questionTemplates.map((language) => (
+            <option key={language.value} value={language.value}>
+              {language.text}
+            </option>
+          ))}
         </StyledSelect>
       </LeftContainer>
       <RightContainer>
