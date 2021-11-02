@@ -60,21 +60,25 @@ const Chat: React.FC = function () {
   const [messages, setMessages] = useState<Types.ChatMessage[]>([]);
   const [content, setContent] = useState<string>('');
 
-  const dbRef = firebaseApp.database().ref(`sessions/${sessionId}/messages`);
   const currentUser = firebaseApp.auth().currentUser;
   const uid = currentUser?.uid;
   const displayName = currentUser?.displayName;
 
   useEffect(() => {
-    dbRef.on('value', (snapshot) => {
-      const chatMessages = [] as Types.ChatMessage[];
-      snapshot.forEach((snap) => {
-        chatMessages.push(snap.val());
+    if (sessionId == null) {
+      return;
+    }
+    firebaseApp
+      .database()
+      .ref(`sessions/${sessionId}/messages`)
+      .on('value', (snapshot) => {
+        const chatMessages = [] as Types.ChatMessage[];
+        snapshot.forEach((snap) => {
+          chatMessages.push(snap.val());
+        });
+        setMessages(chatMessages);
       });
-      setMessages(chatMessages);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [sessionId]);
 
   const handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault();
@@ -84,12 +88,15 @@ const Chat: React.FC = function () {
         throw new Error('User not logged in');
       }
       setContent('');
-      await dbRef.push({
-        content,
-        timeStamp: Date.now().toString(),
-        uid,
-        displayName,
-      } as Types.ChatMessage);
+      await firebaseApp
+        .database()
+        .ref(`sessions/${sessionId}/messages`)
+        .push({
+          content,
+          timeStamp: Date.now().toString(),
+          uid,
+          displayName,
+        } as Types.ChatMessage);
     } catch (error: unknown) {
       const result = (error as Error).message;
       console.log(result);

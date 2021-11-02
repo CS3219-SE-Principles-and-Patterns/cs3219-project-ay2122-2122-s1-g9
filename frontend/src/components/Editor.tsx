@@ -38,7 +38,6 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
 }) {
   const sessionId = useAppSelector(getSessionId);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-  const sessDbRef = firebaseApp.database().ref(`/sessions/${sessionId}`);
   const currentUser = firebaseApp.auth().currentUser;
 
   const [editorLoaded, setEditorLoaded] = useState<boolean>(false);
@@ -51,20 +50,28 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
   };
 
   useEffect(() => {
-    if (!editorLoaded || editorRef.current == null || !editorLanguage) {
+    if (
+      !editorLoaded ||
+      editorRef.current == null ||
+      !editorLanguage ||
+      sessionId == null
+    ) {
       return;
     }
 
     editorRef.current.setValue('');
-    const contentRef = sessDbRef.child(`content/${editorLanguage}`);
+    const contentRef = firebaseApp
+      .database()
+      .ref(`/sessions/${sessionId}/content/${editorLanguage}`);
     const firepad = fromMonaco(contentRef, editorRef.current);
     if (currentUser?.displayName) {
       firepad.setUserName(currentUser.displayName);
     }
 
     const firepadOnReady = () => {
-      sessDbRef
-        .child('defaultWriter')
+      firebaseApp
+        .database()
+        .ref(`/sessions/${sessionId}/defaultWriter`)
         .get()
         .then((snapshot) => {
           const defaultWriterUid = snapshot.val(); // guaranteed to be inside because written by backend
@@ -89,11 +96,13 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
       firepad.dispose();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editorLoaded, editorLanguage, questionTemplates]);
+  }, [editorLoaded, editorLanguage, questionTemplates, sessionId]);
 
   // Listen for when the language changes
   useEffect(() => {
-    const languageRef = sessDbRef.child('language');
+    const languageRef = firebaseApp
+      .database()
+      .ref(`/sessions/${sessionId}/language`);
 
     const onLanguageChange = (snapshot: firebase.database.DataSnapshot) => {
       const newLang = snapshot.val();
@@ -104,8 +113,7 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
     return () => {
       languageRef.off('value', onLanguageChange);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // only attach once
+  }, [sessionId]); // only attach once
 
   const handleEditorMount: EditorProps['onMount'] = (editor, _monaco) => {
     editorRef.current = editor;
@@ -113,7 +121,10 @@ const Editor: React.FC<PeerprepEditorProps> = function ({
   };
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    sessDbRef.update({ language: e.target.value });
+    firebaseApp
+      .database()
+      .ref(`/sessions/${sessionId}`)
+      .update({ language: e.target.value });
   };
 
   const handleCopy = () => {
