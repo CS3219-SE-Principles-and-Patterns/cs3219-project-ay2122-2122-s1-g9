@@ -14,4 +14,8 @@ declare namespace FunctionTypes {
   interface getSessionData {
     sessId: string;
   }
+
+  interface getWriterData {
+    sessId: string;
+  }
 }
