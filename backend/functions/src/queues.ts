@@ -11,15 +11,6 @@ export const addUserToQueue = functions.https.onCall(
   async (data: App.addUserToQueue, context: CallableContext) => {
     const uid = validateAndGetUid(context);
     const queueName = queueCore.validateAndGetLevel(data);
-    functions.logger.info('Parameters received: ', data);
-
-    const userIsInCurrentSession = await isInCurrentSession(uid);
-    if (userIsInCurrentSession) {
-      throw new functions.https.HttpsError(
-        'failed-precondition',
-        'User is already in an active session'
-      );
-    }
 
     await queueCore.addUserToQueue(uid, queueName);
     return SUCCESS_RESP;
@@ -37,7 +28,7 @@ export const removeUserFromQueue = functions.https.onCall(
 );
 
 export const removeUnmatchedUserAfterTimeout = functions.https.onCall(
-  async (data: App.userTimeoutDetails, _: CallableContext) => {
+  async (data: App.userTimeoutDetails, _context: CallableContext) => {
     // If user is in a session, do nothing
     const isUserInSession = await isInCurrentSession(data.userId);
     if (isUserInSession) {
@@ -58,5 +49,13 @@ export const removeUnmatchedUserAfterTimeout = functions.https.onCall(
 
     functions.logger.info(`User ${data.userId} was removed from the queue`);
     return;
+  }
+);
+
+export const getQueueUserIsIn = functions.https.onCall(
+  async (_data: any, context: CallableContext) => {
+    const uid = validateAndGetUid(context);
+    const queueName = await queueCore.getQueueUserIsIn(uid);
+    return { queueName };
   }
 );

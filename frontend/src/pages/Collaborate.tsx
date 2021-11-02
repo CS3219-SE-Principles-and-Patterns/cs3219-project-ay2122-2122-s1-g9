@@ -11,7 +11,6 @@ import PageLayout from '../components/PageLayout';
 import Sidebar from '../components/Sidebar';
 import { Spacer, TwoColLayout } from '../components/Styles';
 import { changeQuestion, getQuestion } from '../firebase/functions';
-import useAuth from '../hooks/auth';
 import useMessageQueue from '../hooks/messageQueue';
 import { getIsVisible } from '../redux/chatSlice';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
