@@ -15,7 +15,6 @@ import { MONACO_LANGS } from '../consts/monaco';
 import { changeQuestion, getQuestion } from '../firebase/functions';
 import useAuth from '../hooks/auth';
 import useMessageQueue from '../hooks/messageQueue';
-import { getIsVisible } from '../redux/chatSlice';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import {
   getHasChangeQnRequest,
@@ -105,7 +104,6 @@ const cleanQnTemplates = (templates: Types.QuestionTemplate[]) => {
 };
 
 const Collaborate: React.FC = function () {
-  const isChatVisible = useAppSelector(getIsVisible);
   const qnId = useAppSelector(getQnsId) as string;
   const hasRequest = useAppSelector(getHasChangeQnRequest);
   const [question, setQuestion] = useState<Types.Question>(
@@ -223,7 +221,7 @@ const Collaborate: React.FC = function () {
             questionTemplates={cleanQnTemplates(question.templates)}
             questionLink={question.link}
           />
-          {isChatVisible && <Chat />}
+          <Chat />
         </EditorContent>
       </TwoColLayout>
     </PageLayout>
