@@ -11,15 +11,21 @@ import Editor from '../components/Editor';
 import PageLayout from '../components/PageLayout';
 import Sidebar from '../components/Sidebar';
 import { Spacer, TwoColLayout } from '../components/Styles';
-import { changeQuestion, getQuestion } from '../firebase/functions';
+import {
+  changeQuestion,
+  getQuestion,
+  rejectChangeQuestion,
+} from '../firebase/functions';
 import useAuth from '../hooks/auth';
 import useMessageQueue from '../hooks/messageQueue';
 import { getIsVisible } from '../redux/chatSlice';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import {
   getHasChangeQnRequest,
+  getHasRejectQnFeedback,
   getQnsId,
   setHasChangeQnRequest,
+  setHasRejectQnFeedback,
 } from '../redux/matchSlice';
 
 const { Title, Text } = Typography;
@@ -83,6 +89,7 @@ const Collaborate: React.FC = function () {
   const isChatVisible = useAppSelector(getIsVisible);
   const qnId = useAppSelector(getQnsId) as string;
   const hasRequest = useAppSelector(getHasChangeQnRequest);
+  const hasRejectQnFeedback = useAppSelector(getHasRejectQnFeedback);
   const [question, setQuestion] = useState<Types.Question | null>(null);
   const [pageLoaded, setPageLoaded] = useState<boolean>(false);
 
@@ -106,6 +113,9 @@ const Collaborate: React.FC = function () {
       },
       onCancel() {
         dispatch(setHasChangeQnRequest(false));
+        rejectChangeQuestion().catch((error) => {
+          console.error(error);
+        });
       },
     });
   };
@@ -116,6 +126,16 @@ const Collaborate: React.FC = function () {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasRequest]);
+
+  useEffect(() => {
+    if (hasRejectQnFeedback) {
+      message.warning(
+        'Your change question request was rejected by your teammate',
+        2.0,
+        () => dispatch(setHasRejectQnFeedback(false))
+      );
+    }
+  }, [dispatch, hasRejectQnFeedback]);
 
   // Activate presence here
   useEffect(() => {
