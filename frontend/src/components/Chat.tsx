@@ -69,31 +69,44 @@ const Chat: React.FC = function () {
   const displayName = currentUser?.displayName;
 
   useEffect(() => {
+    // const initialLength = messages.length;
+    if (messages.length == 0) {
+      return;
+    }
+    // const hasMoreMessages = messages.length > oldMessageLength;
+
+    const latestMessage = messages[messages.length - 1];
+    const isFromOtherParty = latestMessage.uid != uid;
+    console.log(
+      ', chatMessages.length: ',
+      messages.length,
+      'isChatVisible: ',
+      isChatVisible,
+      ', isFromOtherParty: ',
+      isFromOtherParty
+      // 'hasMoreMessages',
+      // hasMoreMessages
+    );
+
+    if (!isChatVisible && isFromOtherParty) {
+      console.log('SET TRUE HERE');
+      dispatch(setHasNewMessage(true));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, messages, uid]);
+
+  useEffect(() => {
     console.log('useEffect called');
     dbRef.on('value', (snapshot) => {
-      console.log('listener called'); // is called whenever the thing opens
+      console.log('listener called');
       const chatMessages = [] as Types.ChatMessage[];
       snapshot.forEach((snap) => {
         chatMessages.push(snap.val());
       });
-      const initialLength = messages.length;
-      console.log(
-        'initial Length: ',
-        initialLength,
-        ', chatMessages.length: ',
-        chatMessages.length,
-        'isChatVisible: ',
-        isChatVisible
-      );
-      if (chatMessages.length > initialLength && !isChatVisible) {
-        // problem is isChatVisible has an old copy, it always happens to be true
-        console.log('SET TRUE HERE'); // but also called when u urself set the message so maybe when chat is not visible? dpesmt work cos not mounted
-        dispatch(setHasNewMessage(true));
-      }
       setMessages(chatMessages);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isChatVisible]);
+  }, []);
 
   const handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault();
