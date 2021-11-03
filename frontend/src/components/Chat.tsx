@@ -69,27 +69,14 @@ const Chat: React.FC = function () {
   const displayName = currentUser?.displayName;
 
   useEffect(() => {
-    // const initialLength = messages.length;
     if (messages.length == 0) {
       return;
     }
-    // const hasMoreMessages = messages.length > oldMessageLength;
 
     const latestMessage = messages[messages.length - 1];
     const isFromOtherParty = latestMessage.uid != uid;
-    console.log(
-      ', chatMessages.length: ',
-      messages.length,
-      'isChatVisible: ',
-      isChatVisible,
-      ', isFromOtherParty: ',
-      isFromOtherParty
-      // 'hasMoreMessages',
-      // hasMoreMessages
-    );
 
     if (!isChatVisible && isFromOtherParty) {
-      console.log('SET TRUE HERE');
       dispatch(setHasNewMessage(true));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
