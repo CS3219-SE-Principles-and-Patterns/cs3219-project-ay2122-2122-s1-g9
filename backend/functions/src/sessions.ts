@@ -49,7 +49,7 @@ export const getSession = functions.https.onCall(
     }
 
     const sessId = data.sessId;
-    return sessionCore.getSession(sessId);
+    return await sessionCore.getSession(sessId);
   }
 );
 
@@ -74,5 +74,22 @@ export const changeQuestion = functions.https.onCall(
 
     await sessionCore.changeQuestionInSession(sessId);
     return SUCCESS_RESP;
+  }
+);
+
+export const updateAndGetWriter = functions.https.onCall(
+  async (data: any, context: CallableContext) => {
+    validateAndGetUid(context); // Only logged in users can access session data
+
+    if (!data || !data.sessId) {
+      throw new functions.https.HttpsError(
+        'invalid-argument',
+        'The function must be called with a single argument "sessId"'
+      );
+    }
+
+    const sessId = data.sessId;
+    const writerId = await sessionCore.updateAndGetWriter(sessId);
+    return { writerId };
   }
 );

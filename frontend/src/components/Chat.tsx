@@ -1,5 +1,6 @@
 import { SendOutlined } from '@ant-design/icons';
 import { Button, Input, Typography } from 'antd';
+import firebase from 'firebase';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -63,7 +64,6 @@ const Chat: React.FC = function () {
   const isChatVisible = useAppSelector(getIsVisible);
   const dispatch = useAppDispatch();
 
-  const dbRef = firebaseApp.database().ref(`sessions/${sessionId}/messages`);
   const currentUser = firebaseApp.auth().currentUser;
   const uid = currentUser?.uid;
   const displayName = currentUser?.displayName;
@@ -96,17 +96,20 @@ const Chat: React.FC = function () {
   }, [dispatch, messages, uid]);
 
   useEffect(() => {
-    console.log('useEffect called');
-    dbRef.on('value', (snapshot) => {
-      console.log('listener called');
-      const chatMessages = [] as Types.ChatMessage[];
-      snapshot.forEach((snap) => {
-        chatMessages.push(snap.val());
+    if (sessionId == null) {
+      return;
+    }
+    firebaseApp
+      .database()
+      .ref(`sessions/${sessionId}/messages`)
+      .on('value', (snapshot) => {
+        const chatMessages = [] as Types.ChatMessage[];
+        snapshot.forEach((snap) => {
+          chatMessages.push(snap.val());
+        });
+        setMessages(chatMessages);
       });
-      setMessages(chatMessages);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [sessionId]);
 
   const handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault();
@@ -116,12 +119,15 @@ const Chat: React.FC = function () {
         throw new Error('User not logged in');
       }
       setContent('');
-      await dbRef.push({
-        content,
-        timeStamp: Date.now().toString(),
-        uid,
-        displayName,
-      } as Types.ChatMessage);
+      await firebaseApp
+        .database()
+        .ref(`sessions/${sessionId}/messages`)
+        .push({
+          content,
+          timeStamp: firebase.database.ServerValue.TIMESTAMP,
+          uid,
+          displayName,
+        } as Types.ChatMessage);
     } catch (error: unknown) {
       const result = (error as Error).message;
       console.log(result);
