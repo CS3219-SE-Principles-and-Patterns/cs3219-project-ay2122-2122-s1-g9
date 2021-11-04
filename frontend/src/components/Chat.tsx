@@ -69,12 +69,12 @@ const Chat: React.FC = function () {
   const displayName = currentUser?.displayName;
 
   useEffect(() => {
-    if (messages.length == 0) {
+    if (messages.length === 0) {
       return;
     }
 
     const latestMessage = messages[messages.length - 1];
-    const isFromOtherParty = latestMessage.uid != uid;
+    const isFromOtherParty = latestMessage.uid !== uid;
 
     if (!isChatVisible && isFromOtherParty) {
       dispatch(setHasNewMessage(true));
