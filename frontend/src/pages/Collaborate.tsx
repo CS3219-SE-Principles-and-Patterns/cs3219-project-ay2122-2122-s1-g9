@@ -11,13 +11,11 @@ import PageLayout from '../components/PageLayout';
 import Sidebar from '../components/Sidebar';
 import { Spacer, TwoColLayout } from '../components/Styles';
 import { MONACO_LANGS } from '../consts/monaco';
-import { changeQuestion, getQuestion } from '../firebase/functions';
 import {
   changeQuestion,
   getQuestion,
   rejectChangeQuestion,
 } from '../firebase/functions';
-import useAuth from '../hooks/auth';
 import useMessageQueue from '../hooks/messageQueue';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import {
