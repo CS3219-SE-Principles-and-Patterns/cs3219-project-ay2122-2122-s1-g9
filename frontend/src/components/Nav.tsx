@@ -1,5 +1,6 @@
-import { Image, Typography } from 'antd';
+import { Button, Image, Typography } from 'antd';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 import useAuth from '../hooks/auth';
@@ -39,6 +40,7 @@ interface Props {
 const Nav: React.FC<Props> = function (props) {
   const { handleLogoClick } = props;
   const authContext = useAuth();
+  const history = useHistory();
 
   const displayName = authContext?.user?.displayName;
   let initials = '';
@@ -50,10 +52,24 @@ const Nav: React.FC<Props> = function (props) {
       .join('')
       .substring(0, 2);
   }
+  const signOut = () => {
+    authContext
+      ?.signOutOfApp()
+      .then(() => {
+        history.replace('/signin');
+        console.log('signed out');
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   return (
     <StyledNav>
       <Image width={147} src={logo} preview={false} onClick={handleLogoClick} />
+      <Button type="dashed" onClick={signOut}>
+        Sign out
+      </Button>
       <UserIcon key="3">
         <StyledText>{initials}</StyledText>
       </UserIcon>

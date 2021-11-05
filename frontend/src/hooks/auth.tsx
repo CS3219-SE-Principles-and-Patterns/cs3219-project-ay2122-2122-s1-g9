@@ -5,13 +5,14 @@ import { Spin } from 'antd';
 import firebase from 'firebase/app';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { observeAuthState, socialLogin } from '../firebase/auth';
+import { observeAuthState, signOut, socialLogin } from '../firebase/auth';
 
 interface AuthContext {
   user: firebase.User | null;
   setUser: React.Dispatch<React.SetStateAction<firebase.User | null>>;
   signInWithGoogle: () => Promise<void>;
   signInWithFacebook: () => Promise<void>;
+  signOutOfApp: () => Promise<void>;
   authError: string | null;
 }
 
@@ -33,6 +34,10 @@ export const AuthProvider: React.FC = function (props) {
     await socialLogin({ setUser, social: 'facebook', setAuthError });
   };
 
+  const signOutOfApp = async () => {
+    await signOut();
+  };
+
   // Subscribe to user on mount
   // Because this sets state in the callback it will cause any ...
   // ... component that utilizes this hook to re-render with the ...
@@ -49,7 +54,14 @@ export const AuthProvider: React.FC = function (props) {
 
   return (
     <AuthContext.Provider
-      value={{ user, setUser, signInWithGoogle, signInWithFacebook, authError }}
+      value={{
+        user,
+        setUser,
+        signInWithGoogle,
+        signInWithFacebook,
+        authError,
+        signOutOfApp,
+      }}
     >
       {children}
     </AuthContext.Provider>

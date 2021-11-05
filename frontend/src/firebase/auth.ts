@@ -87,6 +87,10 @@ const socialLogin = async ({
   }
 };
 
+const signOut = async () => {
+  await auth.signOut();
+};
+
 const observeAuthState = (
   setUser: React.Dispatch<React.SetStateAction<firebase.User | null>>,
   setPending: React.Dispatch<React.SetStateAction<boolean>>
@@ -100,4 +104,4 @@ const observeAuthState = (
     setPending(false);
   });
 
-export { createUser, observeAuthState, socialLogin };
+export { createUser, observeAuthState, signOut, socialLogin };
