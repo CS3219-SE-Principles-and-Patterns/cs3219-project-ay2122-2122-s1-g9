@@ -27,6 +27,7 @@ const UserIcon = styled.div`
   border-radius: 8px;
   background: #1890ff;
   text-transform: uppercase;
+  cursor: pointer;
 `;
 
 const StyledText = styled(Text)`
