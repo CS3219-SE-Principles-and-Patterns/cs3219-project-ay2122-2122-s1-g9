@@ -1,7 +1,7 @@
 import { SendOutlined } from '@ant-design/icons';
 import { Button, Input, Typography } from 'antd';
 import firebase from 'firebase';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import firebaseApp from '../firebase/firebaseApp';
@@ -58,11 +58,12 @@ const SendButton = styled(Button)`
 `;
 
 const Chat: React.FC = function () {
+  const dispatch = useAppDispatch();
   const sessionId = useAppSelector(getSessionId);
+  const isChatVisible = useAppSelector(getIsVisible);
   const [messages, setMessages] = useState<Types.ChatMessage[]>([]);
   const [content, setContent] = useState<string>('');
-  const isChatVisible = useAppSelector(getIsVisible);
-  const dispatch = useAppDispatch();
+  const chatRef = useRef<HTMLDivElement | null>(null);
 
   const currentUser = firebaseApp.auth().currentUser;
   const uid = currentUser?.uid;
@@ -97,6 +98,16 @@ const Chat: React.FC = function () {
         setMessages(chatMessages);
       });
   }, [sessionId]);
+
+  useEffect(() => {
+    if (messages.length === 0) {
+      return;
+    }
+
+    chatRef.current?.lastElementChild?.scrollIntoView({
+      behavior: 'smooth',
+    });
+  }, [messages, isChatVisible]);
 
   const handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault();
@@ -133,7 +144,7 @@ const Chat: React.FC = function () {
   return (
     <OverallContainer>
       <StyledHeader>Chat</StyledHeader>
-      <ChatContainer>
+      <ChatContainer ref={chatRef}>
         <Spacer $height="16px" />
         {messages.map((chat) => {
           if (chat.uid != uid) {
