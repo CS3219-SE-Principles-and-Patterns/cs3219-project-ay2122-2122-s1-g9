@@ -205,21 +205,18 @@ export async function changeQuestionInSession(sessId: string): Promise<void> {
   await initSession(userIds[0], userIds[1], session.lvl);
   return;
 }
+
 export async function rejectChangeQuestion(rejectorUid: string): Promise<void> {
   // Get the current sessionId
   const sessId = await getCurrentSessionId(rejectorUid);
+
   if (!sessId) {
     throw new functions.https.HttpsError(
       'not-found',
       'User who rejected change question is currently not in a session.'
     );
   }
-  if (!(await isSessionOngoing(sessId))) {
-    throw new functions.https.HttpsError(
-      'failed-precondition',
-      `Session ${sessId} is not currently running.`
-    );
-  }
+
   const partnerId = await findSessionPartner(rejectorUid, sessId);
   await sendMessage(partnerId, REJECT_CHANGE_QUESTION, null);
   return;
