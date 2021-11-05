@@ -1,6 +1,8 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { initSession } from './sessionCore';
+import { isOnline } from './presenceCore';
+import { removeUserFromQueue } from './queueCore';
 
 export async function processQueue(lvl: string): Promise<void> {
   const queuePath = admin.database().ref(`/queues/${lvl}`);
@@ -13,7 +15,15 @@ export async function processQueue(lvl: string): Promise<void> {
     return;
   }
 
-  const queue: string[] = queueSnapshot.val();
+  const queue: string[] = [];
+
+  for (const user of queueSnapshot.val()) {
+    if (await isOnline(user)) {
+      queue.push(user);
+    } else {
+      await removeUserFromQueue(user, lvl);
+    }
+  }
 
   if (queue.length < 2) {
     functions.logger.log(

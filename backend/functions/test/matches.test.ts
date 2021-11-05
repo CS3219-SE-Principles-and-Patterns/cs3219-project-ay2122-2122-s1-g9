@@ -6,7 +6,7 @@ import { expect } from './testUtil/chai';
 import fft from './testUtil/fft';
 
 import { matches } from '../src/index';
-import { createUser } from './testUtil/factory';
+import { createOnlineUser } from './testUtil/factory';
 import * as questionCore from '../src/core/questionCore';
 
 describe('detectMatchesCreateSession', () => {
@@ -14,7 +14,7 @@ describe('detectMatchesCreateSession', () => {
 
   describe('one user in queue', () => {
     it('should leave the user alone', async () => {
-      const uid = await createUser();
+      const uid = await createOnlineUser();
 
       const change = functions.Change.fromObjects(
         fft.database.makeDataSnapshot([], '/queues/easy'),
@@ -51,8 +51,8 @@ describe('detectMatchesCreateSession', () => {
 
       const db = admin.database();
 
-      const uid1 = await createUser();
-      const uid2 = await createUser();
+      const uid1 = await createOnlineUser();
+      const uid2 = await createOnlineUser();
 
       const change = functions.Change.fromObjects(
         fft.database.makeDataSnapshot([uid1], '/queues/easy'),

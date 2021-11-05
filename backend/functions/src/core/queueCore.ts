@@ -8,6 +8,7 @@ import {
   LVL_MEDIUM,
   LVL_HARD,
 } from '../consts/values';
+import { isInCurrentSession } from './sessionCore';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function validateAndGetLevel(data: any, keyName = 'queueName'): string {
@@ -38,7 +39,7 @@ export async function removeUserFromQueue(
     await admin.database().ref(`/queues/${queueName}`).once('value')
   ).val() as string[];
 
-  if (queue == null) {
+  if (queue === null) {
     return;
   }
 
@@ -56,11 +57,25 @@ export async function addUserToQueue(
   uid: string,
   queueName: string
 ): Promise<void> {
-  const queuePath = admin.database().ref(`/queues/${queueName.toLowerCase()}`);
+  if (await isInCurrentSession(uid)) {
+    throw new functions.https.HttpsError(
+      'failed-precondition',
+      'User is already in an active session'
+    );
+  }
 
+  const oldQueueName = await getQueueUserIsIn(uid);
+  if (oldQueueName !== null) {
+    throw new functions.https.HttpsError(
+      'failed-precondition',
+      `User is already in ${oldQueueName}!`
+    );
+  }
+
+  const queuePath = admin.database().ref(`/queues/${queueName.toLowerCase()}`);
   let queue: string[] = (await queuePath.once('value')).val();
 
-  if (queue == null) {
+  if (queue === null) {
     queue = [];
   }
 
@@ -76,4 +91,21 @@ export async function addUserToQueue(
 
   functions.logger.log(`Successfully added user ${uid} to ${queueName} queue`);
   return;
+}
+
+export async function getQueueUserIsIn(uid: string): Promise<string | null> {
+  for (const lvl of ALL_LVLS) {
+    const queuePath = admin.database().ref(`/queues/${lvl}`);
+    const queue: string[] = (await queuePath.get()).val();
+
+    if (queue === null) {
+      continue;
+    }
+
+    if (queue.includes(uid)) {
+      return lvl;
+    }
+  }
+
+  return null;
 }

@@ -2,7 +2,6 @@ import 'firebase/database';
 
 import { LoadingOutlined } from '@ant-design/icons';
 import { Collapse, Layout, message, Modal, Spin, Typography } from 'antd';
-import firebase from 'firebase/app';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -17,7 +16,6 @@ import {
   getQuestion,
   rejectChangeQuestion,
 } from '../firebase/functions';
-import useAuth from '../hooks/auth';
 import useMessageQueue from '../hooks/messageQueue';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import {
@@ -75,16 +73,6 @@ const Separator = styled.span`
   border: 1px solid #bfbfbf;
 `;
 
-const isOfflineForDatabase = {
-  state: 'offline',
-  lastUpdated: firebase.database.ServerValue.TIMESTAMP,
-};
-
-const isOnlineForDatabase = {
-  state: 'online',
-  lastUpdated: firebase.database.ServerValue.TIMESTAMP,
-};
-
 const cleanQnTemplates = (templates: Types.QuestionTemplate[]) => {
   const omitPython = templates.filter(
     (template: Types.QuestionTemplate) => template.value != 'python'
@@ -116,7 +104,6 @@ const Collaborate: React.FC = function () {
   const [question, setQuestion] = useState<Types.Question | null>(null);
   const [pageLoaded, setPageLoaded] = useState<boolean>(false);
 
-  const auth = useAuth();
   const dispatch = useAppDispatch();
   useMessageQueue();
 
@@ -159,33 +146,6 @@ const Collaborate: React.FC = function () {
       );
     }
   }, [dispatch, hasRejectQnFeedback]);
-
-  // Activate presence here
-  useEffect(() => {
-    if (auth?.user?.uid == null) {
-      return;
-    }
-
-    // See https://firebase.google.com/docs/firestore/solutions/presence
-    const uid = auth.user.uid;
-    const userStatusDatabaseRef = firebase.database().ref('/status/' + uid);
-
-    firebase
-      .database()
-      .ref('.info/connected')
-      .on('value', (snapshot) => {
-        if (snapshot.val() == false) {
-          return;
-        }
-
-        userStatusDatabaseRef
-          .onDisconnect()
-          .set(isOfflineForDatabase)
-          .then(() => {
-            userStatusDatabaseRef.set(isOnlineForDatabase);
-          });
-      });
-  });
 
   useEffect(() => {
     if (qnId) {
