@@ -24,7 +24,8 @@ Firebase project and the `firebase` CLI should be setup first as most of the ste
 
 ### Google Cloud Tasks
 
-1. Create a cloud task queue with the following command: `gcloud tasks queues create match-timeout-queue`
+1. Ensure that `gcloud` is pointing to the underlying GCP project that Firebase is using. You can read more about it [here](https://firebase.google.com/docs/projects/learn-more#firebase-cloud-relationship)
+1. Create a cloud task queue with the following command: `gcloud tasks queues create match-timeout-queue`.
 1. Ensure your queue has been created at [https://console.cloud.google.com/cloudtasks/](https://console.cloud.google.com/cloudtasks/)
 
 ### Firebase CLI
