@@ -40,6 +40,14 @@ const changeQuestionFunc = firebaseApp
   .functions()
   .httpsCallable('sessions-changeQuestion');
 
+const rejectChangeQuestionFunc = firebaseApp
+  .functions()
+  .httpsCallable('sessions-rejectChangeQuestion');
+
+const updateAndGetWriterFunc = firebaseApp
+  .functions()
+  .httpsCallable('sessions-updateAndGetWriter');
+
 export const getQuestion = async (data: FunctionTypes.getQuestionData) => {
   return await getQuestionFunc(data);
 };
@@ -82,4 +90,12 @@ export const changeQuestionRequest = async () => {
 
 export const changeQuestion = async () => {
   return await changeQuestionFunc();
+};
+
+export const rejectChangeQuestion = async () => {
+  return await rejectChangeQuestionFunc();
+};
+
+export const updateAndGetWriter = async (data: FunctionTypes.getWriterData) => {
+  return await updateAndGetWriterFunc(data);
 };

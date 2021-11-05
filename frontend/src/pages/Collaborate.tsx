@@ -10,14 +10,22 @@ import Editor from '../components/Editor';
 import PageLayout from '../components/PageLayout';
 import Sidebar from '../components/Sidebar';
 import { Spacer, TwoColLayout } from '../components/Styles';
+import { MONACO_LANGS } from '../consts/monaco';
 import { changeQuestion, getQuestion } from '../firebase/functions';
+import {
+  changeQuestion,
+  getQuestion,
+  rejectChangeQuestion,
+} from '../firebase/functions';
+import useAuth from '../hooks/auth';
 import useMessageQueue from '../hooks/messageQueue';
-import { getIsVisible } from '../redux/chatSlice';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import {
   getHasChangeQnRequest,
+  getHasRejectQnFeedback,
   getQnsId,
   setHasChangeQnRequest,
+  setHasRejectQnFeedback,
 } from '../redux/matchSlice';
 
 const { Title, Text } = Typography;
@@ -67,13 +75,35 @@ const Separator = styled.span`
   border: 1px solid #bfbfbf;
 `;
 
+const cleanQnTemplates = (templates: Types.QuestionTemplate[]) => {
+  const omitPython = templates.filter(
+    (template: Types.QuestionTemplate) => template.value != 'python'
+  );
+
+  return omitPython
+    .map((template: Types.QuestionTemplate) => {
+      const updatedTemplate = { ...template };
+      switch (template.value) {
+        case 'golang':
+          updatedTemplate.value = 'go';
+          break;
+        case 'python3':
+          updatedTemplate.value = 'python';
+          updatedTemplate.text = 'Python';
+          break;
+      }
+      return updatedTemplate;
+    })
+    .filter((template: Types.QuestionTemplate) => {
+      return MONACO_LANGS.has(template.value);
+    });
+};
+
 const Collaborate: React.FC = function () {
-  const isChatVisible = useAppSelector(getIsVisible);
   const qnId = useAppSelector(getQnsId) as string;
   const hasRequest = useAppSelector(getHasChangeQnRequest);
-  const [question, setQuestion] = useState<Types.Question>(
-    {} as Types.Question
-  );
+  const hasRejectQnFeedback = useAppSelector(getHasRejectQnFeedback);
+  const [question, setQuestion] = useState<Types.Question | null>(null);
   const [pageLoaded, setPageLoaded] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
@@ -95,6 +125,9 @@ const Collaborate: React.FC = function () {
       },
       onCancel() {
         dispatch(setHasChangeQnRequest(false));
+        rejectChangeQuestion().catch((error) => {
+          console.error(error);
+        });
       },
     });
   };
@@ -105,6 +138,16 @@ const Collaborate: React.FC = function () {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasRequest]);
+
+  useEffect(() => {
+    if (hasRejectQnFeedback) {
+      message.warning(
+        'Your change question request was rejected by your teammate',
+        2.0,
+        () => dispatch(setHasRejectQnFeedback(false))
+      );
+    }
+  }, [dispatch, hasRejectQnFeedback]);
 
   useEffect(() => {
     if (qnId) {
@@ -121,7 +164,17 @@ const Collaborate: React.FC = function () {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [qnId]);
 
-  if (!pageLoaded) {
+  // If the user changes the question, we set question to null.
+  // This prevents the editor from writing the defaultCode for the old question
+  // in the initial language, as the editor might load before the
+  // getQuestion function completes.
+  useEffect(() => {
+    if (qnId == null) {
+      setQuestion(null);
+    }
+  }, [qnId]);
+
+  if (!pageLoaded || question == null) {
     const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
     return <Spin indicator={antIcon} />;
   }
@@ -155,10 +208,10 @@ const Collaborate: React.FC = function () {
         </Sidebar>
         <EditorContent>
           <Editor
-            questionTemplates={question.templates}
+            questionTemplates={cleanQnTemplates(question.templates)}
             questionLink={question.link}
           />
-          {isChatVisible && <Chat />}
+          <Chat />
         </EditorContent>
       </TwoColLayout>
     </PageLayout>

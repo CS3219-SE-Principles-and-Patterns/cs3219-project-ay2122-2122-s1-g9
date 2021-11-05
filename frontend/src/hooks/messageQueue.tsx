@@ -5,6 +5,7 @@ import firebaseApp from '../firebase/firebaseApp';
 import { useAppDispatch } from '../redux/hooks';
 import {
   setHasChangeQnRequest,
+  setHasRejectQnFeedback,
   setIsQueuing,
   setQnsId,
   setSessionId,
@@ -51,6 +52,9 @@ const useMessageQueue = function () {
           break;
         case 'CHANGE_QUESTION_REQUEST':
           dispatch(setHasChangeQnRequest(true));
+          break;
+        case 'REJECT_CHANGE_QUESTION':
+          dispatch(setHasRejectQnFeedback(true));
           break;
         default:
           console.log(`Unable to process ${msg.type}`);
