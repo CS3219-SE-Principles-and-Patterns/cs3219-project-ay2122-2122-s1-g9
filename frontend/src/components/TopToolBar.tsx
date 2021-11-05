@@ -7,7 +7,12 @@ import { Button } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 
-import { getIsVisible, setIsVisible } from '../redux/chatSlice';
+import {
+  getHasNewMessage,
+  getIsVisible,
+  setHasNewMessage,
+  setIsVisible,
+} from '../redux/chatSlice';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { Spacer } from './Styles';
 
@@ -68,6 +73,13 @@ const RightContainer = styled.div`
   align-items: center;
 `;
 
+const Indicator = styled.div`
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+  background: #ff7875;
+`;
+
 const TopToolBar: React.FC<TopToolBarProps> = function ({
   editorLanguage,
   handleLanguageChange,
@@ -77,8 +89,12 @@ const TopToolBar: React.FC<TopToolBarProps> = function ({
 }) {
   const dispatch = useAppDispatch();
   const isChatVisible = useAppSelector(getIsVisible);
+  const hasNewMessage = useAppSelector(getHasNewMessage);
 
   const toggleChat = () => {
+    if (!isChatVisible) {
+      dispatch(setHasNewMessage(false));
+    }
     dispatch(setIsVisible(!isChatVisible));
   };
 
@@ -102,6 +118,7 @@ const TopToolBar: React.FC<TopToolBarProps> = function ({
           icon={isChatVisible ? <MessageFilled /> : <MessageOutlined />}
           size="large"
         />
+        {hasNewMessage && <Indicator />}
         <Spacer $width="16px" />
         <LeetCodeButton
           rel="noopener noreferrer"

@@ -11,6 +11,7 @@ import Editor from '../components/Editor';
 import PageLayout from '../components/PageLayout';
 import Sidebar from '../components/Sidebar';
 import { Spacer, TwoColLayout } from '../components/Styles';
+import { MONACO_LANGS } from '../consts/monaco';
 import {
   changeQuestion,
   getQuestion,
@@ -18,7 +19,6 @@ import {
 } from '../firebase/functions';
 import useAuth from '../hooks/auth';
 import useMessageQueue from '../hooks/messageQueue';
-import { getIsVisible } from '../redux/chatSlice';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import {
   getHasChangeQnRequest,
@@ -85,8 +85,31 @@ const isOnlineForDatabase = {
   lastUpdated: firebase.database.ServerValue.TIMESTAMP,
 };
 
+const cleanQnTemplates = (templates: Types.QuestionTemplate[]) => {
+  const omitPython = templates.filter(
+    (template: Types.QuestionTemplate) => template.value != 'python'
+  );
+
+  return omitPython
+    .map((template: Types.QuestionTemplate) => {
+      const updatedTemplate = { ...template };
+      switch (template.value) {
+        case 'golang':
+          updatedTemplate.value = 'go';
+          break;
+        case 'python3':
+          updatedTemplate.value = 'python';
+          updatedTemplate.text = 'Python';
+          break;
+      }
+      return updatedTemplate;
+    })
+    .filter((template: Types.QuestionTemplate) => {
+      return MONACO_LANGS.has(template.value);
+    });
+};
+
 const Collaborate: React.FC = function () {
-  const isChatVisible = useAppSelector(getIsVisible);
   const qnId = useAppSelector(getQnsId) as string;
   const hasRequest = useAppSelector(getHasChangeQnRequest);
   const hasRejectQnFeedback = useAppSelector(getHasRejectQnFeedback);
@@ -223,10 +246,10 @@ const Collaborate: React.FC = function () {
         </Sidebar>
         <EditorContent>
           <Editor
-            questionTemplates={question.templates}
+            questionTemplates={cleanQnTemplates(question.templates)}
             questionLink={question.link}
           />
-          {isChatVisible && <Chat />}
+          <Chat />
         </EditorContent>
       </TwoColLayout>
     </PageLayout>

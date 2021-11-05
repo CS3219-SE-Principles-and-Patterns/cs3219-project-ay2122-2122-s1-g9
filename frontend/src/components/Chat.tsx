@@ -5,7 +5,8 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import firebaseApp from '../firebase/firebaseApp';
-import { useAppSelector } from '../redux/hooks';
+import { getIsVisible, setHasNewMessage } from '../redux/chatSlice';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { getSessionId } from '../redux/matchSlice';
 import ChatBubble from './ChatBubble';
 import { Spacer } from './Styles';
@@ -60,10 +61,26 @@ const Chat: React.FC = function () {
   const sessionId = useAppSelector(getSessionId);
   const [messages, setMessages] = useState<Types.ChatMessage[]>([]);
   const [content, setContent] = useState<string>('');
+  const isChatVisible = useAppSelector(getIsVisible);
+  const dispatch = useAppDispatch();
 
   const currentUser = firebaseApp.auth().currentUser;
   const uid = currentUser?.uid;
   const displayName = currentUser?.displayName;
+
+  useEffect(() => {
+    if (messages.length === 0) {
+      return;
+    }
+
+    const latestMessage = messages[messages.length - 1];
+    const isFromOtherParty = latestMessage.uid !== uid;
+
+    if (!isChatVisible && isFromOtherParty) {
+      dispatch(setHasNewMessage(true));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, messages, uid]);
 
   useEffect(() => {
     if (sessionId == null) {
@@ -108,6 +125,10 @@ const Chat: React.FC = function () {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setContent(event.target.value);
   };
+
+  if (!isChatVisible) {
+    return null;
+  }
 
   return (
     <OverallContainer>
