@@ -56,18 +56,6 @@ const Nav: React.FC<Props> = function (props) {
       .substring(0, 2);
   }
 
-  // const signOut = () => {
-  //   authContext
-  //     ?.signOutOfApp()
-  //     .then(() => {
-  //       history.replace('/signin');
-  //       console.log('signed out');
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //     });
-  // };
-
   const showConfirm = () => {
     confirm({
       title: 'Not so fast...',
@@ -78,7 +66,6 @@ const Nav: React.FC<Props> = function (props) {
           ?.signOutOfApp()
           .then(() => {
             history.replace('/signin');
-            console.log('signed out');
           })
           .catch((error) => {
             console.error(error);
