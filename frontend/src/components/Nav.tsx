@@ -1,4 +1,5 @@
-import { Button, Image, Typography } from 'antd';
+import { ExclamationCircleOutlined, LogoutOutlined } from '@ant-design/icons';
+import { Dropdown, Image, Menu, Modal, Typography } from 'antd';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -37,6 +38,8 @@ interface Props {
   handleLogoClick?: () => void;
 }
 
+const { confirm } = Modal;
+
 const Nav: React.FC<Props> = function (props) {
   const { handleLogoClick } = props;
   const authContext = useAuth();
@@ -52,27 +55,54 @@ const Nav: React.FC<Props> = function (props) {
       .join('')
       .substring(0, 2);
   }
-  const signOut = () => {
-    authContext
-      ?.signOutOfApp()
-      .then(() => {
-        history.replace('/signin');
-        console.log('signed out');
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+
+  // const signOut = () => {
+  //   authContext
+  //     ?.signOutOfApp()
+  //     .then(() => {
+  //       history.replace('/signin');
+  //       console.log('signed out');
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  // };
+
+  const showConfirm = () => {
+    confirm({
+      title: 'Not so fast...',
+      icon: <ExclamationCircleOutlined />,
+      content: <p>Are you sure you want to sign out?</p>,
+      onOk() {
+        return authContext
+          ?.signOutOfApp()
+          .then(() => {
+            history.replace('/signin');
+            console.log('signed out');
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      },
+    });
   };
+
+  const signoutMenu = (
+    <Menu onClick={showConfirm}>
+      <Menu.Item key="signout" icon={<LogoutOutlined />}>
+        Sign out
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
     <StyledNav>
       <Image width={147} src={logo} preview={false} onClick={handleLogoClick} />
-      <Button type="dashed" onClick={signOut}>
-        Sign out
-      </Button>
-      <UserIcon key="3">
-        <StyledText>{initials}</StyledText>
-      </UserIcon>
+      <Dropdown overlay={signoutMenu} trigger={['click']}>
+        <UserIcon key="3">
+          <StyledText>{initials}</StyledText>
+        </UserIcon>
+      </Dropdown>
     </StyledNav>
   );
 };
