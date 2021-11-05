@@ -77,6 +77,14 @@ export const changeQuestion = functions.https.onCall(
   }
 );
 
+export const rejectChangeQuestion = functions.https.onCall(
+  async (_, context: CallableContext) => {
+    const uid = validateAndGetUid(context);
+    await sessionCore.rejectChangeQuestion(uid);
+    return SUCCESS_RESP;
+  }
+);
+
 export const updateAndGetWriter = functions.https.onCall(
   async (data: any, context: CallableContext) => {
     validateAndGetUid(context); // Only logged in users can access session data

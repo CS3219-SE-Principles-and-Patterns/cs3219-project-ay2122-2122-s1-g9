@@ -8,6 +8,7 @@ import {
   FOUND_SESSION,
   STOP_SESSION,
   CHANGE_QUESTION_REQUEST,
+  REJECT_CHANGE_QUESTION,
 } from '../consts/msgTypes';
 
 export async function getSession(sessId: string): Promise<App.Session> {
@@ -202,6 +203,22 @@ export async function changeQuestionInSession(sessId: string): Promise<void> {
 
   await endSession(sessId, true);
   await initSession(userIds[0], userIds[1], session.lvl);
+  return;
+}
+
+export async function rejectChangeQuestion(rejectorUid: string): Promise<void> {
+  // Get the current sessionId
+  const sessId = await getCurrentSessionId(rejectorUid);
+
+  if (!sessId) {
+    throw new functions.https.HttpsError(
+      'not-found',
+      'User who rejected change question is currently not in a session.'
+    );
+  }
+
+  const partnerId = await findSessionPartner(rejectorUid, sessId);
+  await sendMessage(partnerId, REJECT_CHANGE_QUESTION, null);
   return;
 }
 
