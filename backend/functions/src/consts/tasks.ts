@@ -1,7 +1,8 @@
 import { PROJECT_ID } from './firebaseConfig';
 
 export const CLOUD_TASK_PROJECT_ID = PROJECT_ID;
-export const CLOUD_TASK_LOCATION = 'us-central1'; // Cloud Tasks only exist in us-central1
+export const CLOUD_TASK_LOCATION =
+  PROJECT_ID === 'cs3219-project-prod' ? 'asia-southeast1' : 'us-central1';
 
 export const MATCH_TIMEOUT_QUEUE_NAME = 'match-timeout-queue';
 export const REMOVE_UNMATCHED_USER_FUNCTION_NAME =
