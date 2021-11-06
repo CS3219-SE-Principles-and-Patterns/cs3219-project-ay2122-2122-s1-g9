@@ -1,52 +1,58 @@
 import firebaseApp from './firebaseApp';
+import { FIREBASE_PROJECT_ID } from './firebaseOptions';
 
-const getQuestionFunc = firebaseApp
-  .functions()
-  .httpsCallable('questions-getQuestion');
+let firebaseAppFunctions = firebaseApp.functions();
+if (FIREBASE_PROJECT_ID === 'cs3219-project-prod') {
+  firebaseAppFunctions = firebaseApp.functions('asia-southeast1');
+}
 
-const addUserToQueueFunc = firebaseApp
-  .functions()
-  .httpsCallable('queues-addUserToQueue');
+const getQuestionFunc = firebaseAppFunctions.httpsCallable(
+  'questions-getQuestion'
+);
 
-const removeUserFromQueueFunc = firebaseApp
-  .functions()
-  .httpsCallable('queues-removeUserFromQueue');
+const addUserToQueueFunc = firebaseAppFunctions.httpsCallable(
+  'queues-addUserToQueue'
+);
 
-const getQueueUserIsInFunc = firebaseApp
-  .functions()
-  .httpsCallable('queues-getQueueUserIsIn');
+const removeUserFromQueueFunc = firebaseAppFunctions.httpsCallable(
+  'queues-removeUserFromQueue'
+);
 
-const getSessionFunc = firebaseApp
-  .functions()
-  .httpsCallable('sessions-getSession');
+const getQueueUserIsInFunc = firebaseAppFunctions.httpsCallable(
+  'queues-getQueueUserIsIn'
+);
 
-const stopSessionFunc = firebaseApp
-  .functions()
-  .httpsCallable('sessions-stopSession');
+const getSessionFunc = firebaseAppFunctions.httpsCallable(
+  'sessions-getSession'
+);
 
-const isInCurrentSessionFunc = firebaseApp
-  .functions()
-  .httpsCallable('sessions-isInCurrentSession');
+const stopSessionFunc = firebaseAppFunctions.httpsCallable(
+  'sessions-stopSession'
+);
 
-const getCurrentSessionIdFunc = firebaseApp
-  .functions()
-  .httpsCallable('sessions-getCurrentSessionId');
+const isInCurrentSessionFunc = firebaseAppFunctions.httpsCallable(
+  'sessions-isInCurrentSession'
+);
 
-const changeQuestionRequestFunc = firebaseApp
-  .functions()
-  .httpsCallable('sessions-changeQuestionRequest');
+const getCurrentSessionIdFunc = firebaseAppFunctions.httpsCallable(
+  'sessions-getCurrentSessionId'
+);
 
-const changeQuestionFunc = firebaseApp
-  .functions()
-  .httpsCallable('sessions-changeQuestion');
+const changeQuestionRequestFunc = firebaseAppFunctions.httpsCallable(
+  'sessions-changeQuestionRequest'
+);
 
-const rejectChangeQuestionFunc = firebaseApp
-  .functions()
-  .httpsCallable('sessions-rejectChangeQuestion');
+const changeQuestionFunc = firebaseAppFunctions.httpsCallable(
+  'sessions-changeQuestion'
+);
 
-const updateAndGetWriterFunc = firebaseApp
-  .functions()
-  .httpsCallable('sessions-updateAndGetWriter');
+const rejectChangeQuestionFunc = firebaseAppFunctions.httpsCallable(
+  'sessions-rejectChangeQuestion'
+);
+
+const updateAndGetWriterFunc = firebaseAppFunctions.httpsCallable(
+  'sessions-updateAndGetWriter'
+);
 
 export const getQuestion = async (data: FunctionTypes.getQuestionData) => {
   return await getQuestionFunc(data);
