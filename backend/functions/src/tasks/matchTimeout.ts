@@ -3,7 +3,7 @@ import { CloudTasksClient } from '@google-cloud/tasks';
 import {
   MATCH_TIMEOUT_QUEUE_NAME,
   CLOUD_TASK_PROJECT_ID,
-  CLOUD_TASK_PROJECT_LOCATION,
+  CLOUD_TASK_LOCATION,
   USER_TIMEOUT_DURING_MATCH,
   REMOVE_UNMATCHED_USER_FUNCTION_URL,
 } from '../consts/tasks';
@@ -25,7 +25,7 @@ export async function addUserToTimeoutQueue(
   const client = new CloudTasksClient();
   const parent = client.queuePath(
     CLOUD_TASK_PROJECT_ID,
-    CLOUD_TASK_PROJECT_LOCATION,
+    CLOUD_TASK_LOCATION,
     MATCH_TIMEOUT_QUEUE_NAME
   );
   const payload = {

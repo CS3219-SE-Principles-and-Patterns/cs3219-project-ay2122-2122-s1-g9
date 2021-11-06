@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
 import { queues } from '../src/index';
-import { createSession, createUser } from './testUtil/factory';
+import { createOnlineUser, createSession } from './testUtil/factory';
 import { expect } from './testUtil/chai';
 import fft from './testUtil/fft';
 
@@ -54,13 +54,26 @@ describe('removeUserFromQueue', () => {
 });
 
 describe('removeUnmatchedUserAfterTimeout', () => {
-  const func = fft.wrap(queues.removeUnmatchedUserAfterTimeout);
+  const func = queues.removeUnmatchedUserAfterTimeout;
+
+  // Mocked response object to let function execute successfully
+  const res = {
+    status: () => res,
+    json: () => res,
+  };
 
   describe('in current session', () => {
     it('should exit successfully', async () => {
       const sess = await createSession();
       const userId1 = sess.users[0];
-      await func({ userId: userId1, queueName: 'easy' });
+      const req = {
+        body: { userId: userId1, queueName: 'easy' },
+      };
+
+      // Firebase does not have good support to run tests written in ts.
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      await func(req, res);
 
       await admin
         .database()
@@ -73,11 +86,17 @@ describe('removeUnmatchedUserAfterTimeout', () => {
 
   describe('not in current session', () => {
     it('should remove user from queue', async () => {
-      const userId = await createUser();
+      const userId = await createOnlineUser();
       const db = admin.database();
-
       await db.ref('/queues/easy').set([userId]);
-      await func({ queueName: 'easy', userId });
+
+      const req = {
+        body: { userId, queueName: 'easy' },
+      };
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      await func(req, res);
 
       await db.ref('/queues/easy').once('value', (snapshot) => {
         // If there is nothing in queue, the val will be null

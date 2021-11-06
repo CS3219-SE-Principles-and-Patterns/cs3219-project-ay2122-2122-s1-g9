@@ -72,6 +72,6 @@ describe('detectMatchesCreateSession', () => {
 
       stub.restore();
       stub2.restore();
-    });
+    }).timeout(5000);
   });
 });

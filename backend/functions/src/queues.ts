@@ -56,7 +56,8 @@ export const removeUnmatchedUserAfterTimeout = functions
 
     // If the user is not in a session, remove them from the queue
     const queueName = queueCore.validateAndGetLevel(data);
-    if (queueCore.getQueueUserIsIn(userId) !== queueName) {
+    if ((await queueCore.getQueueUserIsIn(userId)) !== queueName) {
+      functions.logger.info('C');
       res.status(400).json({
         code: 'failed-precondition',
         message: `UserId ${userId} is not in ${queueName} queue`,
