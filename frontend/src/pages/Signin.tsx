@@ -71,6 +71,7 @@ const Signin: React.FC = function () {
               src={logo}
               fallback={fallbackImage}
               preview={false}
+              alt="PeerPrep logo"
             />
           </Logo>
           <Spacer $height="75px" />

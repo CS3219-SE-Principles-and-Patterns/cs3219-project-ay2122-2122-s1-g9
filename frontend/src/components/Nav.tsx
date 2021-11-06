@@ -85,7 +85,13 @@ const Nav: React.FC<Props> = function (props) {
 
   return (
     <StyledNav>
-      <Image width={147} src={logo} preview={false} onClick={handleLogoClick} />
+      <Image
+        width={147}
+        src={logo}
+        preview={false}
+        onClick={handleLogoClick}
+        alt="PeerPrep logo"
+      />
       <Dropdown overlay={signoutMenu} trigger={['click']}>
         <UserIcon key="3">
           <StyledText>{initials}</StyledText>
