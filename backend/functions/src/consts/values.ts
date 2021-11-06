@@ -1,3 +1,5 @@
+import { PROJECT_ID } from './firebaseConfig';
+
 // Cannot use FUNCTIONS_EMULATOR env var because it does not exist when running tests through emulator
 export const RUNNING_IN_EMULATOR = 'FIRESTORE_EMULATOR_HOST' in process.env;
 
@@ -11,4 +13,5 @@ export const SESS_STATUS_ENDED = 'ended';
 
 export const SUCCESS_RESP = { success: true };
 
-export const FUNCTION_LOCATION = 'asia-southeast1';
+export const FUNCTION_LOCATION =
+  PROJECT_ID === 'cs3219-project-prod' ? 'asia-southeast1' : 'us-central1';
