@@ -10,3 +10,5 @@ export const SESS_STATUS_STARTED = 'started';
 export const SESS_STATUS_ENDED = 'ended';
 
 export const SUCCESS_RESP = { success: true };
+
+export const FUNCTION_LOCATION = 'asia-southeast1';
