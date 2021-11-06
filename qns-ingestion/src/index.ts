@@ -16,6 +16,7 @@ async function main() {
   const db = getFirestore(app);
 
   if (process.env.USE_EMULATOR) {
+    console.log('Connecting to Firestore emulator');
     connectFirestoreEmulator(db, 'localhost', 8080);
   }
 

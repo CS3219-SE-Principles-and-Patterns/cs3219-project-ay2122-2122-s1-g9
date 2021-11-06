@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "cs3219-project-dev"
-  }
+    "default": "cs3219-project-dev",
+    "prod": "cs3219-project-prod"
+  },
+  "targets": {}
 }

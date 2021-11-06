@@ -1,6 +1,38 @@
 import fs from 'fs';
 
-import { QnsDictForRandom, Question, QuestionDict } from './questionTypes';
+import { MONACO_LANGS } from './monaco';
+import {
+  QnsDictForRandom,
+  Question,
+  QuestionDict,
+  QuestionTemplate,
+} from './questionTypes';
+
+function cleanTemplates(templates: QuestionTemplate[]): QuestionTemplate[] {
+  const omitPython = templates.filter(
+    (template: QuestionTemplate) => template.value != 'python'
+  );
+
+  const newTemplates = omitPython
+    .map((template: QuestionTemplate) => {
+      const updatedTemplate = { ...template };
+      switch (template.value) {
+        case 'golang':
+          updatedTemplate.value = 'go';
+          break;
+        case 'python3':
+          updatedTemplate.value = 'python';
+          updatedTemplate.text = 'Python';
+          break;
+      }
+      return updatedTemplate;
+    })
+    .filter((template: QuestionTemplate) => {
+      return MONACO_LANGS.has(template.value);
+    });
+
+  return newTemplates;
+}
 
 function readQuestions(qnsDir: string): QuestionDict {
   const exclusions = ['.DS_STORE', 'problems.json', 'translationConfig.json'];
@@ -12,6 +44,7 @@ function readQuestions(qnsDir: string): QuestionDict {
   const qnsDict: { [id: string]: Question } = {};
   for (const filename of arr) {
     const qns: Question = JSON.parse(fs.readFileSync(filename).toString());
+    qns.templates = cleanTemplates(qns.templates);
     qns.level = qns.level.toLowerCase();
     qnsDict[qns.slug] = qns;
   }

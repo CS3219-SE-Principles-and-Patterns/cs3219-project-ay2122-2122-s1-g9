@@ -1,12 +1,11 @@
-// https://firebase.google.com/docs/functions/config-env
-const FIREBASE_CONFIG_STR = process.env['FIREBASE_CONFIG'] || '';
-const FIREBASE_CONFIG = JSON.parse(FIREBASE_CONFIG_STR);
-export const PROJECT_ID = FIREBASE_CONFIG.projectId;
-// Hack, we're doing this because the actual value of locationId is missing the number
-export const PROJECT_LOCATION = FIREBASE_CONFIG.locationId + '1';
+import { PROJECT_ID } from './firebaseConfig';
+
+export const CLOUD_TASK_PROJECT_ID = PROJECT_ID;
+export const CLOUD_TASK_LOCATION =
+  PROJECT_ID === 'cs3219-project-prod' ? 'asia-southeast1' : 'us-central1';
 
 export const MATCH_TIMEOUT_QUEUE_NAME = 'match-timeout-queue';
 export const REMOVE_UNMATCHED_USER_FUNCTION_NAME =
   'queues-removeUnmatchedUserAfterTimeout';
-export const REMOVE_UNMATCHED_USER_FUNCTION_URL = `https://${PROJECT_LOCATION}-${PROJECT_ID}.cloudfunctions.net/${REMOVE_UNMATCHED_USER_FUNCTION_NAME}`;
+export const REMOVE_UNMATCHED_USER_FUNCTION_URL = `https://${CLOUD_TASK_LOCATION}-${CLOUD_TASK_PROJECT_ID}.cloudfunctions.net/${REMOVE_UNMATCHED_USER_FUNCTION_NAME}`;
 export const USER_TIMEOUT_DURING_MATCH = 30;

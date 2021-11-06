@@ -6,6 +6,10 @@ async function writeQnsDict(
   db: Firestore,
   qnsDict: QuestionDict
 ): Promise<void> {
+  console.log(
+    `Inserting questions into Firestore of ${db.app.options.projectId}`
+  );
+
   for (const qns of Object.values(qnsDict)) {
     const docRef = doc(db, 'questions', qns.slug);
     await setDoc(docRef, qns);
@@ -19,6 +23,10 @@ async function writeDictForRandom(
   db: Firestore,
   dictForRandom: QnsDictForRandom
 ): Promise<void> {
+  console.log(
+    `Inserting random questions into Firestore of ${db.app.options.projectId}`
+  );
+
   // randomQuestions(C) -> algorithms(D) -> easy(C) -> auto_id containing qns (D)
   const rootCollectionRef = collection(db, 'randomQuestions');
 

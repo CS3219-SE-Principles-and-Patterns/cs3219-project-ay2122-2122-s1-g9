@@ -29,4 +29,5 @@ jobs:
       - name: Deploy functions
         run: |
           cd ../
-          firebase deploy -f --token ${{secrets.FIREBASE_CI_TOKEN}}
+          firebase -P cs3219-project-dev deploy -f --token ${{secrets.FIREBASE_CI_TOKEN}}
+          firebase -P cs3219-project-prod deploy -f --token ${{secrets.FIREBASE_CI_TOKEN}}

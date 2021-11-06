@@ -62,4 +62,4 @@ jobs:
       - name: Run tests against emulator
         run: |
           cd ../
-          firebase emulators:exec "yarn --cwd functions test"
+          firebase -P default emulators:exec "yarn --cwd functions test"

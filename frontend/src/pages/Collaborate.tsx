@@ -10,7 +10,6 @@ import Editor from '../components/Editor';
 import PageLayout from '../components/PageLayout';
 import Sidebar from '../components/Sidebar';
 import { Spacer, TwoColLayout } from '../components/Styles';
-import { MONACO_LANGS } from '../consts/monaco';
 import {
   changeQuestion,
   getQuestion,
@@ -72,30 +71,6 @@ const Separator = styled.span`
   top: 110px;
   border: 1px solid #bfbfbf;
 `;
-
-const cleanQnTemplates = (templates: Types.QuestionTemplate[]) => {
-  const omitPython = templates.filter(
-    (template: Types.QuestionTemplate) => template.value != 'python'
-  );
-
-  return omitPython
-    .map((template: Types.QuestionTemplate) => {
-      const updatedTemplate = { ...template };
-      switch (template.value) {
-        case 'golang':
-          updatedTemplate.value = 'go';
-          break;
-        case 'python3':
-          updatedTemplate.value = 'python';
-          updatedTemplate.text = 'Python';
-          break;
-      }
-      return updatedTemplate;
-    })
-    .filter((template: Types.QuestionTemplate) => {
-      return MONACO_LANGS.has(template.value);
-    });
-};
 
 const Collaborate: React.FC = function () {
   const qnId = useAppSelector(getQnsId) as string;
@@ -206,7 +181,7 @@ const Collaborate: React.FC = function () {
         </Sidebar>
         <EditorContent>
           <Editor
-            questionTemplates={cleanQnTemplates(question.templates)}
+            questionTemplates={question.templates}
             questionLink={question.link}
           />
           <Chat />
