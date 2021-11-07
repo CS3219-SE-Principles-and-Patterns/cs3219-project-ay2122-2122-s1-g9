@@ -33,9 +33,9 @@ export const removeUserFromQueue = functions
 export const removeUnmatchedUserAfterTimeout = functions
   .region(FUNCTION_LOCATION)
   .https.onRequest(async (req: functions.Request, res: functions.Response) => {
-    functions.logger.info(`Received parameters ${data}`);
+    functions.logger.info(`Received parameters ${JSON.stringify(req.body)}`);
 
-    const data = req.body;
+    const data = req.body.data;
 
     if (!data || !data.userId || !data.queueName) {
       res.status(400).json({
