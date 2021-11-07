@@ -67,7 +67,12 @@ describe('removeUnmatchedUserAfterTimeout', () => {
       const sess = await createSession();
       const userId1 = sess.users[0];
       const req = {
-        body: { userId: userId1, queueName: 'easy' },
+        body: {
+          data: {
+            userId: userId1,
+            queueName: 'easy',
+          },
+        },
       };
 
       // Firebase does not have good support to run tests written in ts.
@@ -91,7 +96,12 @@ describe('removeUnmatchedUserAfterTimeout', () => {
       await db.ref('/queues/easy').set([userId]);
 
       const req = {
-        body: { userId, queueName: 'easy' },
+        body: {
+          data: {
+            userId,
+            queueName: 'easy',
+          },
+        },
       };
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
