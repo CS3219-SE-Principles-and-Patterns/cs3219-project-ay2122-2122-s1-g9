@@ -1,0 +1,26 @@
+{
+  "rules": {
+    "status": {
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid == $uid"
+      }
+    }, 
+    "sessions": {
+        "$sess_id": {
+            ".read": "data.child('users').child('0').val() == auth.uid || data.child('users').child('1').val() == auth.uid",
+            ".write": "newData.child('users').child('0').val() == auth.uid || newData.child('users').child('1').val() == auth.uid"
+        }
+    },
+    "queues": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid"
+      }     
+    }
+  }
+}
