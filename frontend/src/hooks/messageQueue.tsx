@@ -5,6 +5,7 @@ import firebaseApp from '../firebase/firebaseApp';
 import { useAppDispatch } from '../redux/hooks';
 import {
   setHasChangeQnRequest,
+  setHasNoMatchFound,
   setHasRejectQnFeedback,
   setIsQueuing,
   setQnsId,
@@ -40,6 +41,7 @@ const useMessageQueue = function () {
           break;
         case 'NO_MATCH_FOUND':
           dispatch(setIsQueuing(false));
+          dispatch(setHasNoMatchFound(true));
           history.replace('/');
           break;
         case 'STOP_SESSION':

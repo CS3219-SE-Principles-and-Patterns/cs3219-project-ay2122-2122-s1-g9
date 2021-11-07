@@ -44,7 +44,7 @@ const socialLogin = async ({
   setAuthError,
 }: SocialLoginParams) => {
   try {
-    await auth.setPersistence(Persistence.SESSION);
+    await auth.setPersistence(Persistence.LOCAL);
     let provider: firebase.auth.AuthProvider;
     switch (social) {
       case 'facebook':

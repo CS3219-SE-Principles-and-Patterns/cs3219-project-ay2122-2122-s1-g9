@@ -8,6 +8,7 @@ interface MatchState {
   qnsId: string | null;
   hasChangeQnRequest: boolean;
   hasRejectQnFeedback: boolean;
+  hasNoMatchFound: boolean;
 }
 
 const initialState: MatchState = {
@@ -16,6 +17,7 @@ const initialState: MatchState = {
   qnsId: null,
   hasChangeQnRequest: false,
   hasRejectQnFeedback: false,
+  hasNoMatchFound: false,
 };
 
 export const matchSlice = createSlice({
@@ -37,6 +39,9 @@ export const matchSlice = createSlice({
     setHasRejectQnFeedback: (state, action) => {
       state.hasRejectQnFeedback = action.payload;
     },
+    setHasNoMatchFound: (state, action) => {
+      state.hasNoMatchFound = action.payload;
+    },
   },
 });
 
@@ -46,6 +51,7 @@ export const {
   setSessionId,
   setHasChangeQnRequest,
   setHasRejectQnFeedback,
+  setHasNoMatchFound,
 } = matchSlice.actions;
 
 export const getIsQueuing = (state: RootState) => state.match.isQueuing;
@@ -55,5 +61,7 @@ export const getHasChangeQnRequest = (state: RootState) =>
   state.match.hasChangeQnRequest;
 export const getHasRejectQnFeedback = (state: RootState) =>
   state.match.hasRejectQnFeedback;
+export const getHasNoMatchFound = (state: RootState) =>
+  state.match.hasNoMatchFound;
 
 export default matchSlice.reducer;

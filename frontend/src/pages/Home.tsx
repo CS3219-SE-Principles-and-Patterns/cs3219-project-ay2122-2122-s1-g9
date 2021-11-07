@@ -1,5 +1,5 @@
-import { Button, Select, Typography } from 'antd';
-import React, { useState } from 'react';
+import { Button, message, Select, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 
@@ -8,8 +8,12 @@ import PageLayout from '../components/PageLayout';
 import Sidebar from '../components/Sidebar';
 import { Spacer, TwoColLayout } from '../components/Styles';
 import { addUserToQueue } from '../firebase/functions';
-import { useAppDispatch } from '../redux/hooks';
-import { setIsQueuing } from '../redux/matchSlice';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import {
+  getHasNoMatchFound,
+  setHasNoMatchFound,
+  setIsQueuing,
+} from '../redux/matchSlice';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -42,8 +46,21 @@ const StyledButton = styled(Button)`
 const Home: React.FC = function () {
   const history = useHistory();
   const dispatch = useAppDispatch();
+  const hasNoMatchFound = useAppSelector(getHasNoMatchFound);
   const [difficulty, setDifficulty] = useState<Types.Difficulty | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (hasNoMatchFound) {
+      message.info(
+        'Sorry! Seems like there are no matches for your difficulty level. Try again later 👍',
+        5,
+        () => {
+          dispatch(setHasNoMatchFound(false));
+        }
+      );
+    }
+  }, [dispatch, hasNoMatchFound]);
 
   const handleSelect = (value: Types.Difficulty) => {
     setDifficulty(value);
