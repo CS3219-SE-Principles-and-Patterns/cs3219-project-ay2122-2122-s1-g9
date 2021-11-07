@@ -33,6 +33,8 @@ export const removeUserFromQueue = functions
 export const removeUnmatchedUserAfterTimeout = functions
   .region(FUNCTION_LOCATION)
   .https.onRequest(async (req: functions.Request, res: functions.Response) => {
+    functions.logger.info(`Received parameters ${data}`);
+
     const data = req.body;
 
     if (!data || !data.userId || !data.queueName) {
@@ -48,10 +50,11 @@ export const removeUnmatchedUserAfterTimeout = functions
     const userId = data.userId;
     const isUserInSession = await isInCurrentSession(userId);
     if (isUserInSession) {
-      functions.logger.info(
-        `User ${userId} is already in a session and will not be removed from the queue`
-      );
-      return;
+      const msg = `User ${userId} is already in a session and will not be removed from the queue`;
+      functions.logger.info(msg);
+      res.status(200).json({
+        message: msg,
+      });
     }
 
     // If the user is not in a session, remove them from the queue
