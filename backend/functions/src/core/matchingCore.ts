@@ -4,11 +4,13 @@ import { initSession } from './sessionCore';
 import { isOnline } from './presenceCore';
 import { removeUserFromQueue } from './queueCore';
 
-export async function processQueue(lvl: string): Promise<void> {
+export async function processQueue(
+  queueSnapshot: [],
+  lvl: string
+): Promise<void> {
   const queuePath = admin.database().ref(`/queues/${lvl}`);
-  const queueSnapshot = await queuePath.get();
 
-  if (!queueSnapshot.exists()) {
+  if (!queueSnapshot || queueSnapshot.length == 0) {
     functions.logger.log(
       `${lvl} queue has nothing to be processed. Exiting function`
     );
@@ -17,7 +19,7 @@ export async function processQueue(lvl: string): Promise<void> {
 
   const queue: string[] = [];
 
-  for (const user of queueSnapshot.val()) {
+  for (const user of queueSnapshot) {
     if (await isOnline(user)) {
       queue.push(user);
     } else {
