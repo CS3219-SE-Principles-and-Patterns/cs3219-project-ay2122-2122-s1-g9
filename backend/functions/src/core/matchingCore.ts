@@ -5,7 +5,7 @@ import { isOnline } from './presenceCore';
 import { removeUserFromQueue } from './queueCore';
 
 export async function processQueue(
-  queueSnapshot: [],
+  queueSnapshot: string[],
   lvl: string
 ): Promise<void> {
   const queuePath = admin.database().ref(`/queues/${lvl}`);

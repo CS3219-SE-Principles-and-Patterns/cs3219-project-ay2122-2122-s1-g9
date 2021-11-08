@@ -7,7 +7,7 @@ export const detectMatchesCreateSession = functions
   .database.ref('/queues/{difficulty}')
   .onWrite(async (change, context) => {
     const lvl = context.params.difficulty;
-    const queueState = change.after.val();
+    const queueState = change.after.val() as string[];
     await matchingCore.processQueue(queueState, lvl);
     functions.logger.log(`Completed processing for ${lvl} queue`);
   });
