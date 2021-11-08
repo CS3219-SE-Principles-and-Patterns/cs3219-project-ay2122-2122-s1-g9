@@ -14,6 +14,10 @@ defaults:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project-id: [cs3219-project-dev, cs3219-project-prod]
+      fail-fast: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -29,5 +33,4 @@ jobs:
       - name: Deploy functions
         run: |
           cd ../
-          firebase -P cs3219-project-dev deploy -f --token ${{secrets.FIREBASE_CI_TOKEN}}
-          firebase -P cs3219-project-prod deploy -f --token ${{secrets.FIREBASE_CI_TOKEN}}
+          firebase -P ${{ matrix.project-id }} deploy -f --token ${{secrets.FIREBASE_CI_TOKEN}}
