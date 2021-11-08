@@ -1,7 +1,5 @@
 # frontend
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/1eae7288-2265-46bc-b7ef-5341276d1f43/deploy-status)](https://app.netlify.com/sites/peerprep/deploys)
-
 This is the frontend repo for PeerPrep. This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Setup
