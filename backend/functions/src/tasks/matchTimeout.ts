@@ -7,6 +7,7 @@ import {
   USER_TIMEOUT_DURING_MATCH,
   REMOVE_UNMATCHED_USER_FUNCTION_URL,
 } from '../consts/tasks';
+import autoId from '../util/autoId';
 
 export async function addUserToTimeoutQueue(
   data: App.userTimeoutDetails
@@ -28,8 +29,13 @@ export async function addUserToTimeoutQueue(
     CLOUD_TASK_LOCATION,
     MATCH_TIMEOUT_QUEUE_NAME
   );
+
+  const taskId = autoId();
   const payload = {
-    data: data,
+    data: {
+      ...data,
+      taskId,
+    },
   };
 
   const task: any = {
@@ -51,5 +57,10 @@ export async function addUserToTimeoutQueue(
   functions.logger.info('Sending task:', task);
   const request = { parent: parent, task: task };
   const [response] = await client.createTask(request);
-  functions.logger.info(`Created task ${response.name}`);
+  functions.logger.info(
+    `Created task ${response.name} with generated taskId of ${taskId}`
+  );
+  return {
+    id: taskId,
+  };
 }

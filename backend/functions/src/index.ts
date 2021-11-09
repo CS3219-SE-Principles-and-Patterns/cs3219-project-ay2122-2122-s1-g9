@@ -5,7 +5,7 @@ import * as matches from './matches';
 import * as questions from './questions';
 import * as queues from './queues';
 import * as sessions from './sessions';
-import { FUNCTION_LOCATION } from './consts/values';
+import functionBuilder from './functionBuilder';
 
 admin.initializeApp();
 
@@ -13,11 +13,11 @@ admin.initializeApp();
 // // https://firebase.google.com/docs/functions/typescript
 //
 
-export const helloWorld = functions
-  .region(FUNCTION_LOCATION)
-  .https.onRequest((request, response) => {
+export const helloWorld = functionBuilder.https.onRequest(
+  (request, response) => {
     functions.logger.info('Hello logs!', { structuredData: true });
     response.send('Hello from Firebase!');
-  });
+  }
+);
 
 export { matches, questions, queues, sessions };

@@ -1,6 +1,10 @@
 import * as admin from 'firebase-admin';
 import { queues } from '../src/index';
-import { createOnlineUser, createSession } from './testUtil/factory';
+import {
+  createMatchTimeoutTask,
+  createOnlineUser,
+  createSession,
+} from './testUtil/factory';
 import { expect } from './testUtil/chai';
 import fft from './testUtil/fft';
 
@@ -66,11 +70,13 @@ describe('removeUnmatchedUserAfterTimeout', () => {
     it('should exit successfully', async () => {
       const sess = await createSession();
       const userId1 = sess.users[0];
+      const matchTimeoutTask = await createMatchTimeoutTask(userId1);
       const req = {
         body: {
           data: {
             userId: userId1,
             queueName: 'easy',
+            taskId: matchTimeoutTask.taskId,
           },
         },
       };
@@ -93,6 +99,7 @@ describe('removeUnmatchedUserAfterTimeout', () => {
     it('should remove user from queue', async () => {
       const userId = await createOnlineUser();
       const db = admin.database();
+      const matchTimeoutTask = await createMatchTimeoutTask(userId);
       await db.ref('/queues/easy').set([userId]);
 
       const req = {
@@ -100,6 +107,7 @@ describe('removeUnmatchedUserAfterTimeout', () => {
           data: {
             userId,
             queueName: 'easy',
+            taskId: matchTimeoutTask.taskId,
           },
         },
       };
