@@ -8,7 +8,7 @@ This is the frontend repo for PeerPrep. This project was bootstrapped with [Crea
 
 1. Copy the `.env.example` file and rename it to `.env`
 
-2. Update the variables in the `.env` file with the relevant Firebase keys
+2. Update the variables in the `.env` file with the relevant Firebase keys. Set REACT_APP_USE_EMULATOR to true or false depending on which instance you wish to connect to.
 
 Note: The `.env` file has been handed over to our project mentor Sahil for use in the front-end project
 
