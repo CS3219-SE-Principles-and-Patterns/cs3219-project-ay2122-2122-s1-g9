@@ -10,13 +10,16 @@ This is the frontend repo for PeerPrep. This project was bootstrapped with [Crea
 
 2. Update the variables in the `.env` file with the relevant Firebase keys
 
+Note: The `.env` file has been handed over to our project mentor Sahil for use in the front-end project
+
 ### Code Dependencies
 
-Run `yarn install` to install dependencies 
+Run `yarn install` to install dependencies
 
 ## Development
 
 1. Run the app in development mode
+
 ```
 yarn start
 ```
