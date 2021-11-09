@@ -3,7 +3,7 @@ import { FUNCTION_LOCATION } from './consts/values';
 
 const functionBuilder = functions.region(FUNCTION_LOCATION).runWith({
   timeoutSeconds: 180,
-  minInstances: 1,
+  minInstances: 2,
 });
 
 export default functionBuilder;
