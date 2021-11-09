@@ -133,5 +133,3 @@ export async function getMatchTimeoutTask(userId: string): Promise<any> {
     await firestore.doc(`matchTimeoutTasks/${userId}`).get()
   ).data()) as any;
 }
-
-// export async function removeUnmatchedUserAfterTimeout
