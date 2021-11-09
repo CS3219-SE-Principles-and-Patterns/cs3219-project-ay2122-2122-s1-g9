@@ -8,21 +8,22 @@ const isOnlineForDatabase = {
   lastUpdated: admin.database.ServerValue.TIMESTAMP,
 };
 
+function generateId(): string {
+  let id = '';
+
+  for (let i = 0; i < 28; i++) {
+    id += ASCII_CHARS.charAt(Math.floor(Math.random() * ASCII_CHARS.length));
+  }
+
+  return id;
+}
+
 export async function setUserOnline(uid: string): Promise<void> {
   await admin.database().ref(`/status/${uid}`).set(isOnlineForDatabase);
 }
 
 export async function createUser(): Promise<string> {
-  // By default, user will be online
-  let userId = '';
-
-  for (let i = 0; i < 28; i++) {
-    userId += ASCII_CHARS.charAt(
-      Math.floor(Math.random() * ASCII_CHARS.length)
-    );
-  }
-
-  return userId;
+  return generateId();
 }
 
 export async function createOnlineUser(): Promise<string> {
@@ -53,4 +54,13 @@ export async function createSession(): Promise<App.Session> {
   }
 
   return sessData;
+}
+
+export async function createMatchTimeoutTask(userId: string): Promise<any> {
+  const firestore = admin.firestore();
+  const task = { taskId: generateId() };
+  await firestore
+    .doc(`matchTimeoutTasks/${userId}`)
+    .set({ taskId: task.taskId });
+  return task;
 }
