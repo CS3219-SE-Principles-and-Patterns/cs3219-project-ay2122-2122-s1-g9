@@ -59,3 +59,10 @@ Once the setup is done, you should return to the backend folder.
 
 1. Ensure that you are logged in to Firebase on `firebase` CLI. Make sure that `.firebaserc` file is pointing to the correct project.
 1. `firebase deploy -f`. The `-f` deletes old functions that does not exist in the deployed codebase without asking for confirmation.
+
+### Setting min instances of Cloud Function
+1. More information on min instances is available on Firebase docs [here](https://firebase.google.com/docs/functions/manage-functions#reduce_the_number_of_cold_starts) and the Google docs [here](https://cloud.google.com/functions/docs/configuring/min-instances)
+1. You can control the min instances online for each Cloud Function by doing `firebase functions:config:set peerprep.mininstances=2`. This will set the min instances to 2.
+1. To set it back to default, do `firebase functions:config:unset peerprep.mininstances`
+1. To see the configured min instances, do `firebase functions:config:get peerprep.mininstances`
+1. Redeploy the Cloud Functions so that the new settings will take place
